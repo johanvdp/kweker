@@ -1,0 +1,17 @@
+menu "Kweker"
+
+    config LED_GPIO
+        int "LED GPIO number"
+        range 0 34
+        default 2
+        help
+            GPIO number (GPIO_NUM_xx) to control LED (1:on).
+
+    config AM2301_GPIO
+        int "AM2301 GPIO number"
+        range 0 34
+        default 4
+        help
+            GPIO number (GPIO_NUM_xx) to AM2301 sensor.
+
+endmenu

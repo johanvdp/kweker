@@ -1,0 +1,61 @@
+= AM2301 temperature and relative humidity sensor
+
+Uses an one wire serial interface to communicate sensor values.
+
+== One wire serial
+
+The bus signal is a single wire shared for in- and output by both the host and the device.
+Both parties use open-drain type outputs to pull-down the signal from the floating (pulled-high) signal level.
+
+* Phase 1: Host start
+** Host pulls the signal low (Tbe)
+** Host floats the signal high
+* Phase 2: device response
+** Device pulls the signal low (Trel)    
+** Device floats the signal high (Treh)
+* Phase 3: device exchanges bits (40x)
+** Device pulls the signal low (Tlow)
+** Device floats the signal high  (Thi0, or Thi1)
+** Bit is interpreted as low (0) when Thi < Tlow
+** Bit is interpreted as high (1) when Thi > Tlow
+* Phase 4: device release
+** Device drives the signal high  (Thi0, or Thi1)
+
+
+[ditaa]
+....
+             Tgo      Treh       Thi0      Thi1                  Thi0
+ ---+       +---+    +----+     +---+     +-------+       +     +---+   +---
+    |       |   |    |    |     |   |     |       | . . . |     |   |   |
+    +-------+   +----+    +-----+   +-----+       +       +-----+   +---+
+     Tbe         Trel      Tlow      Tlow                  Tlow      Ten
+
+                          |<------->|<----------->|  . . .|<------->|
+
+                           bit39 (0) bit38 (1)             bit0 (0)
+
+    |<--------->|<------->|<--------------------------------------->|<-->|                       
+
+       phase 1    phase 2   phase 3 (40 bits)                        phase 4
+
+....
+
+.Interface characteristics
+|===
+| Symbol | Parameter | min | typ | max | Unit
+
+| Tbe  | Host start pull low       | 0.8 | 1  | 20  | ms
+| Tgo  | Host float high           | 20  | 30 | 200 | μs
+| Trel | Device start pull low     | 75  | 80 | 85  | μs
+| Treh | Device float high         | 75  | 80 | 85  | μs
+| Tlow | Device data low time      | 48  | 50 | 55  | μs
+| Thi0 | Device data "0" high time | 22  | 26 | 30  | μs
+| Thi1 | Device data "1" high time | 68  | 70 | 75  | μs
+| Ten  | Device release            | 45  | 50 | 55  | μs
+|===
+
+
+
+== State
+
+plantuml::AM2301_states.plantuml[format=svg, title="States"]
