@@ -1,3 +1,4 @@
+// The author disclaims copyright to this document.
 == AM2301A module
 
 Measures relative humidity and temperature.

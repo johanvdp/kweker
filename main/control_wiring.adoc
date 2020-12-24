@@ -1,3 +1,4 @@
+// The author disclaims copyright to this document.
 == Control wiring
 
 Low voltage power and control signals.

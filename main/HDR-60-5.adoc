@@ -1,3 +1,4 @@
+// The author disclaims copyright to this document.
 == HDR-60-5
 
 Power supply unit.

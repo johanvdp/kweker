@@ -1,3 +1,4 @@
+// The author disclaims copyright to this document.
 == SSR-10 DA
 
 Solid state relay.

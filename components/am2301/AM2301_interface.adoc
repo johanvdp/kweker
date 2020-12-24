@@ -1,3 +1,4 @@
+// The author disclaims copyright to this document.
 === Interface
 
 The bus signal is a single wire shared for in- and output by both the host and the device.
