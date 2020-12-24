@@ -1,0 +1,37 @@
+== MH-Z19B module
+
+CO2 concentration measurement sensor.
+Using a serial port (UART TTL level 3.3V) for communication.
+Software settings and protocol see datasheet.
+
+.MH-Z19B module
+[%autowidth]
+|===
+| pin | name | description
+
+| 1   |      | analog output (unused)
+| 2   |      | none
+| 3   | GND  | negative
+| 4   | VIN  | positive
+| 5   | RXD  | TTL level data input
+| 6   | TXD  | TTL level data output
+| 7   |      | none
+|===
+
+.MH-Z19B module other
+[%autowidth]
+|===
+| parameter | value
+
+| operating voltage | 4.5..5.5 VDC
+| operating current | 150 mA peak
+| operating temperature | -10..50C
+| operating humidity | 0..90%RH
+| lifespan | >5 years
+| detection range | 0..2000 ppm
+| preheat time | 3 min
+| response time | < 120 s
+| accuracy | +/-(50 ppm + 5% reading value)
+| output signal | serial port (TTL level 3.3V)
+|===
+

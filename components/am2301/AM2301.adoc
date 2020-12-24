@@ -1,0 +1,46 @@
+== AM2301A module
+
+Measures relative humidity and temperature.
+Communicates using an one-wire serial bus.
+
+.AM2301A module
+[%autowidth]
+|===
+| pin | color | function
+
+.2+| 1
+.2+| red
+| VDD (3.3..5.2V)
+| recommend 5.0V
+| 2 | yellow | serial data, dual port
+| 3 | black  | GND
+| 4 |        | not connected
+|===
+
+.AM2301A other
+[%autowidth]
+|===
+| parameter | value
+
+2+|*relative humidity*
+| resolution | 0.1 %RH
+| range | 0..99.9 %RH
+| accuracy | +/- 3% RH
+
+| repeatability | +/- 1 %RH
+| response | <6 s (1/e, 63%)
+| drift | <0.5 %RH/y
+
+2+|*relative temperature*
+.2+| resolution
+| 0.1 C
+| 16 bit
+| accuracy | +/- 1 C
+
+| range | -40..80 C
+| repeatability | +/- 0.2 C
+| response | <10 s (1/e, 63%)
+| drift | <0.3 C/y
+|===
+
+include::AM2301_interface.adoc[]

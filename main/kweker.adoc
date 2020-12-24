@@ -1,0 +1,375 @@
+:toc:
+:toc-title: Table of contents
+:toclevels: 5
+:sectnums:
+
+= Kweker (Grower)
+
+As useful as windshield wipers on a goat's ass.
+
+== Structure
+* Data
+    ** State
+        *** Current task
+        *** Actuator state
+            **** Lamp
+            **** Heater
+            **** Exhaust fan
+            **** Recirculation fan
+    ** Setpoints
+        *** Day
+            **** Sunrise
+            **** Air temperature
+            **** Air humidity
+            **** Air CO2 concentration
+        *** Night
+            **** Sunset
+            **** Air temperature
+            **** Air humidity 
+            **** Air CO2 concentration
+* Sensors
+	** Clock
+	** Air temperature
+	** Air humidity
+	** Air CO2 concentration
+	** (future)
+		*** Soil temperature
+		*** Soil moisture
+		*** Ambient air temperature
+		*** Ambient air humidity
+		*** Ambient air CO2 concentration
+	** Operator
+		*** Buttons
+
+* Actuators
+    ** Lamp
+    ** Heater_
+    ** Exhaust fan
+    ** Recirculation fan
+    ** Display
+* Tasks
+    ** Off
+    ** Confirm off
+    ** Manual control
+    ** Monitor sensors
+    ** Change day setpoints
+    ** Change night setpoints
+    ** Automatic control 
+
+== Cause and effect
+
+How a positive increase in one phenomenon affects another.
+
+* (+) causes an increase
+* (-) causes a decrease
+* effect depends on environment
+
+.Cause and effect
+[%autowidth]
+|===
+|Cause/Effect                 |Air temperature|Air humidity |Air CO2 concentration|Soil temperature|Soil moisture
+
+|Ambient air temperature      |+              |-            |                     |+               |-            
+|Ambient air humidity         |               |+            |                     |                |             
+|Ambient air CO2 concentration|               |             |+                    |                |             
+|Lamp                         |+              |-            |-                    |+               |-            
+|Exhaust fan                  |Amb. air temp. |Amb. air hum.|Amb. air. CO2 conc.  |                |             
+|Recirculation fan            |               |             |                     |                |-            
+|Heater                       |+              |-            |                     |+               |-            
+|===
+
+== Measurement
+
+Typical environment.
+
+.Air temperature
+[%autowidth]
+|===
+|environment|min.[°C]|max.[°C]|description        
+                                                  
+|day        |25      |30      |allowed higher     
+|night      |15      |20      |not allowed lower  
+|day-night  |        |10      |difference at most 
+|===
+
+.Air humidity
+[%autowidth]
+|===
+|environment|min.[%RH]|max.[%RH]|description
+
+|sprout     |70       |80       |           
+|vegetative |40       |70       |           
+|bloom      |20       |40       |           
+|===
+
+.CO2 concentration
+[%autowidth]
+|===
+|environment          |min. [ppm]|max. [ppm]|description  
+                                                          
+|outdoor              |300       |500       |400ppm=0.04% 
+|human occupied space |1000      |1200      |             
+|enriched (vegetative)|800       |1200      |lower end    
+|enriched (bloom)     |800       |1200      |higher end   
+|dangerous for people |5000      |          |             
+|===
+
+== Setpoints
+
+.Setpoints
+[%autowidth]
+|===
+|name            |lamp duration[h]|T min.[°C]|T max.[°C]|RH min.[%]|RH max.[%]|CO2 min. [ppm]|CO2 max. [ppm]
+
+|sprout day      |18              |20        |25        |70        |80        |              |              
+|sprout night    |6               |25        |25        |70        |80        |              |              
+|vegetative day  |18              |20        |30        |40        |70        |800           |1000          
+|vegetative night|6               |15        |20        |40        |70        |800           |1000          
+|bloom day       |12              |20        |35        |20        |40        |800           |1200          
+|bloom night     |12              |15        |25        |20        |40        |800           |1200          
+|===
+
+== Control
+
+=== Lamp
+
+The lamp is not a means of control. It is strictly following the night/day circadian rhythm that was set.
+
+.Cause and effect
+* ON
+    ** Increase air temperature (lamp).
+    ** Decrease relative humidity (higher temperature)
+    ** Increase relative humidity (more evaporation)
+    ** Reduce CO2 concentration (photosynthesis)
+* OFF
+    ** Decrease air temperature (lamp)
+    ** Increase relative humidity (lower temperature)
+    ** Decrease relative humidity (less evaporation)
+
+=== Exhaust fan
+
+Reduces the humidity (produced by evaporation through leaves) to avoid mold.
+Follows the ambient air temperature, humidity, and CO2 concentration.
+
+.Cause and effect
+* ON
+    ** Follow ambient air temperature
+    ** Follow ambient air humidity
+    ** Follow ambient air CO2 concentration
+* OFF
+    ** Increase air temperature (if lamp is on)
+    ** Increase air humidity (evaporation)
+    ** Reduce CO2 concentration (if lamp is on, photosynthesis)
+
+.Exhaust fan control
+[%autowidth]
+|===
+|air temperature|air humidity|set|description    
+
+|low            |low         |OFF|               
+|low            |ok          |OFF|               
+|low            |high        |ON |avoid mold wins
+|ok             |low         |OFF|               
+|ok             |ok          |OFF|               
+|ok             |high        |ON |               
+|high           |low         |ON |               
+|high           |ok          |ON |               
+|high           |high        |ON |               
+|===
+
+=== Recirculation fan
+
+.Cause and effect
+* ON
+    ** Promote stirdy stem growth
+    ** Promote nutrient transport by promoting evaporation
+    ** Plant produces more flowers where wind blows
+    ** Disperse CO2 that is needed on the leaves, not on the ground
+* OFF
+    ** No energy use
+
+.Recirculation fan control
+[%autowidth]
+|===
+|circadian|set|description
+
+|night    |ON |           
+|day      |ON |           
+|===
+
+=== Heater
+
+Avoid low temperature, and avoid mold.
+
+** list: Cause and effect **
+
+* ON
+    ** Increase temperature
+    ** Decrease relative humidity
+* OFF
+    ** Decrease temperature
+    ** Increase relative humidity
+
+.Heater control
+[%autowidth]
+|===
+|air temperature|air humidity|set|description              
+
+|low            |low         |ON |how to increase humidity?
+|low            |ok          |ON |                         
+|low            |high        |ON |                         
+|ok             |low         |OFF|                         
+|ok             |ok          |OFF|                         
+|ok             |high        |ON |avoid mold               
+|high           |low         |OFF|                         
+|high           |ok          |OFF|                         
+|high           |high        |OFF|fans to reduce humidity  
+|===
+
+== Tasks
+
+=== Common
+
+Common functionality for all tasks.
+
+* Does
+    ** Collect sensor values
+    ** Calculate derived values
+
+=== Off
+
+Switch all actuators to off.
+
+      1234567890123456
+    1   OFF          →
+    2                 
+    3                 
+    4                 
+
+* Knows
+    ** Performed once
+* Does
+    ** Set actuator values to off (once)
+    ** Allow navigate from Off to Manual.
+
+=== Confirm off
+
+Display warning before transitioning to Off.
+
+      1234567890123456
+    1   OFF           
+    2   ARE YOU SURE? 
+    3                 
+    4 YES           NO
+
+
+* Knows
+    ** - 
+* Do*es
+    ** Allow navigate from Confirm off to Off
+    ** Allow navigate from Confirm off to Manual.
+
+=== Manual
+
+Display and allow control of the current actuator state.
+
+      1234567890123456
+    1 ← MANUAL       →
+    2 ←-LIGHT----OFF-→
+    3   HEATER   OFF ↑
+    4   FAN INT  OFF ↓
+        FAN EXT  OFF  
+
+* Knows
+    ** Selected actuator
+* Does
+    ** Allow navigate from Manual to Confirm off
+    ** Allow navigate from Manual to Monitor
+    ** Allow change selected actuator
+    ** Allow change actuator value
+
+=== Monitor
+
+Display the current state.
+
+      1234567890123456
+    1 ← MONITOR      →
+    2   16:13         
+    3   21.5 °C       
+    4   51 %RH        
+        621 ppm CO2   
+
+* Knows
+    ** Visible sensors
+* Does
+    ** Allow navigate from Monitor to Manual
+    ** Allow navigate from Monitor to Day
+    ** Rotates visible sensor values
+
+=== Day
+
+Display and allow modification of the setpoints for the day period.
+
+      1234567890123456
+    1 ← DAY          →
+    2 ←-16:00--------→
+    3   28.0 C       ↑
+    4   70 %RH       ↓
+        800 ppm CO2   
+
+* Knows
+    ** Selected setpoint
+* Does
+    ** Allow navigate from Day to Monitor
+    ** Allow navigate from Day to Night
+    ** Allow change selected setpoint
+    ** Allow change selected setpoint value
+
+=== Night
+
+Display and allow modification of the setpoints for the night period.
+
+      1234567890123456
+    1 ← NIGHT        →
+    2 ←-16:00--------→
+    3   18.0 C       ↑
+    4   50 %RH       ↓
+        400 ppm CO2   
+
+* Knows
+    ** Selected setpoint
+* Does
+    ** Allow navigate from Night to Day
+    ** Allow navigate from Night to Control
+    ** Allow change selected setpoint
+    ** Allow change selected setpoint value
+
+=== Control
+
+Display the current state and performs automatic control.
+
+      1234567890123456
+    1 ← CONTROL       
+    2   16:13 NIGHT   
+    3   21.5 °C       
+    4   51 %RH        
+        621 ppm CO2   
+
+* Knows
+	** Visible sensor selection
+    ** Visible sensor rotation timing
+* Does
+    ** Calculate actuator values
+    ** Applies actuator values
+    ** Allow navigate from Control to Night
+    ** Rotates visible sensor values
+
+// external level 2 sections
+include::controller.adoc[]
+include::../components/am2301/AM2301.adoc[]
+include::../components/mhz19b/MH-Z19B.adoc[]
+include::HDR-60-5.adoc[]
+include::SSR-10-DA.adoc[]
+include::layout.adoc[]
+include::mains_wiring.adoc[]
+include::control_wiring.adoc[]

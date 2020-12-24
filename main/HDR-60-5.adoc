@@ -1,0 +1,29 @@
+== HDR-60-5
+
+Power supply unit.
+
+.HDR-60-5 module
+[%autowidth]
+|===
+| pin  | function
+
+2+| *output*
+| 1, 2 | GND
+| 3, 4 | 5V DC
+
+2+| *input*
+| 5    | AC/L
+| 6    | AC/N
+|===
+
+.HDR-60-5 module other
+[%autowidth]
+|===
+| parameter | value
+
+| AC input voltage | 85..264VAC
+| DC output voltage | 5V
+| Rated current | 6.5A
+| Rated power | 32.5W
+|===
+

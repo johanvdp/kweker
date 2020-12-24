@@ -1,0 +1,40 @@
+== SSR-10 DA
+
+Solid state relay.
+Used to switch AC loads on and off.
+
+.SSR-10 DA module
+[%autowidth]
+|===
+| pin   | description
+
+| *1*   
+.2+| AC switch
+| *2*   
+
+| *3*   | DC control+
+| *4*   | DC control-
+
+|===
+
+.SSR-10 DA module limits
+[%autowidth]
+|===
+| parameter | value
+
+| DC control | 3..32V DC
+| AC switch voltage | 24..380V AC
+| AC switch current | < 10 A
+|===
+
+.SSR-10 DA module usage
+[%autowidth]
+|===
+| device | description
+
+| SSR1 | Grow lamp
+| SSR2 | Exhaust fan
+| SSR3 | Recirculation fan
+| SSR4 | Heater
+|===
+
