@@ -12,23 +12,30 @@ AM2301::~AM2301() {
 void AM2301::setup(gpio_num_t pin, xQueueHandle resultQueue) {
 	ESP_LOGD(tag, "setup, pin: %d, queue: %s", pin, resultQueue ? "y" : "n");
 
+	if (state != COMPONENT_UNINITIALIZED) {
+		state = COMPONENT_FATAL;
+		ESP_LOGE(tag, "setup only once (FATAL)");
+		return;
+	}
+
 	if (pin < GPIO_NUM_0 || pin >= GPIO_NUM_MAX) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup requires GPIO pin number (FATAL)");
 		return;
 	}
 	this->pin = pin;
 
 	if (resultQueue == NULL) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup requires result queue handle (FATAL)");
 		return;
 	}
 	this->resultQueue = resultQueue;
 
-	queue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME, sizeof(isr_data_t));
-	if (queue == 0) {
-		componentState = FATAL;
+	decoderQueue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME,
+			sizeof(decoder_data_t));
+	if (decoderQueue == 0) {
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup xQueueCreate failed (FATAL)");
 		return;
 	}
@@ -36,7 +43,7 @@ void AM2301::setup(gpio_num_t pin, xQueueHandle resultQueue) {
 	BaseType_t ret = xTaskCreatePinnedToCore(&task, "setup", 2048, this,
 			(2 | portPRIVILEGE_BIT), NULL, 1);
 	if (ret != pdPASS) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup xTaskCreate failed: %d (FATAL)", ret);
 		return;
 	}
@@ -49,49 +56,65 @@ void AM2301::setup(gpio_num_t pin, xQueueHandle resultQueue) {
 	io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
 	ret = gpio_config(&io_conf);
 	if (ret != ESP_OK) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup gpio_config failed: %d (FATAL)", ret);
 		return;
 	}
-	one_wire_listen();
 
 	ret = gpio_install_isr_service(
 	ESP_INTR_FLAG_LEVEL3 | ESP_INTR_FLAG_IRAM);
 	if (ret != ESP_OK) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup gpio_install_isr_service failed: %d (FATAL)", ret);
 		return;
 	}
 
 	ret = gpio_isr_handler_add(pin, isr_handler, this);
 	if (ret != ESP_OK) {
-		componentState = FATAL;
+		state = COMPONENT_FATAL;
 		ESP_LOGE(tag, "setup gpio_isr_handler_add failed: %d (FATAL)", ret);
 		return;
 	}
+
+	state = COMPONENT_READY;
 }
 
-void AM2301::measure() {
+bool AM2301::measure() {
 	ESP_LOGD(tag, "measure");
 
-	if (componentState == FATAL) {
+	if (state == COMPONENT_FATAL) {
 		ESP_LOGE(tag, "measure component state (FATAL)");
-		return;
+		return false;
+	} else if (state == COMPONENT_UNINITIALIZED) {
+		ESP_LOGE(tag, "measure component not setup");
+		return false;
+	} else if (state != COMPONENT_READY) {
+		ESP_LOGE(tag, "measure component not ready");
+		return false;
 	}
 
-	queue_instruction_start();
+	return queue_instruction_start();
 }
 
-void AM2301::queue_instruction_start() {
+/**
+ * Put INSTRUCTION_START into the queue.
+ *
+ * @return True if adding was succesful. False if not (queue full).
+ */
+
+bool AM2301::queue_instruction_start() {
 	ESP_LOGD(tag, "queue_instruction_start");
 
-	isr_data_t data;
+	decoder_data_t data;
 	data.instruction = INSTRUCTION_START;
-	BaseType_t ret = xQueueSend(queue, &data, (TickType_t ) 0);
+	BaseType_t ret = xQueueSend(decoderQueue, &data, (TickType_t ) 0);
 	if (ret != pdPASS) {
 		// queue full, might recover
 		ESP_LOGE(tag, "queue_instruction_start xQueueSend failed");
+		return false;
 	}
+
+	return true;
 }
 
 /**
@@ -135,17 +158,17 @@ void AM2301::handle_instruction_start() {
 	bit = 40;
 	one_wire_start();
 	one_wire_listen();
-
 	state = WAIT_FOR_DEVICE_START_LOW;
 }
 
 void AM2301::handle_instruction_edge_detected() {
 	if (state == WAIT_FOR_DEVICE_START_LOW) {
-		if (isrData.level) {
-			// assume device end start pulse
-			// expect data low
+		if (decoderData.level) {
+			// out of sync
+			// missed device begin start pulse
+			// expect data low next
 			state = WAIT_FOR_DEVICE_DATA_LOW;
-			ESP_LOGD(tag, "expected device start low");
+			ESP_LOGD(tag, "missed device start low");
 		} else {
 			// device begin start pulse
 			// expect end start pulse
@@ -153,18 +176,18 @@ void AM2301::handle_instruction_edge_detected() {
 			ESP_LOGD(tag, "device start low");
 		}
 	} else if (state == WAIT_FOR_DEVICE_START_HIGH) {
-		if (isrData.level) {
+		if (decoderData.level) {
 			// device end start pulse
 			// expect data low
 			state = WAIT_FOR_DEVICE_DATA_LOW;
 			ESP_LOGD(tag, "device start high");
 		} else {
-			state = BUS_ERROR;
+			fire_recoverable(decoderData.timestamp);
 			ESP_LOGE(tag, "expected device data high");
 			one_wire_float();
 		}
 	} else if (state == WAIT_FOR_DEVICE_DATA_LOW) {
-		if (isrData.level) {
+		if (decoderData.level) {
 			// assume device end start pulse
 			// expect data low
 			state = WAIT_FOR_DEVICE_DATA_LOW;
@@ -180,7 +203,7 @@ void AM2301::handle_instruction_edge_detected() {
 			} else {
 				// end of bit high duration
 				// not correcting for wrapping after ~300000y power-on-time
-				highDuration = isrData.timestamp - previousTimestamp;
+				highDuration = decoderData.timestamp - previousTimestamp;
 				// calculate bit value (1: high duration longer than low duration) and store
 				bool bit_value = highDuration > lowDuration;
 				if (bit_value) {
@@ -191,58 +214,81 @@ void AM2301::handle_instruction_edge_detected() {
 						bit, highDuration, bit_value);
 				if (bit == 0) {
 					state = WAIT_FOR_DEVICE_RELEASE;
-					frame_finished(data, lastValidTimestamp);
+					frame_finished(data, decoderData.timestamp);
 				}
 			}
 			// next bit
 			bit--;
 		}
 	} else if (state == WAIT_FOR_DEVICE_DATA_HIGH) {
-		if (isrData.level) {
-			lowDuration = isrData.timestamp - previousTimestamp;
+		if (decoderData.level) {
+			lowDuration = decoderData.timestamp - previousTimestamp;
 			state = WAIT_FOR_DEVICE_DATA_LOW;
 			ESP_LOGD(tag, "device data, bit: %02d, low: %d", bit, lowDuration);
 		} else {
-			state = BUS_ERROR;
-			ESP_LOGE(tag, "framing error, expected high, bit: %02d", bit);
+			fire_recoverable(decoderData.timestamp);
+			ESP_LOGE(tag, "bus error, expected high, bit: %02d", bit);
 			one_wire_float();
 		}
 	} else if (state == WAIT_FOR_DEVICE_RELEASE) {
-		if (isrData.level) {
-			// concluding data transmission
-			state = BUS_IDLE;
+		if (decoderData.level) {
+			state = HOST_BUS_FLOAT;
 			ESP_LOGD(tag, "device release");
-			one_wire_float();
 		} else {
-			state = BUS_ERROR;
-			ESP_LOGE(tag, "framing error, expected device release");
-			one_wire_float();
+			// measurement result already reported
+			state = HOST_BUS_FLOAT;
+			ESP_LOGE(tag, "bus error, expected device release");
 		}
-	} else if (state == BUS_IDLE) {
-		// ignore
-	} else if (state == BUS_ERROR) {
-		// ignore
+		one_wire_float();
+	} else if (state == HOST_BUS_FLOAT) {
+		// set to output causes edge detection
+		if (decoderData.level) {
+			ESP_LOGE(tag, "bus error, expected host bus float");
+		} else {
+			ESP_LOGD(tag, "host bus float");
+		}
+		state = WAIT_FOR_DEVICE_RATE_LIMIT;
+	} else if (state == WAIT_FOR_DEVICE_RATE_LIMIT) {
+		// wait for device hold-off (timeout on queue)
+		// no edges expected while waiting
+		// measurement result already reported
+		ESP_LOGE(tag, "bus error, while wait for device rate limit");
+	} else if (state == COMPONENT_READY) {
+		// waiting for start measurement instruction
+		// no edges expected while waiting
+		// measurement result already reported
+		ESP_LOGE(tag, "bus error, while ready");
+	} else if (state == COMPONENT_RECOVERABLE) {
+		// wait for device hold-off (timeout on queue)
+		// ignore all edges until then
+	} else if (state == COMPONENT_FATAL) {
+		// bus alive while not setup correctly
+		// ignore everything that follows
 	} else {
-		ESP_LOGE(tag, "unknown state: %d, level: %d", state, isrData.level);
+		ESP_LOGE(tag, "unknown state: %d, level: %d", state, decoderData.level);
 	}
-	previousTimestamp = isrData.timestamp;
+	previousTimestamp = decoderData.timestamp;
 }
 
 /**
  * Run forever.
- * Monitor ISR edge detection data and detect frames.
+ * Monitor decoder queue for ISR edge detection data and instructions.
  */
 void IRAM_ATTR AM2301::run() {
 	while (true) {
-		if (xQueueReceive(queue, &isrData, portMAX_DELAY)) {
-			if (isrData.instruction == INSTRUCTION_EDGE_DETECTED) {
+		if (xQueueReceive(decoderQueue, &decoderData,
+				MINIMUM_MEASUREMENT_INTERVAL_TICKS)) {
+			if (decoderData.instruction == INSTRUCTION_EDGE_DETECTED) {
 				handle_instruction_edge_detected();
-			} else if (isrData.instruction == INSTRUCTION_START) {
+			} else if (decoderData.instruction == INSTRUCTION_START) {
 				handle_instruction_start();
 			} else {
 				ESP_LOGE(tag, "run, unknown instruction: %d",
-						isrData.instruction);
+						decoderData.instruction);
 			}
+		} else {
+			// timeout, no activity
+			state = COMPONENT_READY;
 		}
 	}
 }
@@ -259,10 +305,8 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp) {
 	uint8_t actualChecksum = b0;
 	uint8_t expectedChecksum = b4 + b3 + b2 + b1;
 	if (actualChecksum == expectedChecksum) {
-		// store last valid measurement
-		this->lastValidTimestamp = timestamp;
 		// frame contains humidity times ten
-		this->lastValidHumidity = ((frame >> 24) & 0xFFFF) / 10.0;
+		float humidity = ((frame >> 24) & 0xFFFF) / 10.0;
 		// frame contains temperature times ten
 		float t = ((frame >> 8) & 0x7FFF) / 10.0;
 		// frame contains temperature sign as bit
@@ -270,28 +314,29 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp) {
 		if (t_negative) {
 			t *= -1.0;
 		}
-		this->lastValidTemperature = t - TEMPERATURE_C_TO_K;
+		float temperature = t + TEMPERATURE_C_TO_K;
 
-		ESP_LOGD(tag, "frame_finished, T: %.1fK, RH: %.1f%%",
-				lastValidTemperature, lastValidHumidity);
-		fire_result(true);
+		ESP_LOGD(tag, "frame_finished, T: %.1fK, RH: %.1f%%", temperature,
+				humidity);
+		fire_result(RESULT_OK, temperature, humidity, timestamp);
 
 	} else {
-		ESP_LOGD(tag,
-				"frame_finished, invalid checksum: %02X%02X%02X%02X%02X",
+		ESP_LOGD(tag, "frame_finished, invalid checksum: %02X%02X%02X%02X%02X",
 				b4, b3, b2, b1, b0);
-		fire_result(false);
+		fire_recoverable(timestamp);
 	}
 }
 
 /**
  * Fire result to result queue.
  */
-void AM2301::fire_result(bool valid) {
+void AM2301::fire_result(result_status_t status, float temperature,
+		float humidity, int64_t timestamp) {
 	result_t result;
-	result.result = valid ? OK : RECOVERABLE;
-	result.temperature = this->lastValidTemperature;
-	result.humidity = this->lastValidHumidity;
+	result.status = status;
+	result.temperature = temperature;
+	result.humidity = humidity;
+	result.timestamp = timestamp;
 	BaseType_t ret = xQueueSend(resultQueue, &result, 0);
 	if (ret != pdPASS) {
 		// queue full, might recover
@@ -300,12 +345,23 @@ void AM2301::fire_result(bool valid) {
 }
 
 /**
+ * Report recoverable error as measurement result (once).
+ */
+void AM2301::fire_recoverable(int64_t timestamp) {
+	if (state != COMPONENT_RECOVERABLE) {
+		state = COMPONENT_RECOVERABLE;
+		fire_result(RESULT_RECOVERABLE, NAN, NAN, timestamp);
+	}
+}
+
+/**
  * Link C static world to C++ instance
  */
-void AM2301::task(void *pvParameter) {
+void IRAM_ATTR AM2301::task(void *pvParameter) {
 	if (pvParameter == 0) {
 		ESP_LOGE(tag, "task, invalid parameter (FATAL)");
 	} else {
+		// should be an instance
 		AM2301 *pInstance = (AM2301*) pvParameter;
 		pInstance->run();
 	}
@@ -316,9 +372,9 @@ void AM2301::task(void *pvParameter) {
  */
 void IRAM_ATTR AM2301::isr_handler(void *pvParameter) {
 	AM2301 *pInstance = (AM2301*) pvParameter;
-	AM2301::isr_data_t data;
+	AM2301::decoder_data_t data;
 	data.instruction = INSTRUCTION_EDGE_DETECTED;
 	data.timestamp = esp_timer_get_time();
 	data.level = gpio_get_level(pInstance->pin);
-	xQueueSendFromISR(pInstance->queue, &data, NULL);
+	xQueueSendFromISR(pInstance->decoderQueue, &data, NULL);
 }

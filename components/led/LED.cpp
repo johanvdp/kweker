@@ -66,8 +66,6 @@ void LED::run() {
 					gpio_set_level(pin, !on);
 					vTaskDelay(80 / portTICK_PERIOD_MS);
 				}
-				// separate blink series
-				vTaskDelay(500 / portTICK_PERIOD_MS);
 			}
 		}
 	};

@@ -25,15 +25,22 @@ public:
 	 * @param resultQueue measurement result queue.
 	 */
 	void setup(gpio_num_t pin, xQueueHandle resultQueue);
-	void measure();
+	/**
+	 * Asyncronously request measurement.
+	 * Asyncronously delivers the result (of type result_t) into the result queue.
+	 * Do not request more than one measurement per MINIMUM_MEASUREMENT_INTERVAL_MS.
+	 *
+	 * @return true if request was succesful. False if rejected (queue full).
+	 */
+	bool measure();
 
 	typedef enum {
-		OK = 0,
+		RESULT_OK = 0,
 		//
-		RECOVERABLE,
+		RESULT_RECOVERABLE,
 		//
-		FATAL,
-	} error_t;
+		RESULT_FATAL,
+	} result_status_t;
 
 	/**
 	 * Measurement result message.
@@ -42,76 +49,62 @@ public:
 		/**
 		 * Overall result status.
 		 */
-		error_t result = OK;
+		result_status_t status;
 		/**
-		 * Temperature [K] of last succesful measurement
-		 * NAN if none available
+		 * Temperature [K] measured
+		 * NAN if not available
 		 */
-		float temperature = NAN;
+		float temperature;
 		/**
-		 * Relative humidity [%] of last succesful measurement
-		 * NAN if none available
+		 * Relative humidity [%] measured
+		 * NAN if not available
 		 */
-		float humidity = NAN;
+		float humidity;
 		/**
-		 * Timestamp of last succesful measurement
-		 * INT64_MIN if none available
+		 * Timestamp of measurement
+		 * INT64_MIN if not available
 		 */
-		int64_t timestamp = INT64_MIN;
+		int64_t timestamp;
 	} result_t;
 
 private:
 	/**
-	 * ISR instruction
+	 * Decoder instruction type
 	 */
 	typedef enum {
 		INSTRUCTION_EDGE_DETECTED,
 		INSTRUCTION_START,
-	} isr_instruction_t;
+	} decoder_instruction_t;
 
 	/**
-	 * ISR edge detection data
+	 * Decoder data type
 	 */
 	typedef struct {
-		isr_instruction_t instruction;
+		/** instruction */
+		decoder_instruction_t instruction;
+		/** timestamp for INSTRUCTION_EDGE_DETECTED */
 		int64_t timestamp;
+		/** wire level for INSTRUCTION_EDGE_DETECTED */
 		uint8_t level;
-	} isr_data_t;
+	} decoder_data_t;
 
 	/**
-	 * Single wire bus state
+	 * Component state
 	 */
 	typedef enum {
-		BUS_IDLE = 0,
+		COMPONENT_UNINITIALIZED = 0,
+		COMPONENT_READY,
 		HOST_SEND_START,
 		WAIT_FOR_DEVICE_START_LOW,
 		WAIT_FOR_DEVICE_START_HIGH,
 		WAIT_FOR_DEVICE_DATA_LOW,
 		WAIT_FOR_DEVICE_DATA_HIGH,
 		WAIT_FOR_DEVICE_RELEASE,
-		BUS_ERROR
-	} bus_state_t;
-
-	/**
-	 * Component state.
-	 */
-	error_t componentState = OK;
-	/**
-	 * Temperature [K]
-	 * NAN if none
-	 */
-	float lastValidTemperature = NAN;
-	/**
-	 * Relative humidity [%]
-	 * NAN if none
-	 */
-	float lastValidHumidity = NAN;
-
-	/**
-	 * Timestamp of last succesful measurement
-	 * INT64_MIN if none
-	 */
-	int64_t lastValidTimestamp = INT64_MIN;
+		HOST_BUS_FLOAT,
+		WAIT_FOR_DEVICE_RATE_LIMIT,
+		COMPONENT_RECOVERABLE,
+		COMPONENT_FATAL,
+	} component_state_t;
 
 	/**
 	 * GPIO pin connected to AM2301 sensor
@@ -119,9 +112,11 @@ private:
 	gpio_num_t pin = GPIO_NUM_NC;
 
 	/**
-	 * Queue to receive ISR edge detection data
+	 * Queue to receive
+	 * - ISR edge detection data, and
+	 * - decoder instructions
 	 */
-	xQueueHandle queue = 0;
+	xQueueHandle decoderQueue = 0;
 
 	/**
 	 * Queue to send measurement results
@@ -138,18 +133,18 @@ private:
 	// used to calculate bit value when high duration is known
 	int32_t lowDuration = 0;
 	// duration of bit high,
-	// used to calculate bit value when high duration is known
+	// used to calculate bit value when both low and high duration are known
 	int32_t highDuration = 0;
-	// data read from ISR queue
-	AM2301::isr_data_t isrData;
-	// bus state
-	bus_state_t state = BUS_IDLE;
+	// data read from decoder queue
+	AM2301::decoder_data_t decoderData;
+	// component state
+	volatile component_state_t state = COMPONENT_UNINITIALIZED;
 
 	void run();
-	void queue_instruction_start();
+	bool queue_instruction_start();
 	void frame_finished(int64_t frame, int64_t timestamp);
-	void fire_result(bool valid);
-
+	void fire_result(result_status_t status, float temperature, float humidity, int64_t timestamp);
+	void fire_recoverable(int64_t timestamp);
 	void handle_instruction_edge_detected();
 	void handle_instruction_start();
 
@@ -157,10 +152,9 @@ private:
 	void one_wire_start();
 	void one_wire_listen();
 
-	static constexpr float TEMPERATURE_C_TO_K = -273.15;
+	static constexpr float TEMPERATURE_C_TO_K = 273.15;
 	static constexpr int NUMBER_OF_EDGES_IN_DATA_FRAME = 100;
-	static constexpr uint64_t QUEUE_START_NEW_FRAME = -1;
-	static constexpr uint32_t MINIMUM_MEASUREMENT_INTERVAL_MS = 5000;
+	static constexpr TickType_t MINIMUM_MEASUREMENT_INTERVAL_TICKS = 2000 / portTICK_PERIOD_MS;
 	static constexpr int MICRO_PER_MILLI = 1000;
 
 	static void IRAM_ATTR task(void *pvParameter);
