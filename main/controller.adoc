@@ -83,7 +83,7 @@ The controller module contains multiple sub-modules.
 | pin  | name | function                 | use
                                          
 | *38* | GND  |                          | 
-| *37* | P23  | *VSPID*(2)               | SPIMOSI LCD & TOUCH
+| *37* | P23  | *VSPID*(2)               | SPIMOSI TOUCH
 | *36* | P22  | VSPIWP(2)                | TOUCH CS
 | *35* | P1   | *U0TXD*(1)               | USB SERIAL
 | *34* | P3   | *U0RXD*(1)               | USB SERIAL
@@ -94,10 +94,10 @@ The controller module contains multiple sub-modules.
 | *29* | P5   | VSPICS0(2)               | LCD CS
 | *28* | P17  | U2TXD(5)                 |
 | *27* | P16  | U2RXD(5)                 |
-| *26* | P4   | HSPIHD(2)                | 
+| *26* | P4   | HSPIHD(2)                | 1 WIRE SERIAL
 | *25* | P0   | *GPIO0*(1,3)             | BOOT
 | *24* | P2   | *GPIO2*(1,3), HSPIWP(2)  | LED
-| *23* | P15  | HSPICS0(2)               |
+| *23* | P15  | HSPICS0(2)               | LCD RESET
 | *22* | P8   | SD_DATA_1(1)             |
 | *21* | P7   | SD_DATA_O(1)             |
 | *20* | P6   | SD_CLK(1)                |
@@ -117,7 +117,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 
 3+| *LCD panel*
 | *1.1*  | VCC       | *3.3V*..5V
-| *1.2*  | GND       |
+| *1.2*  | GND       | GND
 | *1.3*  | CS        | LCD chip select
 | *1.4*  | RESET     | LCD reset
 | *1.5*  | DC/RS     | LCD register / data selection
