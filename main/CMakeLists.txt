@@ -1,8 +1,5 @@
-# Edit following two lines to set component requirements (see docs)
-set(COMPONENT_REQUIRES )
-set(COMPONENT_PRIV_REQUIRES )
+set(SOURCES main.c)
+idf_component_register(SRCS ${SOURCES}
+                    INCLUDE_DIRS .)
 
-set(COMPONENT_SRCS "main.cpp" )
-set(COMPONENT_ADD_INCLUDEDIRS .)
-
-register_component()
+target_compile_definitions(${COMPONENT_LIB} PUBLIC "-DLV_LVGL_H_INCLUDE_SIMPLE")
