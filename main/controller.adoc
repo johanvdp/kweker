@@ -57,7 +57,7 @@ The controller module contains multiple sub-modules.
 | pin  | name | function                 | use
                                          
 | *1*  | 3.3V |                          |
-| *2*  | EN   |                          | RESET
+| *2*  | EN   |                          | (on board reset button)
 | *3*  | P36  |                          |
 | *4*  | P39  |                          |
 | *5*  | P34  |                          |
@@ -65,8 +65,8 @@ The controller module contains multiple sub-modules.
 | *7*  | P32  |                          |
 | *8*  | P33  |                          |
 | *9*  | P25  |                          |
-| *10* | P26  |                          |
-| *11* | P27  |                          |
+| *10* | P26  |                          | LCD LED
+| *11* | P27  |                          | TOUCH IRQ
 | *12* | P14  | HSPICLK(2)               |
 | *13* | P12  | HSPIQ(2)                 |
 | *14* | GND  |                          |
@@ -83,20 +83,20 @@ The controller module contains multiple sub-modules.
 | pin  | name | function                 | use
                                          
 | *38* | GND  |                          | 
-| *37* | P23  | *VSPID*(2)               | SPIMOSI TOUCH
+| *37* | P23  | *VSPID*(2)               | TOUCH SPIMOSI 
 | *36* | P22  | VSPIWP(2)                | TOUCH CS
 | *35* | P1   | *U0TXD*(1)               | USB SERIAL
 | *34* | P3   | *U0RXD*(1)               | USB SERIAL
 | *33* | P21  | VSPIHD(2)                | LCD DC/RS
 | *32* | GND  |                          |
-| *31* | P19  | *VSPIQ*(2)               | SPIMISO LCD & TOUCH
-| *30* | P18  | *VSPICLK*(2)             | SPICLK LCD & TOUCH
+| *31* | P19  | *VSPIQ*(2)               | LCD & TOUCH SPIMISO
+| *30* | P18  | *VSPICLK*(2)             | LCD & TOUCH SPICLK
 | *29* | P5   | VSPICS0(2)               | LCD CS
-| *28* | P17  | U2TXD(5)                 |
-| *27* | P16  | U2RXD(5)                 |
+| *28* | P17  | U2TXD(5)                 | CO2 TXD
+| *27* | P16  | U2RXD(5)                 | CO2 RXD
 | *26* | P4   | HSPIHD(2)                | 1 WIRE SERIAL
-| *25* | P0   | *GPIO0*(1,3)             | BOOT
-| *24* | P2   | *GPIO2*(1,3), HSPIWP(2)  | LED
+| *25* | P0   | *GPIO0*(1,3)             | (on board boot logic)
+| *24* | P2   | *GPIO2*(1,3), HSPIWP(2)  | (on board LED)
 | *23* | P15  | HSPICS0(2)               | LCD RESET
 | *22* | P8   | SD_DATA_1(1)             |
 | *21* | P7   | SD_DATA_O(1)             |
@@ -116,28 +116,28 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 | pin  | function  | description
 
 3+| *LCD panel*
-| *1.1*  | VCC       | *3.3V*..5V
+| *1.1*  | VCC       | 5V (all signals are 3.3V)
 | *1.2*  | GND       | GND
-| *1.3*  | CS        | LCD chip select
-| *1.4*  | RESET     | LCD reset
-| *1.5*  | DC/RS     | LCD register / data selection
-| *1.6*  | SDI(MOSI) | LCD SPI bus write data
-| *1.7*  | SCK       | LCD SPI bus clock
-| *1.8*  | LED       | LCD backlight control (3.3V is on)
-| *1.9*  | SDO(MISO) | LCD SPI bus read data (optional)
+| *1.3*  | CS        | LCD CS
+| *1.4*  | RESET     | LCD RESET
+| *1.5*  | DC/RS     | LCD DC/RS
+| *1.6*  | SDI(MOSI) | LCD SPIMOSI
+| *1.7*  | SCK       | LCD SPICLK
+| *1.8*  | LED       | LCD LED (high is on)
+| *1.9*  | SDO(MISO) | (do not use tri-state conflict)
 
 3+| *touch screen*
-| *1.10* | T_CLK     | Touch screen SPI bus clock
-| *1.11* | T_CS      | Touch screen chip select
-| *1.12* | T_DIN     | Touch screen SPI bus write data
-| *1.13* | T_DO      | Touch screen SPI bus read data
-| *1.14* | T_IRQ     | Touch screen interupt detect
+| *1.10* | T_CLK     | TOUCH SPICLK
+| *1.11* | T_CS      | TOUCH CS
+| *1.12* | T_DIN     | TOUCH SPIMOSI
+| *1.13* | T_DO      | TOUCH SPIMISO
+| *1.14* | T_IRQ     | TOUCH IRQ
 
 3+| *SD card*
-| *2.1*  | SD_CS     | SD card chip select
-| *2.2*  | SD_MOSI   | SD card SPI bus write data
-| *2.3*  | SD_MISO   | SD card SPI bus read data
-| *2.4*  | SD_SCK    | SD card SPI bus clock
+| *2.1*  | SD_CS     | (SD card chip select)
+| *2.2*  | SD_MOSI   | (SD card SPI bus write data)
+| *2.3*  | SD_MISO   | (SD card SPI bus read data)
+| *2.4*  | SD_SCK    | (SD card SPI bus clock)
 |===
 
 .MSP3520 module other
@@ -145,7 +145,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 |===
 | parameter | value
 
-| operating voltage | *3.3V*..5V
+| operating voltage | 5V
 | operating current | 90 mA
 |===
 
