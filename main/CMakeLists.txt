@@ -1,4 +1,4 @@
-set(SOURCES main.c)
+set(SOURCES main.cpp GUI.cpp)
 idf_component_register(SRCS ${SOURCES}
                     INCLUDE_DIRS .)
 
