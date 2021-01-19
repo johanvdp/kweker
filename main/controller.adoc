@@ -6,7 +6,16 @@
 
 == Controller
 
-The controller module contains multiple sub-modules.
+The controller module contains multiple sub-modules:
+
+* <<ESP32 module>>,
+* <<User interface module>>, and
+* <<Power distribution>>.
+
+=== External interface
+
+The external interface to the controller are the top and bottom screw terminals.
+For ease of reference a short module name is chosen.
 
 *Module name: CPU*
 
