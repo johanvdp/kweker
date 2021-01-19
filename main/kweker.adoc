@@ -3,61 +3,58 @@
 :toc-title: Table of contents
 :toclevels: 5
 :sectnums:
+:hide-uri-scheme:
 
 = Kweker (Grower)
 
 As useful as windshield wipers on a goat's ass.
 
-== Structure
-* Data
-    ** State
-        *** Current task
-        *** Actuator state
-            **** Lamp
-            **** Heater
-            **** Exhaust fan
-            **** Recirculation fan
-    ** Setpoints
-        *** Day
-            **** Sunrise
-            **** Air temperature
-            **** Air humidity
-            **** Air CO2 concentration
-        *** Night
-            **** Sunset
-            **** Air temperature
-            **** Air humidity 
-            **** Air CO2 concentration
-* Sensors
-	** Clock
-	** Air temperature
-	** Air humidity
-	** Air CO2 concentration
-	** (future)
-		*** Soil temperature
-		*** Soil moisture
-		*** Ambient air temperature
-		*** Ambient air humidity
-		*** Ambient air CO2 concentration
-	** Operator
-		*** Buttons
+== Environment
 
-* Actuators
-    ** Lamp
-    ** Heater_
-    ** Exhaust fan
-    ** Recirculation fan
-    ** Display
-* Tasks
-    ** Off
-    ** Confirm off
-    ** Manual control
-    ** Monitor sensors
-    ** Change day setpoints
-    ** Change night setpoints
-    ** Automatic control 
+Typical environment for growing cannabis.
 
-== Cause and effect
+=== Temperature
+
+.Temperature
+[%autowidth]
+|===
+| environment| min.[°C] | max.[°C] | description        
+                                                        
+| day        | 25       | 30       | allowed higher     
+| night      | 15       | 20       | not allowed lower  
+| day-night  |          | 10       | difference at most 
+|===
+
+=== Humidity
+
+.Humidity
+[%autowidth]
+|===
+| environment | min.[%RH] | max.[%RH] | description
+                                        
+| sprout      | 70        | 80        | higher
+| vegetative  | 40        | 70        | normal          
+| bloom       | 20        | 40        | lower
+|===
+
+=== CO2 concentration
+
+.CO2 concentration
+[%autowidth]
+|===
+| environment          | min. [ppm] | max. [ppm] | description  
+                                                           
+| outdoor              |   250 | 400  | background (normal) outdoor air level.footnote:dhs[https://www.dhs.wisconsin.gov/chemical/carbondioxide.htm]
+| good                 |   400 | 1000 | typical level found in occupied spaces with good air exchange.footnote:dhs[]
+| enriched vegetative  |   800 | 1200 | enriched vegetative towards lower end
+| enriched bloom       |   800 | 1200 | enriched bloom towards higher end
+| poor                 |  1000 | 1200 | level associated with complaints of drowsiness and poor air.footnote:dhs[]
+| stuffy               |  2000 | 5000 | level associated with headaches, sleepiness, and stagnant, stale, stuffy air. Poor concentration, loss of attention, increased heart rate and slight nausea may also be present.footnote:dhs[]
+| toxic                |  5000 |      | this indicates unusual air conditions where high levels of other gases could also be present. Toxicity or oxygen deprivation could occur. This is the permissible exposure limit for daily workplace exposures.footnote:dhs[]
+| immediately harmful  | 40000 |      | this level is immediately harmful due to oxygen deprivation.footnote:source
+|===
+
+=== Cause and effect
 
 How a positive increase in one phenomenon affects another.
 
@@ -68,114 +65,289 @@ How a positive increase in one phenomenon affects another.
 .Cause and effect
 [%autowidth]
 |===
-|Cause/Effect                 |Air temperature|Air humidity |Air CO2 concentration|Soil temperature|Soil moisture
+|Cause/Effect             |Temperature    | Relative Humidity | CO2 concentration
 
-|Ambient air temperature      |+              |-            |                     |+               |-            
-|Ambient air humidity         |               |+            |                     |                |             
-|Ambient air CO2 concentration|               |             |+                    |                |             
-|Lamp                         |+              |-            |-                    |+               |-            
-|Exhaust fan                  |Amb. air temp. |Amb. air hum.|Amb. air. CO2 conc.  |                |             
-|Recirculation fan            |               |             |                     |                |-            
-|Heater                       |+              |-            |                     |+               |-            
+|Ambient temperature      |+              |-              |            
+|Ambient humidity         |               |+              |             
+|Ambient CO2 concentration|               |               |+             
+|Light on                 |+              |-              |- (more photosynthesis)            
+|Exhaust fan              |towards ambient|towards ambient|towards ambient            
+|Recirculation fan        |               |               |            
+|Heater                   |+              |-              |            
 |===
 
-== Measurement
+== Model
 
-Typical environment.
+.Model
+|===
+| Name | Data type
 
-.Air temperature
-[%autowidth]
-|===
-|environment|min.[°C]|max.[°C]|description        
-                                                  
-|day        |25      |30      |allowed higher     
-|night      |15      |20      |not allowed lower  
-|day-night  |        |10      |difference at most 
+2+| Current state
+| Control mode | control mode
+| Time | time
+| Circadian | circadian
+| Temperature | temperature
+| Humidity | humidity
+| CO2 concentration | CO2 concentration
+
+2+| Actuator state
+| Light switch state | switch state
+| Heater switch state | switch state
+| Exhaust fan switch state | switch state
+| Recirculation fan switch state | switch state
+
+2+| Automatic control 
+| Begin of day time setpoint | Time
+| Begin of night time setpoint | Time
+| Day temperature setpoint | Temperature
+| Day humidity setpoint |  Humidity
+| Day CO2 concentration setpoint | CO2 concentration
+| Night temperature setpoint | Temperature
+| Night humidity setpoint | Humidity
+| Night CO2 concentration setpoint | CO2 concentration
+| Temperature control level | Control level
+| Humidity control level | Control level
+| CO2 concentration control level | Control level
+
+2+| Manual control
+| Light switch setpoint | Temperature
+| Heater switch setpoint | Temperature
+| Exhaust fan switch setpoint | Temperature
+| Recirculation fan switch setpoint | Temperature
 |===
 
-.Air humidity
-[%autowidth]
+.Data types
 |===
-|environment|min.[%RH]|max.[%RH]|description
+| Data type | Range | Unit
 
-|sprout     |70       |80       |           
-|vegetative |40       |70       |           
-|bloom      |20       |40       |           
-|===
-
-.CO2 concentration
-[%autowidth]
-|===
-|environment          |min. [ppm]|max. [ppm]|description  
-                                                          
-|outdoor              |300       |500       |400ppm=0.04% 
-|human occupied space |1000      |1200      |             
-|enriched (vegetative)|800       |1200      |lower end    
-|enriched (bloom)     |800       |1200      |higher end   
-|dangerous for people |5000      |          |             
+| Time | 00:00..23:59 |
+| Circadian | day, night |
+| Temperature | 0.0 .. 50.0 | C
+| Humidity | 0.0 .. 100.0 | %RH
+| CO2 concentration | 0 .. 2000 | ppm
+| Switch state | on, off |
+| Control mode | off, manual, automatic |
+| Control level | low, normal, high |
 |===
 
-== Setpoints
+== Boundaries
 
-.Setpoints
-[%autowidth]
-|===
-|name            |lamp duration[h]|T min.[°C]|T max.[°C]|RH min.[%]|RH max.[%]|CO2 min. [ppm]|CO2 max. [ppm]
+=== Sensors
 
-|sprout day      |18              |20        |25        |70        |80        |              |              
-|sprout night    |6               |25        |25        |70        |80        |              |              
-|vegetative day  |18              |20        |30        |40        |70        |800           |1000          
-|vegetative night|6               |15        |20        |40        |70        |800           |1000          
-|bloom day       |12              |20        |35        |20        |40        |800           |1200          
-|bloom night     |12              |15        |25        |20        |40        |800           |1200          
+.Sensors
 |===
+| Name
+
+| Clock
+| Temperature
+| Humidity
+| CO2 concentration
+|===
+
+=== Actuators
+
+.Actuators
+|===
+| Name
+
+| Light
+| Heater
+| Exhaust fan
+| Recirculation fan
+|===
+
+=== Human machine interface
+
+.Human machine interface
+|===
+| Group | Content | Editable
+
+3+| *Common*
+.8+| *Toolbar*
+| Time |
+| Control... |
+| Settings... |
+| About... |
+| Light switch state |
+| Heater switch state |
+| Exhaust fan switch state |
+| Recirculation fan switch state |
+3+| *Control*
+.1+| *General*
+| Control mode |
+.3+| *Measurements*
+| Temperature |
+| Humidity |
+| CO2 concentration |
+.3+| *Setpoints*
+| Temperature |
+| Humidity |
+| CO2 concentration |
+.3+| *Control*
+| Temperature control levels |
+| Humidity control levels |
+| CO2 concentration control levels |
+.4+| *Output*
+| Light switch state | Y(manual)
+| Heater switch state | Y(manual)
+| Exhaust fan switch state | Y(manual)
+| Recirculation fan switch state | Y(manual)
+
+3+| *Settings*
+.1+| *General*
+| Time | Y
+.8+| *Control automatic*
+| Begin of day time setpoint | Y
+| Begin of night time setpoint | Y
+| Day temperature setpoint | Y
+| Day humidity setpoint | Y
+| Day CO2 concentration setpoint | Y
+| Night temperature setpoint | Y
+| Night humidity setpoint | Y
+| Night CO2 concentration setpoint | Y
+
+3+| *About*
+.2+| *Text*
+| Product description |
+| Other product licenses |
+
+|===
+
+.Control
+[ditaa]
+....
+              +-------------+ ------------+ ------------+      
+  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)
++-------------+             +-------------+-------------+-------------+
+|                                                                     |
+|    T [C]    |    RH [%]   |  CO2 [ppm]  |  MODE       |  OUTPUT     |
+|             |             |             | +---------+ | +---------+ | 
+|     (H)     |     (H)     |     (H)     | | OFF     | | | LIGHT   | |
+|             |             |             | +---------+ | +---------+ |
+|             |             |             |             |             |
+|             |             |             | +---------+ | +---------+ |
+|     23      |      42     |     612     | | MANUAL  | | | HEATER  | |
+|             |             |             | +---------+ | +---------+ |
+|             |             |             |             |             |
+|             |             |             | +---------+ | +---------+ |
+|     (L)     |     (L)     |     (L)     | | AUTO    | | | EXHAUST | |
+|             |             |             | +---------+ | +---------+ |
+|             |             |             |             |             |
+|             |             |             |             | +---------+ |
+|     24      |     35      |     800     |             | | RECIRC. | |
+|             |             |             |             | +---------+ |
++---------------------------------------------------------------------+
+....
+
+.Settings
+[ditaa]
+....
+              + ------------+-------------+ ------------+             
+  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)          
++-------------+-------------+             +-------------+-------------+
+|                                                                     |
+| Time                                  |                   - 12:34 + |
+|                                       |                             |
+| Begin of day time                     |                   - 06:00 + |
+|                                       |                             |
+| Begin of night time                   |                   - 22:00 + |
+|                                       |                             |
+| Day temperature                       |                   -   28  + |
+|                                       |                             |
+| Day humidity                          |                   -   35  + |
+|                                       |                             |
+| Day CO2 concentration                 |                   -  800  + |
+|                                       |                             |
+| Night temperature                     |                   -   18  + |
+|                                       |                             |
+| Night humidity                        |                   -   35  + |
+|                                       |                             |
+| Night CO2 concentration               |                   -  400  + |
++---------------------------------------------------------------------+
+....
+
+.About
+[ditaa]
+....
+              + ------------+ ------------+-------------+
+  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)
++-------------+-------------+-------------+             +-------------+
+|                                                                     |
+| Product description                                                 | 
+| ..                                                                  |
+|                                                                     |
+| 3rd party licenses                                                  |
+| ..                                                                  |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
+|                                                                     |
++---------------------------------------------------------------------+
+....
+
 
 == Control
 
-=== Lamp
+=== Light
 
-The lamp is not a means of control. It is strictly following the night/day circadian rhythm that was set.
+The light is not a means of control. It is strictly following the night/day circadian rhythm that was set.
+The heat of the light does have an effect on temperature and thus humidity of the environment. 
 
 .Cause and effect
 * ON
-    ** Increase air temperature (lamp).
+    ** Increase temperature
     ** Decrease relative humidity (higher temperature)
     ** Increase relative humidity (more evaporation)
     ** Reduce CO2 concentration (photosynthesis)
 * OFF
-    ** Decrease air temperature (lamp)
+    ** Decrease temperature
     ** Increase relative humidity (lower temperature)
     ** Decrease relative humidity (less evaporation)
+
+.Light control
+|===
+| Condition | Result
+
+2+| *control off*
+2+| *control manual*
+2+| *control automatic*
+
+| circadian day | ON
+| circadian night | OFF
+|===
 
 === Exhaust fan
 
 Reduces the humidity (produced by evaporation through leaves) to avoid mold.
-Follows the ambient air temperature, humidity, and CO2 concentration.
+Follows the ambient temperature, humidity, and CO2 concentration.
 
 .Cause and effect
 * ON
-    ** Follow ambient air temperature
-    ** Follow ambient air humidity
-    ** Follow ambient air CO2 concentration
+    ** Follow ambient temperature
+    ** Follow ambient humidity
+    ** Follow ambient CO2 concentration
 * OFF
-    ** Increase air temperature (if lamp is on)
-    ** Increase air humidity (evaporation)
-    ** Reduce CO2 concentration (if lamp is on, photosynthesis)
+    ** Increase temperature (if light is on, producing heat)
+    ** Increase humidity (evaporation)
+    ** Reduce CO2 concentration (if light is on, photosynthesis)
 
 .Exhaust fan control
 [%autowidth]
 |===
-|air temperature|air humidity|set|description    
+| Condition | Result
 
-|low            |low         |OFF|               
-|low            |ok          |OFF|               
-|low            |high        |ON |avoid mold wins
-|ok             |low         |OFF|               
-|ok             |ok          |OFF|               
-|ok             |high        |ON |               
-|high           |low         |ON |               
-|high           |ok          |ON |               
-|high           |high        |ON |               
+| Temperature high | ON
+| Temperature low | OFF
+| Humidity high | ON
+| Humidity low | OFF
+| CO2 concentration high | ON
+| else | OFF
 |===
 
 === Recirculation fan
@@ -186,16 +358,21 @@ Follows the ambient air temperature, humidity, and CO2 concentration.
     ** Promote nutrient transport by promoting evaporation
     ** Plant produces more flowers where wind blows
     ** Disperse CO2 that is needed on the leaves, not on the ground
+    ** Equalize temperature
 * OFF
     ** No energy use
 
 .Recirculation fan control
 [%autowidth]
 |===
-|circadian|set|description
+| condition | result
 
-|night    |ON |           
-|day      |ON |           
+2+| *control off*
+2+| *control manual*
+2+| *control automatic*
+
+| circadian day | ON
+| circadian night | OFF |           
 |===
 
 === Heater
@@ -214,156 +391,18 @@ Avoid low temperature, and avoid mold.
 .Heater control
 [%autowidth]
 |===
-|air temperature|air humidity|set|description              
+| condition | result
 
-|low            |low         |ON |how to increase humidity?
-|low            |ok          |ON |                         
-|low            |high        |ON |                         
-|ok             |low         |OFF|                         
-|ok             |ok          |OFF|                         
-|ok             |high        |ON |avoid mold               
-|high           |low         |OFF|                         
-|high           |ok          |OFF|                         
-|high           |high        |OFF|fans to reduce humidity  
+2+| *control off*
+2+| *control manual*
+2+| *control automatic*
+
+| temperature high | OFF
+| temperature low | ON
+| humidity high | ON
+| else | OFF
 |===
 
-== Tasks
-
-=== Common
-
-Common functionality for all tasks.
-
-* Does
-    ** Collect sensor values
-    ** Calculate derived values
-
-=== Off
-
-Switch all actuators to off.
-
-      1234567890123456
-    1   OFF          →
-    2                 
-    3                 
-    4                 
-
-* Knows
-    ** Performed once
-* Does
-    ** Set actuator values to off (once)
-    ** Allow navigate from Off to Manual.
-
-=== Confirm off
-
-Display warning before transitioning to Off.
-
-      1234567890123456
-    1   OFF           
-    2   ARE YOU SURE? 
-    3                 
-    4 YES           NO
-
-
-* Knows
-    ** - 
-* Do*es
-    ** Allow navigate from Confirm off to Off
-    ** Allow navigate from Confirm off to Manual.
-
-=== Manual
-
-Display and allow control of the current actuator state.
-
-      1234567890123456
-    1 ← MANUAL       →
-    2 ←-LIGHT----OFF-→
-    3   HEATER   OFF ↑
-    4   FAN INT  OFF ↓
-        FAN EXT  OFF  
-
-* Knows
-    ** Selected actuator
-* Does
-    ** Allow navigate from Manual to Confirm off
-    ** Allow navigate from Manual to Monitor
-    ** Allow change selected actuator
-    ** Allow change actuator value
-
-=== Monitor
-
-Display the current state.
-
-      1234567890123456
-    1 ← MONITOR      →
-    2   16:13         
-    3   21.5 °C       
-    4   51 %RH        
-        621 ppm CO2   
-
-* Knows
-    ** Visible sensors
-* Does
-    ** Allow navigate from Monitor to Manual
-    ** Allow navigate from Monitor to Day
-    ** Rotates visible sensor values
-
-=== Day
-
-Display and allow modification of the setpoints for the day period.
-
-      1234567890123456
-    1 ← DAY          →
-    2 ←-16:00--------→
-    3   28.0 C       ↑
-    4   70 %RH       ↓
-        800 ppm CO2   
-
-* Knows
-    ** Selected setpoint
-* Does
-    ** Allow navigate from Day to Monitor
-    ** Allow navigate from Day to Night
-    ** Allow change selected setpoint
-    ** Allow change selected setpoint value
-
-=== Night
-
-Display and allow modification of the setpoints for the night period.
-
-      1234567890123456
-    1 ← NIGHT        →
-    2 ←-16:00--------→
-    3   18.0 C       ↑
-    4   50 %RH       ↓
-        400 ppm CO2   
-
-* Knows
-    ** Selected setpoint
-* Does
-    ** Allow navigate from Night to Day
-    ** Allow navigate from Night to Control
-    ** Allow change selected setpoint
-    ** Allow change selected setpoint value
-
-=== Control
-
-Display the current state and performs automatic control.
-
-      1234567890123456
-    1 ← CONTROL       
-    2   16:13 NIGHT   
-    3   21.5 °C       
-    4   51 %RH        
-        621 ppm CO2   
-
-* Knows
-	** Visible sensor selection
-    ** Visible sensor rotation timing
-* Does
-    ** Calculate actuator values
-    ** Applies actuator values
-    ** Allow navigate from Control to Night
-    ** Rotates visible sensor values
 
 // external level 2 sections
 include::controller.adoc[]

@@ -33,7 +33,7 @@ Used to switch AC loads on and off.
 |===
 | device | description
 
-| SSR1 | Grow lamp
+| SSR1 | Light
 | SSR2 | Exhaust fan
 | SSR3 | Recirculation fan
 | SSR4 | Heater
