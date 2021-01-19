@@ -222,7 +222,7 @@ How a positive increase in one phenomenon affects another.
 |                                                                     |
 |    T [C]    |    RH [%]   |  CO2 [ppm]  |  MODE       |  OUTPUT     |
 |             |             |             | +---------+ | +---------+ | 
-|     (H)     |     (H)     |     (H)     | | OFF     | | | LIGHT   | |
+|     (h)     |     (h)     |     (h)     | | OFF     | | | LIGHT   | |
 |             |             |             | +---------+ | +---------+ |
 |             |             |             |             |             |
 |             |             |             | +---------+ | +---------+ |
@@ -230,13 +230,20 @@ How a positive increase in one phenomenon affects another.
 |             |             |             | +---------+ | +---------+ |
 |             |             |             |             |             |
 |             |             |             | +---------+ | +---------+ |
-|     (L)     |     (L)     |     (L)     | | AUTO    | | | EXHAUST | |
+|     (l)     |     (l)     |     (l)     | | AUTO    | | | EXHAUST | |
 |             |             |             | +---------+ | +---------+ |
 |             |             |             |             |             |
 |             |             |             |             | +---------+ |
 |     24      |     35      |     800     |             | | RECIRC. | |
 |             |             |             |             | +---------+ |
 +---------------------------------------------------------------------+
+
+(L) light on/off indicator
+(H) heater on/off indicator
+(E) exhaust fan on/off indicator
+(R) recirculation on/off indicator
+(h) control level high indicator 
+(l) control level low indicator 
 ....
 
 .Settings
