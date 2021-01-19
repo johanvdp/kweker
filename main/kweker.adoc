@@ -163,15 +163,17 @@ How a positive increase in one phenomenon affects another.
 | Group | Content | Editable
 
 3+| *Common*
-.8+| *Toolbar*
+.10+| *Toolbar*
 | Time |
 | Control... |
 | Settings... |
 | About... |
-| Light switch state |
-| Heater switch state |
-| Exhaust fan switch state |
-| Recirculation fan switch state |
+| Circadian indicator |
+| Control mode indicator |
+| Light switch indicator |
+| Heater switch indicator |
+| Exhaust fan switch indicator |
+| Recirculation fan switch indicator |
 3+| *Control*
 .1+| *General*
 | Control mode |
