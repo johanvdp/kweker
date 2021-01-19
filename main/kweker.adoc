@@ -216,9 +216,9 @@ How a positive increase in one phenomenon affects another.
 .Control
 [ditaa]
 ....
-              +-------------+ ------------+ ------------+      
-  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)
-+-------------+             +-------------+-------------+-------------+
+        +-------------+ ------------+ ------------+      
+  12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
++-------+             +-------------+-------------+-------------------+
 |                                                                     |
 |    T [C]    |    RH [%]   |  CO2 [ppm]  |  MODE       |  OUTPUT     |
 |             |             |             | +---------+ | +---------+ | 
@@ -238,6 +238,8 @@ How a positive increase in one phenomenon affects another.
 |             |             |             |             | +---------+ |
 +---------------------------------------------------------------------+
 
+(C) circadian day/night indicator
+(M) control mode off/manual/auto indicator
 (L) light on/off indicator
 (H) heater on/off indicator
 (E) exhaust fan on/off indicator
@@ -249,9 +251,9 @@ How a positive increase in one phenomenon affects another.
 .Settings
 [ditaa]
 ....
-              + ------------+-------------+ ------------+             
-  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)          
-+-------------+-------------+             +-------------+-------------+
+        +-------------+ ------------+ ------------+      
+  12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
++-------+-------------+             +-------------+-------------------+
 |                                                                     |
 | Time                                  |                   - 12:34 + |
 |                                       |                             |
@@ -276,9 +278,9 @@ How a positive increase in one phenomenon affects another.
 .About
 [ditaa]
 ....
-              + ------------+ ------------+-------------+
-  12:34       |  Control    |  Settings   |  About      | (L)(H)(E)(R)
-+-------------+-------------+-------------+             +-------------+
+        +-------------+ ------------+ ------------+      
+  12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
++-------+-------------+-------------+             +-------------------+
 |                                                                     |
 | Product description                                                 | 
 | ..                                                                  |
