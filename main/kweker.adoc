@@ -51,7 +51,7 @@ Typical environment for growing cannabis.
 | poor                 |  1000 | 1200 | level associated with complaints of drowsiness and poor air.footnote:dhs[]
 | stuffy               |  2000 | 5000 | level associated with headaches, sleepiness, and stagnant, stale, stuffy air. Poor concentration, loss of attention, increased heart rate and slight nausea may also be present.footnote:dhs[]
 | toxic                |  5000 |      | this indicates unusual air conditions where high levels of other gases could also be present. Toxicity or oxygen deprivation could occur. This is the permissible exposure limit for daily workplace exposures.footnote:dhs[]
-| immediately harmful  | 40000 |      | this level is immediately harmful due to oxygen deprivation.footnote:source
+| immediately harmful  | 40000 |      | this level is immediately harmful due to oxygen deprivation.footnote:dhs[]
 |===
 
 === Cause and effect
