@@ -1,9 +1,12 @@
+// The author disclaims copyright to this source code.
+extern "C" {
+
 #include "freertos/FreeRTOS.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-#include "GUI.h"
+#include "hmi.h"
 #include "LED.h"
 #include "AM2301.h"
 
@@ -13,9 +16,6 @@
 #define LED_GPIO (gpio_num_t)CONFIG_LED_GPIO
 #define AM2301_GPIO (gpio_num_t)CONFIG_AM2301_GPIO
 
-extern "C" {
-
-GUI gui;
 LED led;
 AM2301 am2301;
 
@@ -28,7 +28,7 @@ void app_main() {
 		return;
 	}
 
-	gui.setup();
+	hmi_initialize();
 
 	led.setup(LED_GPIO, true);
 
