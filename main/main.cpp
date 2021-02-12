@@ -9,6 +9,8 @@ extern "C" {
 #include "hmi.h"
 #include "LED.h"
 #include "AM2301.h"
+#include "pubsub.h"
+#include "pubsub_test.h"
 
 #define TAG "main"
 
@@ -29,6 +31,14 @@ void app_main() {
 	}
 
 	hmi_initialize();
+	pubsub_initialize();
+	bool succes = pubsub_test();
+	if (succes) {
+		ESP_LOGI(TAG, "pubsub_test succes");
+	} else {
+		ESP_LOGE(TAG, "pubsub_test failed (FATAL)");
+		return;
+	}
 
 	led.setup(LED_GPIO, true);
 
