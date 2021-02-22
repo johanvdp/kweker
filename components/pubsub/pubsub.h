@@ -30,15 +30,15 @@ typedef void* pubsub_topic_t;
 
 extern void pubsub_initialize();
 
-extern void pubsub_add_subscription(QueueHandle_t subscriber_queue, char* topic_name);
-extern void pubsub_remove_subscription(QueueHandle_t subscriber_queue, char* topic_name);
+extern void pubsub_add_subscription(QueueHandle_t subscriber_queue, const char* topic_name);
+extern void pubsub_remove_subscription(QueueHandle_t subscriber_queue, const char* topic_name);
 
-extern pubsub_topic_t* pubsub_register_topic(char* topic_name);
-extern void pubsub_unregister_topic(char* topic_name);
-extern void pubsub_publish(pubsub_topic_t *topic, pubsub_message_t *message);
-extern void pubsub_publish_bool(pubsub_topic_t *topic, bool value);
-extern void pubsub_publish_int(pubsub_topic_t *topic, int64_t value);
-extern void pubsub_publish_double(pubsub_topic_t *topic, double value);
+extern pubsub_topic_t pubsub_register_topic(const char* topic_name);
+extern void pubsub_unregister_topic(const char* topic_name);
+extern void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message);
+extern void pubsub_publish_bool(pubsub_topic_t topic, bool value);
+extern void pubsub_publish_int(pubsub_topic_t topic, int64_t value);
+extern void pubsub_publish_double(pubsub_topic_t topic, double value);
 
 #ifdef __cplusplus
 }

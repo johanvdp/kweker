@@ -7,6 +7,7 @@
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "pubsub.h"
 
 /**
  * Signal LED.
@@ -21,14 +22,14 @@ public:
 	 * Setup once before use.
 	 * @param pin one wire output pin
 	 * @param on level used to light LED
+	 * @param queue receiving pubsub messages
 	 */
-	void setup(gpio_num_t pin, bool on);
-	void signal(uint8_t count);
+	void setup(gpio_num_t pin, bool on, QueueHandle_t queue);
 
 private:
 	gpio_num_t pin = GPIO_NUM_NC;
 	bool on = true;
-	xQueueHandle queue = 0;
+	QueueHandle_t queue = 0;
 
 	void run();
 
