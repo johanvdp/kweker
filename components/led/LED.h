@@ -22,9 +22,9 @@ public:
 	 * Setup once before use.
 	 * @param pin one wire output pin
 	 * @param on level used to light LED
-	 * @param queue receiving pubsub messages
+	 * @param topic topic receiving messages
 	 */
-	void setup(gpio_num_t pin, bool on, QueueHandle_t queue);
+	void setup(gpio_num_t pin, bool on, const char* topic);
 
 private:
 	gpio_num_t pin = GPIO_NUM_NC;

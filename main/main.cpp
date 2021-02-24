@@ -60,14 +60,7 @@ void app_main()
     pubsub_topic_t am2301_timestamp_topic = pubsub_register_topic(
             TOPIC_AM2301_TIMESTAMP);
 
-    // LED: big queue not useful
-    QueueHandle_t led_queue = xQueueCreate(10, sizeof(pubsub_message_t));
-    if (led_queue == 0) {
-        ESP_LOGE(TAG, "setup, failed to create led queue (FATAL)");
-        return;
-    }
-    led.setup(LED_GPIO, true, led_queue);
-    pubsub_add_subscription(led_queue, TOPIC_ONBOARD_LED);
+    led.setup(LED_GPIO, true, TOPIC_ONBOARD_LED);
 
     // LOG: big queue not useful
     QueueHandle_t log_queue = xQueueCreate(10, sizeof(pubsub_message_t));
