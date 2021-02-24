@@ -78,8 +78,7 @@ private:
 		COMPONENT_UNINITIALIZED = 0,
 		COMPONENT_READY,
 		HOST_SEND_START,
-		WAIT_FOR_DEVICE_START_LOW,
-		WAIT_FOR_DEVICE_START_HIGH,
+		WAIT_FOR_DEVICE_START,
 		WAIT_FOR_DEVICE_DATA_LOW,
 		WAIT_FOR_DEVICE_DATA_HIGH,
 		WAIT_FOR_DEVICE_RELEASE,
@@ -133,7 +132,7 @@ private:
 	// data read from decoder queue
 	AM2301::decoder_data_t decoderData;
 	// component state
-	volatile component_state_t state = COMPONENT_UNINITIALIZED;
+	component_state_t state = COMPONENT_UNINITIALIZED;
 
 	void run();
 	bool queue_instruction_start();

@@ -21,7 +21,7 @@ void LED::setup(gpio_num_t pin, bool on, QueueHandle_t queue) {
 		return;
 	}
 	if (queue == 0) {
-		ESP_LOGE(tag, "signal requires queue (FATAL)");
+		ESP_LOGE(tag, "setup requires queue (FATAL)");
 		return;
 	}
 	this->pin = pin;
@@ -41,8 +41,7 @@ void LED::run() {
 	pubsub_message_t message;
 	while (true) {
 		if (xQueueReceive(queue, &message, portMAX_DELAY)) {
-			ESP_LOGI(tag, "xQueueReceive");
-			// blink series
+			ESP_LOGD(tag, "blink %lld", message.int_val);
 			for (int i = 0; i < message.int_val; i++) {
 				gpio_set_level(pin, on);
 				vTaskDelay(20 / portTICK_PERIOD_MS);
