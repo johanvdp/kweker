@@ -14,7 +14,7 @@ static const char *TOPIC_PUBSUB_TEST_BOOL = "pubsub.test.bool";
 static const char *TOPIC_PUBSUB_TEST_DOUBLE = "pubsub.test.double";
 
 bool pubsub_test() {
-	ESP_LOGI(tag, "pubsub_test");
+	ESP_LOGD(tag, "pubsub_test");
 
 	int succes = 0;
 	// create topic
@@ -45,35 +45,35 @@ bool pubsub_test() {
 	if (result == pdTRUE) {
 
 		if (message.int_val == 11) {
-			ESP_LOGI(tag, "ok 11");
+			ESP_LOGD(tag, "ok 11");
 			succes++;
 		}
 	}
 	result = xQueueReceive(queueMixed, &message, 2);
 	if (result == pdTRUE) {
 		if (message.boolean_val == 0) {
-			ESP_LOGI(tag, "ok false");
+			ESP_LOGD(tag, "ok false");
 			succes++;
 		}
 	}
 	result = xQueueReceive(queueMixed, &message, 2);
 	if (result == pdTRUE) {
 		if (message.double_val > 0.10 && message.double_val < 0.12) {
-			ESP_LOGI(tag, "ok 0.11");
+			ESP_LOGD(tag, "ok 0.11");
 			succes++;
 		}
 	}
 	result = xQueueReceive(queueInt, &message, 2);
 	if (result == pdTRUE) {
 		if (message.int_val == 11) {
-			ESP_LOGI(tag, "ok 11");
+			ESP_LOGD(tag, "ok 11");
 			succes++;
 		}
 	}
 	result = xQueueReceive(queueInt, &message, 1);
 	// expect queue empty
 	if (result != pdTRUE) {
-		ESP_LOGI(tag, "ok empty");
+		ESP_LOGD(tag, "ok empty");
 		succes++;
 	}
 

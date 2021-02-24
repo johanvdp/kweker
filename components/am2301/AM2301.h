@@ -9,6 +9,7 @@
 #include "driver/gpio.h"
 #include "esp_log.h"
 #include "esp_err.h"
+#include "pubsub.h"
 
 /**
  * AM2301 temperature and relative humidity sensor.
@@ -22,15 +23,22 @@ public:
 	/**
 	 * Setup once before use.
 	 * @param pin one wire (input/output) pin
-	 * @param resultQueue measurement result queue.
+	 * @param temperature_topic temperature measurement topic.
+	 * @param humidity_topic humidity measurement topic.
+	 * @param status_topic measurement status topic.
+	 * @param timestamp_topic measurement timestamp topic.
 	 */
-	void setup(gpio_num_t pin, xQueueHandle resultQueue);
+	void setup(gpio_num_t pin,
+			pubsub_topic_t temperature_topic,
+			pubsub_topic_t humidity_topic,
+			pubsub_topic_t status_topic,
+			pubsub_topic_t timestamp_topic);
 	/**
 	 * Asyncronously request measurement.
-	 * Asyncronously delivers the result (of type result_t) into the result queue.
+	 * Asyncronously publishes the result (of type pubsub_message_t).
 	 * Do not request more than one measurement per MINIMUM_MEASUREMENT_INTERVAL_MS.
 	 *
-	 * @return true if request was succesful. False if rejected (queue full).
+	 * @return true if request was succesful. False if rejected.
 	 */
 	bool measure();
 
@@ -41,31 +49,6 @@ public:
 		//
 		RESULT_FATAL,
 	} result_status_t;
-
-	/**
-	 * Measurement result message.
-	 */
-	typedef struct {
-		/**
-		 * Overall result status.
-		 */
-		result_status_t status;
-		/**
-		 * Temperature [K] measured
-		 * NAN if not available
-		 */
-		float temperature;
-		/**
-		 * Relative humidity [%] measured
-		 * NAN if not available
-		 */
-		float humidity;
-		/**
-		 * Timestamp of measurement
-		 * INT64_MIN if not available
-		 */
-		int64_t timestamp;
-	} result_t;
 
 private:
 	/**
@@ -119,9 +102,21 @@ private:
 	xQueueHandle decoderQueue = 0;
 
 	/**
-	 * Queue to send measurement results
+	 * Temperature measurement topic.
 	 */
-	xQueueHandle resultQueue = 0;
+	pubsub_topic_t temperature_topic = 0;
+	/**
+	 * Humidity measurement topic.
+	 */
+	pubsub_topic_t humidity_topic = 0;
+	/**
+	 * Measurement status topic.
+	 */
+	pubsub_topic_t status_topic = 0;
+	/**
+	 * Measurement timestamp topic.
+	 */
+	pubsub_topic_t timestamp_topic = 0;
 
 	// timestamp of previous edge detected
 	int64_t previousTimestamp = 0;
@@ -143,7 +138,6 @@ private:
 	void run();
 	bool queue_instruction_start();
 	void frame_finished(int64_t frame, int64_t timestamp);
-	void fire_result(result_status_t status, float temperature, float humidity, int64_t timestamp);
 	void fire_recoverable(int64_t timestamp);
 	void handle_instruction_edge_detected();
 	void handle_instruction_start();

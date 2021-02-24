@@ -9,8 +9,13 @@ AM2301::AM2301() {
 AM2301::~AM2301() {
 }
 
-void AM2301::setup(gpio_num_t pin, xQueueHandle resultQueue) {
-	ESP_LOGD(tag, "setup, pin: %d, queue: %s", pin, resultQueue ? "y" : "n");
+void AM2301::setup(gpio_num_t pin,
+		pubsub_topic_t temperature_topic,
+		pubsub_topic_t humidity_topic,
+		pubsub_topic_t status_topic,
+		pubsub_topic_t timestamp_topic) {
+	ESP_LOGD(tag, "setup, pin: %d, t:%p, rh:%p, status:%p, time:%p",
+			pin, temperature_topic, humidity_topic, status_topic, timestamp_topic);
 
 	if (state != COMPONENT_UNINITIALIZED) {
 		state = COMPONENT_FATAL;
@@ -25,12 +30,10 @@ void AM2301::setup(gpio_num_t pin, xQueueHandle resultQueue) {
 	}
 	this->pin = pin;
 
-	if (resultQueue == NULL) {
-		state = COMPONENT_FATAL;
-		ESP_LOGE(tag, "setup requires result queue handle (FATAL)");
-		return;
-	}
-	this->resultQueue = resultQueue;
+	this->temperature_topic = temperature_topic;
+	this->humidity_topic = humidity_topic;
+	this->status_topic = status_topic;
+	this->timestamp_topic = timestamp_topic;
 
 	decoderQueue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME,
 			sizeof(decoder_data_t));
@@ -306,19 +309,24 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp) {
 	uint8_t expectedChecksum = b4 + b3 + b2 + b1;
 	if (actualChecksum == expectedChecksum) {
 		// frame contains humidity times ten
-		float humidity = ((frame >> 24) & 0xFFFF) / 10.0;
+		double humidity = ((frame >> 24) & 0xFFFF) / 10.0;
 		// frame contains temperature times ten
-		float t = ((frame >> 8) & 0x7FFF) / 10.0;
+		double t = ((frame >> 8) & 0x7FFF) / 10.0;
 		// frame contains temperature sign as bit
 		bool t_negative = (frame >> 8) & 0x8000;
 		if (t_negative) {
 			t *= -1.0;
 		}
-		float temperature = t + TEMPERATURE_C_TO_K;
+		double temperature = t + TEMPERATURE_C_TO_K;
 
 		ESP_LOGD(tag, "frame_finished, T: %.1fK, RH: %.1f%%", temperature,
 				humidity);
-		fire_result(RESULT_OK, temperature, humidity, timestamp);
+
+		pubsub_publish_double(temperature_topic, temperature);
+		pubsub_publish_double(humidity_topic, humidity);
+		pubsub_publish_int(status_topic, RESULT_OK);
+		pubsub_publish_int(timestamp_topic, timestamp);
+
 
 	} else {
 		ESP_LOGD(tag, "frame_finished, invalid checksum: %02X%02X%02X%02X%02X",
@@ -328,29 +336,16 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp) {
 }
 
 /**
- * Fire result to result queue.
- */
-void AM2301::fire_result(result_status_t status, float temperature,
-		float humidity, int64_t timestamp) {
-	result_t result;
-	result.status = status;
-	result.temperature = temperature;
-	result.humidity = humidity;
-	result.timestamp = timestamp;
-	BaseType_t ret = xQueueSend(resultQueue, &result, 0);
-	if (ret != pdPASS) {
-		// queue full, might recover
-		ESP_LOGE(tag, "fire_result queue full");
-	}
-}
-
-/**
  * Report recoverable error as measurement result (once).
  */
 void AM2301::fire_recoverable(int64_t timestamp) {
 	if (state != COMPONENT_RECOVERABLE) {
 		state = COMPONENT_RECOVERABLE;
-		fire_result(RESULT_RECOVERABLE, NAN, NAN, timestamp);
+
+		pubsub_publish_int(status_topic, RESULT_RECOVERABLE);
+		pubsub_publish_int(timestamp_topic, timestamp);
+		pubsub_publish_double(temperature_topic, NAN);
+		pubsub_publish_double(humidity_topic, NAN);
 	}
 }
 
