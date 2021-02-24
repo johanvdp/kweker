@@ -1,17 +1,45 @@
 menu "Kweker"
 
-    config LED_GPIO
+    config GPIO_LED
         int "LED GPIO number"
-        range 0 34
+        range 0 33
         default 2
         help
             GPIO number (GPIO_NUM_xx) to control LED (1:on).
 
-    config AM2301_GPIO
+    config GPIO_AM2301
         int "AM2301 GPIO number"
-        range 0 34
+        range 0 33
         default 4
         help
             GPIO number (GPIO_NUM_xx) to AM2301 sensor.
+
+    config GPIO_LAMP
+        int "Lamp GPIO number"
+        range 0 33
+        default 33
+        help
+            GPIO number (GPIO_NUM_xx) to lamp SSR.
+
+    config GPIO_EXHAUST
+        int "Exhaust fan GPIO number"
+        range 0 33
+        default 25
+        help
+            GPIO number (GPIO_NUM_xx) to exhaust fan SSR.
+
+    config GPIO_RECIRC
+        int "Recirculation fan GPIO number"
+        range 0 33
+        default 26
+        help
+            GPIO number (GPIO_NUM_xx) to recirculation fan SSR.
+
+    config GPIO_HEATER
+        int "Heater GPIO number"
+        range 0 33
+        default 27
+        help
+            GPIO number (GPIO_NUM_xx) to heater SSR.
 
 endmenu

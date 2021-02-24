@@ -36,13 +36,13 @@ For ease of reference a short module name is chosen.
 
 4+| *actuators*
 | *2.1*  | GND  |                 | PWR.GND
-| *2.2*  | OUT1 | output 1 (3.3V) | ESP.3
+| *2.2*  | OUT1 | output 1 (3.3V) | ESP.8
 | *2.3*  | GND  |                 | PWR.GND
-| *2.4*  | OUT2 | output 2 (3.3V) | ESP.4
+| *2.4*  | OUT2 | output 2 (3.3V) | ESP.9
 | *2.5*  | GND  |                 | PWR.GND
-| *2.6*  | OUT3 | output 3 (3.3V) | ESP.5
+| *2.6*  | OUT3 | output 3 (3.3V) | ESP.10
 | *2.7*  | GND  |                 | PWR.GND
-| *2.8*  | OUT4 | output 4 (3.3V) | ESP.6
+| *2.8*  | OUT4 | output 4 (3.3V) | ESP.11
 
 4+| *humidity & temperature sensor*
 | *2.9*  | 5V   |                          | PWR.5V
@@ -53,7 +53,7 @@ For ease of reference a short module name is chosen.
 | *2.12* | 5V  |                            | PWR.5V
 | *2.13* | GND |                            | PWR.GND
 | *2.14* | TX  | serial transmit TTL (3.3V) | ESP.28
-| *2.15* | RX  | serial receive TTL (3.3V)  | ESP.29
+| *2.15* | RX  | serial receive TTL (3.3V)  | ESP.27
 |===
 
 === ESP32 module
@@ -67,22 +67,22 @@ For ease of reference a short module name is chosen.
                                          
 | *1*  | 3.3V |                         |                     | 
 | *2*  | EN   |                         | on board reset btn  | 
-| *3*  | P36  |                         | OUT1                | CPU.2.2
-| *4*  | P39  |                         | OUT2                | CPU.2.4
-| *5*  | P34  |                         | OUT3                | CPU.2.6
-| *6*  | P35  |                         | OUT4                | CPU.2.8
-| *7*  | P32  |                         |                     |
-| *8*  | P33  |                         |                     |
-| *9*  | P25  |                         |                     |
-| *10* | P26  |                         | LCD LED             | LCD.1.8
-| *11* | P27  |                         | TOUCH IRQ           | LCD.1.14
-| *12* | P14  | HSPICLK(2)              |                     |
+| *3*  | P36  | input only              |                     | 
+| *4*  | P39  | input only              |                     | 
+| *5*  | P34  | input only              |                     | 
+| *6*  | P35  | input only              | TOUCH IRQ           | LCD.1.14
+| *7*  | P32  |                         | LCD LED             | LCD.1.8
+| *8*  | P33  |                         | OUT1                | CPU.2.2
+| *9*  | P25  |                         | OUT2                | CPU.2.4
+| *10* | P26  |                         | OUT3                | CPU.2.6
+| *11* | P27  |                         | OUT4                | CPU.2.8
+| *12* | P14  | HSPICLK(2)              |                     |                     |
 | *13* | P12  | HSPIQ(2)                |                     |
 | *14* | GND  |                         |                     | 
 | *15* | P13  | HSPID(2)                |                     |
-| *16* | P9   | SD_DATA_2(1), *U1RXD*(5)| CO2 RX              | CPU.2.14
-| *17* | P10  | SD_DATA_3(1), *U1TXD*(5)| CO2 TX              | CPU.2.13
-| *18* | P11  | SD_CMD(1)               |                     |
+| *16* | P9   | SD_DATA_2(1), *U1RXD*(5)|                     | 
+| *17* | P10  | SD_DATA_3(1), *U1TXD*(5)|                     | 
+| *18* | P11  | SD_CMD(1)               |                     | 
 | *19* | 5V   |                         |                     | PWR.5V
 |===
 
@@ -142,7 +142,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 | *1.5*  | DC/RS     | LCD DC/RS                     | ESP.33
 | *1.6*  | SDI(MOSI) | LCD SPIMOSI                   | ESP.37
 | *1.7*  | SCK       | LCD SPICLK                    | ESP.30
-| *1.8*  | LED       | LCD LED (high is on)          | ESP.10
+| *1.8*  | LED       | LCD LED (high is on)          | ESP.7
 | *1.9*  | SDO(MISO) | do not use tri-state conflict | 
 
 4+| *touch screen*
@@ -150,7 +150,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 | *1.11* | T_CS      | TOUCH CS      | ESP.36
 | *1.12* | T_DIN     | TOUCH SPIMOSI | ESP.37
 | *1.13* | T_DO      | TOUCH SPIMISO | ESP.31
-| *1.14* | T_IRQ     | TOUCH IRQ     | ESP.11
+| *1.14* | T_IRQ     | TOUCH IRQ     | ESP.6
 
 4+| *SD card* (unused)
 | *2.1*  | SD_CS     | SD card chip select        |
