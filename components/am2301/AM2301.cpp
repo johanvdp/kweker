@@ -106,7 +106,6 @@ bool AM2301::measure()
  *
  * @return True if adding was succesful. False if not (queue full).
  */
-
 bool AM2301::queue_instruction_start()
 {
     ESP_LOGD(tag, "queue_instruction_start");
@@ -318,7 +317,7 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp)
         }
         double temperature = t + TEMPERATURE_C_TO_K;
 
-        ESP_LOGD(tag, "frame_finished, T: %.1fK, RH: %.1f%%", temperature, humidity);
+        ESP_LOGI(tag, "frame_finished, T: %.1fK, RH: %.1f%%", temperature, humidity);
 
         pubsub_publish_double(temperature_topic, temperature);
         pubsub_publish_double(humidity_topic, humidity);
