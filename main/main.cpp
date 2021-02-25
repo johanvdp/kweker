@@ -13,6 +13,7 @@ extern "C" {
 #include "AM2301.h"
 #include "pubsub.h"
 #include "pubsub_test.h"
+#include "model.h"
 
 #define TAG "main"
 
@@ -30,16 +31,6 @@ DO lamp;
 DO exhaust;
 DO recirc;
 DO heater;
-
-static const char *TOPIC_LED_ACTIVITY = "led.activity";
-static const char *TOPIC_AM2301_TEMPERATURE = "am2301.temperature";
-static const char *TOPIC_AM2301_HUMIDITY = "am2301.humidity";
-static const char *TOPIC_AM2301_STATUS = "am2301.status";
-static const char *TOPIC_AM2301_TIMESTAMP = "am2301.timestamp";
-static const char *TOPIC_DO_LAMP = "do.lamp";
-static const char *TOPIC_DO_EXHAUST = "do.exhaust";
-static const char *TOPIC_DO_RECIRC = "do.recirc";
-static const char *TOPIC_DO_HEATER = "do.heater";
 
 void app_main()
 {
@@ -62,26 +53,13 @@ void app_main()
         return;
     }
 
-    pubsub_topic_t led_activity_topic = pubsub_register_topic(
-            TOPIC_LED_ACTIVITY);
-    pubsub_topic_t am2301_temperature_topic = pubsub_register_topic(
-            TOPIC_AM2301_TEMPERATURE);
-    pubsub_topic_t am2301_humidity_topic = pubsub_register_topic(
-            TOPIC_AM2301_HUMIDITY);
-    pubsub_topic_t am2301_status_topic = pubsub_register_topic(
-            TOPIC_AM2301_STATUS);
-    pubsub_topic_t am2301_timestamp_topic = pubsub_register_topic(
-            TOPIC_AM2301_TIMESTAMP);
-    pubsub_topic_t do_lamp_topic = pubsub_register_topic(TOPIC_DO_LAMP);
-    pubsub_topic_t do_exhaust_topic = pubsub_register_topic(TOPIC_DO_EXHAUST);
-    pubsub_topic_t do_recirc_topic = pubsub_register_topic(TOPIC_DO_RECIRC);
-    pubsub_topic_t do_heater_topic = pubsub_register_topic(TOPIC_DO_HEATER);
+    model_initialize();
 
-    led.setup(GPIO_LED, true, TOPIC_LED_ACTIVITY);
-    lamp.setup(GPIO_LAMP, true, TOPIC_DO_LAMP);
-    exhaust.setup(GPIO_EXHAUST, true, TOPIC_DO_EXHAUST);
-    recirc.setup(GPIO_RECIRC, true, TOPIC_DO_RECIRC);
-    heater.setup(GPIO_HEATER, true, TOPIC_DO_HEATER);
+    led.setup(GPIO_LED, true, TOPIC_ACTIVITY);
+    lamp.setup(GPIO_LAMP, true, TOPIC_ACTUATOR_LAMP);
+    exhaust.setup(GPIO_EXHAUST, true, TOPIC_ACTUATOR_EXHAUST);
+    recirc.setup(GPIO_RECIRC, true, TOPIC_ACTUATOR_RECIRC);
+    heater.setup(GPIO_HEATER, true, TOPIC_ACTUATOR_HEATER);
 
     // LOG: big queue not useful
     QueueHandle_t log_queue = xQueueCreate(10, sizeof(pubsub_message_t));
@@ -90,19 +68,19 @@ void app_main()
         return;
     }
     pubsub_add_subscription(log_queue, TOPIC_AM2301_STATUS);
-    pubsub_add_subscription(log_queue, TOPIC_AM2301_TEMPERATURE);
-    pubsub_add_subscription(log_queue, TOPIC_AM2301_HUMIDITY);
+    pubsub_add_subscription(log_queue, TOPIC_CURRENT_TEMPERATURE);
+    pubsub_add_subscription(log_queue, TOPIC_CURRENT_HUMIDITY);
     pubsub_add_subscription(log_queue, TOPIC_AM2301_TIMESTAMP);
 
-    am2301.setup(GPIO_AM2301, am2301_temperature_topic, am2301_humidity_topic,
+    am2301.setup(GPIO_AM2301, current_temperature_topic, current_humidity_topic,
             am2301_status_topic, am2301_timestamp_topic);
 
     pubsub_message_t log_message;
-    pubsub_message_t led_activity_message;
+    pubsub_message_t activity_message;
 
     // start chain reaction
-    led_activity_message.int_val = 1;
-    pubsub_publish(led_activity_topic, &led_activity_message);
+    activity_message.int_val = 1;
+    pubsub_publish(activity_topic, &activity_message);
     am2301.measure();
 
     while (1) {
@@ -112,17 +90,17 @@ void app_main()
         if (result == pdFALSE) {
             // nothing, re-try
             ESP_LOGI(TAG, "AM2301 measure");
-            led_activity_message.int_val = 1;
-            pubsub_publish(led_activity_topic, &led_activity_message);
+            activity_message.int_val = 1;
+            pubsub_publish(activity_topic, &activity_message);
             am2301.measure();
 
         } else {
             // something
-            if (strcmp(log_message.topic, TOPIC_AM2301_TEMPERATURE) == 0) {
+            if (strcmp(log_message.topic, TOPIC_CURRENT_TEMPERATURE) == 0) {
                 ESP_LOGI(TAG, "AM2301 T: %.1fK, %.1fC", log_message.double_val,
                         log_message.double_val - 273.15);
 
-            } else if (strcmp(log_message.topic, TOPIC_AM2301_HUMIDITY) == 0) {
+            } else if (strcmp(log_message.topic, TOPIC_CURRENT_HUMIDITY) == 0) {
                 ESP_LOGI(TAG, "AM2301 RH: %.1f%%", log_message.double_val);
 
             } else if (strcmp(log_message.topic, TOPIC_AM2301_TIMESTAMP) == 0) {
@@ -134,15 +112,15 @@ void app_main()
 
                     ESP_LOGI(TAG, "AM2301 OK");
 
-                    led_activity_message.int_val = 1;
-                    pubsub_publish(led_activity_topic, &led_activity_message);
+                    activity_message.int_val = 1;
+                    pubsub_publish(activity_topic, &activity_message);
 
                     // again
                     vTaskDelay(5000 / portTICK_PERIOD_MS);
 
                     ESP_LOGI(TAG, "AM2301 measure");
-                    led_activity_message.int_val = 1;
-                    pubsub_publish(led_activity_topic, &led_activity_message);
+                    activity_message.int_val = 1;
+                    pubsub_publish(activity_topic, &activity_message);
                     am2301.measure();
 
                 } else if (status
@@ -150,24 +128,24 @@ void app_main()
 
                     ESP_LOGW(TAG, "AM2301 RECOVERABLE");
 
-                    led_activity_message.int_val = 2;
-                    pubsub_publish(led_activity_topic, &led_activity_message);
+                    activity_message.int_val = 2;
+                    pubsub_publish(activity_topic, &activity_message);
 
                     // hold-off
                     vTaskDelay(10000 / portTICK_PERIOD_MS);
 
                     ESP_LOGI(TAG, "AM2301 measure");
-                    led_activity_message.int_val = 1;
-                    pubsub_publish(led_activity_topic, &led_activity_message);
+                    activity_message.int_val = 1;
+                    pubsub_publish(activity_topic, &activity_message);
                     am2301.measure();
 
                 } else if (status == AM2301::result_status_t::RESULT_FATAL) {
 
                     ESP_LOGE(TAG, "AM2301 FATAL");
 
-                    led_activity_message.int_val = 10;
+                    activity_message.int_val = 10;
                     ESP_LOGI(TAG, "pubsub_publish 10");
-                    pubsub_publish(led_activity_topic, &led_activity_message);
+                    pubsub_publish(activity_topic, &activity_message);
 
                     // give up
                     break;
