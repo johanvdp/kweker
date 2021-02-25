@@ -45,14 +45,15 @@ void app_main()
 
     hmi_initialize();
     pubsub_initialize();
-// test breaks application (cleanup?)    
-//    bool succes = pubsub_test();
-//    if (succes) {
-//        ESP_LOGI(TAG, "pubsub_test succes");
-//    } else {
-//        ESP_LOGE(TAG, "pubsub_test failed (FATAL)");
-//        return;
-//    }
+
+	// pubsub self test
+    bool succes = pubsub_test();
+    if (succes) {
+        ESP_LOGI(TAG, "pubsub_test succes");
+    } else {
+        ESP_LOGE(TAG, "pubsub_test failed (FATAL)");
+        return;
+    }
 
     model_initialize();
 

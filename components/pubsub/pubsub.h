@@ -39,6 +39,8 @@ extern void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message);
 extern void pubsub_publish_bool(pubsub_topic_t topic, bool value);
 extern void pubsub_publish_int(pubsub_topic_t topic, int64_t value);
 extern void pubsub_publish_double(pubsub_topic_t topic, double value);
+extern uint16_t pubsub_topic_count();
+extern uint16_t pubsub_subscriber_count(const char* topic_name);
 
 #ifdef __cplusplus
 }
