@@ -45,13 +45,14 @@ void app_main()
 
     hmi_initialize();
     pubsub_initialize();
-    bool succes = pubsub_test();
-    if (succes) {
-        ESP_LOGI(TAG, "pubsub_test succes");
-    } else {
-        ESP_LOGE(TAG, "pubsub_test failed (FATAL)");
-        return;
-    }
+// test breaks application (cleanup?)    
+//    bool succes = pubsub_test();
+//    if (succes) {
+//        ESP_LOGI(TAG, "pubsub_test succes");
+//    } else {
+//        ESP_LOGE(TAG, "pubsub_test failed (FATAL)");
+//        return;
+//    }
 
     model_initialize();
 
@@ -79,6 +80,7 @@ void app_main()
     pubsub_message_t activity_message;
 
     // start chain reaction
+    ESP_LOGI(TAG, "AM2301 measure");
     activity_message.int_val = 1;
     pubsub_publish(activity_topic, &activity_message);
     am2301.measure();
