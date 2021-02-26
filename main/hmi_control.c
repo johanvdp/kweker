@@ -1,9 +1,12 @@
 // The author disclaims copyright to this source code.
 #include "hmi_control.h"
+#include "esp_log.h"
 
 #define HMI_CONTROL_W 110
 #define HMI_CONTROL_H 270
 #define HMI_MARGIN 5
+
+static const char *tag = "hmi_control";
 
 /** temperature control */
 hmi_control_t hmi_control_temperature;
@@ -18,55 +21,83 @@ lv_obj_t *hmi_control_mode_btnmatrix;
 lv_obj_t *hmi_control_manual_btnmatrix;
 
 /**
+ * Calculate fraction of value on control bar.
+ */
+static double hmi_control_bar_fraction(hmi_control_t *control, double value) {
+
+    double fraction = (value + control->bar_bias) * control->bar_gain;
+    ESP_LOGD(tag, "value: %lf, bias: %lf, gain:%lf, fraction:%lf", value, control->bar_bias, control->bar_gain, fraction);
+    return fraction;
+}
+
+/**
+ * Calculate value on control bar.
+ */
+static int16_t hmi_control_bar_value(hmi_control_t *control, double value) {
+
+    return hmi_control_bar_fraction(control, value) * 100.0;
+}
+
+/**
  * Calculate location of value on control bar.
  */
-static lv_coord_t hmi_control_get_y(lv_obj_t *bar, int16_t value) {
+static lv_coord_t hmi_control_get_y(hmi_control_t *control, double value) {
 
-	lv_coord_t min = lv_bar_get_min_value(bar);
-	lv_coord_t max = lv_bar_get_max_value(bar);
+    lv_obj_t *bar = control->bar;
 	lv_coord_t y = lv_obj_get_y(bar);
 	lv_coord_t height = lv_obj_get_height(bar);
 
-	float fraction = (float) (value - min) / (max - min);
-	return y + height - (fraction * height) - 10;
+	double fraction = hmi_control_bar_fraction(control, value);
+	return y + height - (fraction * height) - 5;
 }
 
-static void hmi_control_update(hmi_control_t *target, int16_t pv, int16_t sv,
-bool hi, bool lo) {
+void hmi_control_update_pv(hmi_control_t *target, double pv) {
 
-	lv_obj_t *bar = target->bar;
-	lv_obj_t *label_sv = target->label_sv;
-	lv_obj_t *label_pv = target->label_pv;
+    lv_obj_t *bar = target->bar;
+    lv_obj_t *label_pv = target->label_pv;
+
+    lv_coord_t bar_x = lv_obj_get_x(bar);
+    lv_coord_t bar_width = lv_obj_get_width(bar);
+
+    int16_t value = hmi_control_bar_value(target, pv);
+    lv_bar_set_value(bar, value, LV_ANIM_OFF);
+    lv_label_set_text_fmt(label_pv, "=%.1lf", pv);
+    lv_coord_t pv_y = hmi_control_get_y(target, pv);
+    lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
+}
+
+void hmi_control_update_sv(hmi_control_t *target, double sv) {
+
+    lv_obj_t *bar = target->bar;
+    lv_obj_t *label_sv = target->label_sv;
+    lv_coord_t bar_x = lv_obj_get_x(bar);
+
+    lv_label_set_text_fmt(label_sv, "%.1lf>", sv);
+    lv_coord_t label_width = lv_obj_get_width(label_sv);
+    lv_coord_t sv_y = hmi_control_get_y(target, sv);
+    lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
+}
+
+void hmi_control_update_hi(hmi_control_t *target, bool hi) {
+
+    lv_obj_t *label_hi = target->label_hi;
+
+    lv_obj_set_style_local_text_color(label_hi, LV_LABEL_PART_MAIN,
+            LV_STATE_DEFAULT, hi ? LV_COLOR_RED : LV_COLOR_GRAY);
+}
+
+void hmi_control_update_lo(hmi_control_t *target, bool lo) {
+
 	lv_obj_t *label_lo = target->label_lo;
-	lv_obj_t *label_hi = target->label_hi;
-
-	lv_coord_t bar_x = lv_obj_get_x(bar);
-	lv_coord_t bar_width = lv_obj_get_width(bar);
-
-	// pv
-	lv_bar_set_value(bar, pv, LV_ANIM_OFF);
-	lv_label_set_text_fmt(label_pv, "=%2d", pv);
-	lv_coord_t pv_y = hmi_control_get_y(bar, pv);
-	lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
-
-	// sv
-	lv_label_set_text_fmt(label_sv, "%2d>", sv);
-	lv_coord_t label_width = lv_obj_get_width(label_sv);
-	lv_coord_t sv_y = hmi_control_get_y(bar, sv);
-	lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
 
 	// lo
 	lv_obj_set_style_local_text_color(label_lo, LV_LABEL_PART_MAIN,
 			LV_STATE_DEFAULT, lo ? LV_COLOR_RED : LV_COLOR_GRAY);
-
-	// hi
-	lv_obj_set_style_local_text_color(label_hi, LV_LABEL_PART_MAIN,
-			LV_STATE_DEFAULT, hi ? LV_COLOR_RED : LV_COLOR_GRAY);
 }
 
 static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent,
 		lv_coord_t x, lv_coord_t y, lv_coord_t w, lv_coord_t h,
-		const char *name, int16_t min, int16_t max) {
+		const char *name, double min, double max) {
 
 	lv_obj_t *control = lv_cont_create(parent, NULL);
 	lv_obj_clean_style_list(control, LV_CONT_PART_MAIN);
@@ -100,33 +131,36 @@ static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent,
 	lv_coord_t bar_width = w / 10;
 	lv_obj_set_size(bar, bar_width,
 			label_lo_coords.y1 - label_hi_coords.y2 - 10);
-	lv_bar_set_range(bar, min, max);
+	// use bias and scale to convert value to [0.0, 1.0] range
+	target->bar_bias = -min;
+	target->bar_gain = 1.0 / (max-min);
 	lv_bar_set_type(bar, LV_BAR_TYPE_NORMAL);
+    lv_bar_set_range(bar, 0, 100);
 	lv_obj_align(bar, label_hi, LV_ALIGN_OUT_BOTTOM_MID, 0, HMI_MARGIN);
 	lv_obj_align(bar, label_lo, LV_ALIGN_OUT_TOP_MID, 0, -HMI_MARGIN);
 	target->bar = bar;
 	lv_coord_t bar_x = lv_obj_get_x(bar);
 
 	lv_obj_t *label_max = lv_label_create(control, NULL);
-	lv_label_set_text_fmt(label_max, "-%2d", max);
-	lv_coord_t max_y = hmi_control_get_y(bar, max);
+	lv_label_set_text_fmt(label_max, "-%.1lf", max);
+	lv_coord_t max_y = hmi_control_get_y(target, max);
 	lv_obj_set_pos(label_max, bar_x + bar_width + HMI_MARGIN, max_y);
 
 	lv_obj_t *label_min = lv_label_create(control, NULL);
-	lv_coord_t min_y = hmi_control_get_y(bar, min);
+	lv_coord_t min_y = hmi_control_get_y(target, min);
 	lv_obj_set_pos(label_min, bar_x + bar_width + HMI_MARGIN, min_y);
-	lv_label_set_text_fmt(label_min, "-%2d", min);
+	lv_label_set_text_fmt(label_min, "-%.1lf", min);
 
 	lv_obj_t *label_pv = lv_label_create(control, NULL);
-	lv_coord_t pv_y = hmi_control_get_y(bar, min);
+	lv_coord_t pv_y = hmi_control_get_y(target, min);
 	lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
-	lv_label_set_text_fmt(label_pv, "=%2d", min);
+	lv_label_set_text_fmt(label_pv, "=%.1lf", min);
 	target->label_pv = label_pv;
 
 	lv_obj_t *label_sv = lv_label_create(control, NULL);
-	lv_label_set_text_fmt(label_sv, "%2d>", min);
+	lv_label_set_text_fmt(label_sv, "%.1lf>", min);
 	lv_coord_t label_width = lv_obj_get_width(label_sv);
-	lv_coord_t sv_y = hmi_control_get_y(bar, min);
+	lv_coord_t sv_y = hmi_control_get_y(target, min);
 	lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
 	target->label_sv = label_sv;
 }
@@ -209,19 +243,28 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent) {
 
 	hmi_control_create_control(&hmi_control_temperature, tab, HMI_MARGIN,
 	HMI_MARGIN,
-	HMI_CONTROL_W, HMI_CONTROL_H, "Temperature [°C]", 0, 50);
-	hmi_control_update(&hmi_control_temperature, 26, 30, false, true);
+	HMI_CONTROL_W, HMI_CONTROL_H, "Temperature [°C]", 0.0, 50.0);
+	hmi_control_update_pv(&hmi_control_temperature, 0.0);
+    hmi_control_update_sv(&hmi_control_temperature, 0.0);
+    hmi_control_update_hi(&hmi_control_temperature, false);
+    hmi_control_update_lo(&hmi_control_temperature, false);
 
 	hmi_control_create_control(&hmi_control_humidity, tab,
 	HMI_MARGIN + HMI_CONTROL_W, HMI_MARGIN,
-	HMI_CONTROL_W, HMI_CONTROL_H, "Humidity [%RH]", 0, 100);
-	hmi_control_update(&hmi_control_humidity, 46, 40, true, false);
+	HMI_CONTROL_W, HMI_CONTROL_H, "Humidity [%RH]", 0.0, 100.0);
+	hmi_control_update_pv(&hmi_control_humidity, 0.0);
+    hmi_control_update_sv(&hmi_control_humidity, 0.0);
+    hmi_control_update_hi(&hmi_control_humidity, false);
+    hmi_control_update_lo(&hmi_control_humidity, false);
 
 	hmi_control_create_control(&hmi_control_co2, tab,
 			(HMI_MARGIN + HMI_CONTROL_W) * 2,
-			HMI_MARGIN, HMI_CONTROL_W, HMI_CONTROL_H, "CO2 conc. [ppm]", 0,
-			2000);
-	hmi_control_update(&hmi_control_co2, 415, 800, false, true);
+			HMI_MARGIN, HMI_CONTROL_W, HMI_CONTROL_H, "CO2 conc. [ppm]", 0.0,
+			2000.0);
+	hmi_control_update_pv(&hmi_control_co2, 0.0);
+    hmi_control_update_sv(&hmi_control_co2, 0.0);
+    hmi_control_update_hi(&hmi_control_co2, false);
+    hmi_control_update_lo(&hmi_control_co2, false);
 
 	hmi_control_mode_btnmatrix = hmi_control_create_mode(tab,
 			(HMI_MARGIN + HMI_CONTROL_W) * 3 + 10, HMI_MARGIN, 110, 120);

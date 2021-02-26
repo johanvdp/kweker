@@ -14,6 +14,7 @@ extern "C" {
 #include "pubsub.h"
 #include "pubsub_test.h"
 #include "model.h"
+#include "controller.h"
 
 #define TAG "main"
 
@@ -56,6 +57,7 @@ void app_main()
     }
 
     model_initialize();
+    controller_initialize();
 
     led.setup(GPIO_LED, true, TOPIC_ACTIVITY);
     lamp.setup(GPIO_LAMP, true, TOPIC_ACTUATOR_LAMP);
@@ -70,11 +72,11 @@ void app_main()
         return;
     }
     pubsub_add_subscription(log_queue, TOPIC_AM2301_STATUS);
-    pubsub_add_subscription(log_queue, TOPIC_CURRENT_TEMPERATURE);
-    pubsub_add_subscription(log_queue, TOPIC_CURRENT_HUMIDITY);
+    pubsub_add_subscription(log_queue, TOPIC_MEASURED_TEMPERATURE);
+    pubsub_add_subscription(log_queue, TOPIC_MEASURED_HUMIDITY);
     pubsub_add_subscription(log_queue, TOPIC_AM2301_TIMESTAMP);
 
-    am2301.setup(GPIO_AM2301, current_temperature_topic, current_humidity_topic,
+    am2301.setup(GPIO_AM2301, measured_temperature_topic, measured_humidity_topic,
             am2301_status_topic, am2301_timestamp_topic);
 
     pubsub_message_t log_message;
@@ -99,11 +101,11 @@ void app_main()
 
         } else {
             // something
-            if (strcmp(log_message.topic, TOPIC_CURRENT_TEMPERATURE) == 0) {
+            if (strcmp(log_message.topic, TOPIC_MEASURED_TEMPERATURE) == 0) {
                 ESP_LOGI(TAG, "AM2301 T: %.1fK, %.1fC", log_message.double_val,
                         log_message.double_val - 273.15);
 
-            } else if (strcmp(log_message.topic, TOPIC_CURRENT_HUMIDITY) == 0) {
+            } else if (strcmp(log_message.topic, TOPIC_MEASURED_HUMIDITY) == 0) {
                 ESP_LOGI(TAG, "AM2301 RH: %.1f%%", log_message.double_val);
 
             } else if (strcmp(log_message.topic, TOPIC_AM2301_TIMESTAMP) == 0) {

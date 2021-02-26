@@ -16,13 +16,13 @@ extern "C" {
 
 typedef struct {
 	lv_obj_t *bar;
+    double bar_bias;
+    double bar_gain;
 	lv_obj_t *label_sv;
 	lv_obj_t *label_pv;
 	lv_obj_t *label_lo;
 	lv_obj_t *label_hi;
 } hmi_control_t;
-
-lv_obj_t* hmi_control_create_tab(lv_obj_t *parent);
 
 /** temperature control */
 extern hmi_control_t hmi_control_temperature;
@@ -35,6 +35,12 @@ extern hmi_control_t hmi_control_co2;
 extern lv_obj_t *hmi_control_mode_btnmatrix;
 /** setpoint manual control */
 extern lv_obj_t *hmi_control_manual_btnmatrix;
+
+lv_obj_t* hmi_control_create_tab(lv_obj_t *parent);
+void hmi_control_update_pv(hmi_control_t *target, double pv);
+void hmi_control_update_sv(hmi_control_t *target, double sv);
+void hmi_control_update_hi(hmi_control_t *target, bool hi);
+void hmi_control_update_lo(hmi_control_t *target, bool lo);
 
 #ifdef __cplusplus
 }
