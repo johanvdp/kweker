@@ -14,7 +14,7 @@ extern "C" {
 #include "pubsub.h"
 #include "pubsub_test.h"
 #include "model.h"
-#include "controller.h"
+#include "bind.h"
 
 #define TAG "main"
 
@@ -57,7 +57,7 @@ void app_main()
     }
 
     model_initialize();
-    controller_initialize();
+    bind_initialize();
 
     led.setup(GPIO_LED, true, TOPIC_ACTIVITY);
     lamp.setup(GPIO_LAMP, true, TOPIC_ACTUATOR_LAMP);

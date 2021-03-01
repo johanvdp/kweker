@@ -6,7 +6,7 @@
 #define HMI_CONTROL_H 270
 #define HMI_MARGIN 5
 
-static const char *tag = "hmi_control";
+static const char *TAG = "hmi_control";
 
 /** temperature control */
 hmi_control_t hmi_control_temperature;
@@ -26,7 +26,7 @@ lv_obj_t *hmi_control_manual_btnmatrix;
 static double hmi_control_bar_fraction(hmi_control_t *control, double value) {
 
     double fraction = (value + control->bar_bias) * control->bar_gain;
-    ESP_LOGD(tag, "value: %lf, bias: %lf, gain:%lf, fraction:%lf", value, control->bar_bias, control->bar_gain, fraction);
+    ESP_LOGD(TAG, "value: %lf, bias: %lf, gain:%lf, fraction:%lf", value, control->bar_bias, control->bar_gain, fraction);
     return fraction;
 }
 
