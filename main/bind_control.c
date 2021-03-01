@@ -43,62 +43,62 @@ static QueueHandle_t night_auto_setpoint_temperature_queue;
 
 static void hmi_control_set_temperature_pv(double pv)
 {
-    hmi_control_update_pv(&hmi_control_temperature, pv);
+    hmi_control_set_pv(&hmi_control_temperature, pv);
 }
 
 static void hmi_control_set_temperature_sv(double sv)
 {
-    hmi_control_update_sv(&hmi_control_temperature, sv);
+    hmi_control_set_sv(&hmi_control_temperature, sv);
 }
 
 static void hmi_control_set_temperature_hi(bool hi)
 {
-    hmi_control_update_hi(&hmi_control_temperature, hi);
+    hmi_control_set_hi(&hmi_control_temperature, hi);
 }
 
 static void hmi_control_set_temperature_lo(bool lo)
 {
-    hmi_control_update_lo(&hmi_control_temperature, lo);
+    hmi_control_set_lo(&hmi_control_temperature, lo);
 }
 
 static void hmi_control_set_humidity_pv(double pv)
 {
-    hmi_control_update_pv(&hmi_control_humidity, pv);
+    hmi_control_set_pv(&hmi_control_humidity, pv);
 }
 
 static void hmi_control_set_humidity_sv(double sv)
 {
-    hmi_control_update_sv(&hmi_control_humidity, sv);
+    hmi_control_set_sv(&hmi_control_humidity, sv);
 }
 
 static void hmi_control_set_humidity_hi(bool hi)
 {
-    hmi_control_update_hi(&hmi_control_humidity, hi);
+    hmi_control_set_hi(&hmi_control_humidity, hi);
 }
 
 static void hmi_control_set_humidity_lo(bool lo)
 {
-    hmi_control_update_lo(&hmi_control_humidity, lo);
+    hmi_control_set_lo(&hmi_control_humidity, lo);
 }
 
 static void hmi_control_set_co2_pv(double pv)
 {
-    hmi_control_update_pv(&hmi_control_co2, pv);
+    hmi_control_set_pv(&hmi_control_co2, pv);
 }
 
 static void hmi_control_set_co2_sv(double sv)
 {
-    hmi_control_update_sv(&hmi_control_co2, sv);
+    hmi_control_set_sv(&hmi_control_co2, sv);
 }
 
 static void hmi_control_set_co2_hi(bool hi)
 {
-    hmi_control_update_hi(&hmi_control_co2, hi);
+    hmi_control_set_hi(&hmi_control_co2, hi);
 }
 
 static void hmi_control_set_co2_lo(bool lo)
 {
-    hmi_control_update_lo(&hmi_control_co2, lo);
+    hmi_control_set_lo(&hmi_control_co2, lo);
 }
 
 static void bind_control_task(void *pvParameter)

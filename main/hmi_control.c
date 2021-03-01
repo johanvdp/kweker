@@ -51,7 +51,7 @@ static lv_coord_t hmi_control_get_y(hmi_control_t *control, double value) {
 	return y + height - (fraction * height) - 5;
 }
 
-void hmi_control_update_pv(hmi_control_t *target, double pv) {
+void hmi_control_set_pv(hmi_control_t *target, double pv) {
 
     lv_obj_t *bar = target->bar;
     lv_obj_t *label_pv = target->label_pv;
@@ -66,7 +66,7 @@ void hmi_control_update_pv(hmi_control_t *target, double pv) {
     lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
 }
 
-void hmi_control_update_sv(hmi_control_t *target, double sv) {
+void hmi_control_set_sv(hmi_control_t *target, double sv) {
 
     lv_obj_t *bar = target->bar;
     lv_obj_t *label_sv = target->label_sv;
@@ -78,7 +78,7 @@ void hmi_control_update_sv(hmi_control_t *target, double sv) {
     lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
 }
 
-void hmi_control_update_hi(hmi_control_t *target, bool hi) {
+void hmi_control_set_hi(hmi_control_t *target, bool hi) {
 
     lv_obj_t *label_hi = target->label_hi;
 
@@ -86,7 +86,7 @@ void hmi_control_update_hi(hmi_control_t *target, bool hi) {
             LV_STATE_DEFAULT, hi ? LV_COLOR_RED : LV_COLOR_GRAY);
 }
 
-void hmi_control_update_lo(hmi_control_t *target, bool lo) {
+void hmi_control_set_lo(hmi_control_t *target, bool lo) {
 
 	lv_obj_t *label_lo = target->label_lo;
 
@@ -244,27 +244,27 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent) {
 	hmi_control_create_control(&hmi_control_temperature, tab, HMI_MARGIN,
 	HMI_MARGIN,
 	HMI_CONTROL_W, HMI_CONTROL_H, "Temperature [°C]", 0.0, 50.0);
-	hmi_control_update_pv(&hmi_control_temperature, 0.0);
-    hmi_control_update_sv(&hmi_control_temperature, 0.0);
-    hmi_control_update_hi(&hmi_control_temperature, false);
-    hmi_control_update_lo(&hmi_control_temperature, false);
+	hmi_control_set_pv(&hmi_control_temperature, 0.0);
+    hmi_control_set_sv(&hmi_control_temperature, 0.0);
+    hmi_control_set_hi(&hmi_control_temperature, false);
+    hmi_control_set_lo(&hmi_control_temperature, false);
 
 	hmi_control_create_control(&hmi_control_humidity, tab,
 	HMI_MARGIN + HMI_CONTROL_W, HMI_MARGIN,
 	HMI_CONTROL_W, HMI_CONTROL_H, "Humidity [%RH]", 0.0, 100.0);
-	hmi_control_update_pv(&hmi_control_humidity, 0.0);
-    hmi_control_update_sv(&hmi_control_humidity, 0.0);
-    hmi_control_update_hi(&hmi_control_humidity, false);
-    hmi_control_update_lo(&hmi_control_humidity, false);
+	hmi_control_set_pv(&hmi_control_humidity, 0.0);
+    hmi_control_set_sv(&hmi_control_humidity, 0.0);
+    hmi_control_set_hi(&hmi_control_humidity, false);
+    hmi_control_set_lo(&hmi_control_humidity, false);
 
 	hmi_control_create_control(&hmi_control_co2, tab,
 			(HMI_MARGIN + HMI_CONTROL_W) * 2,
 			HMI_MARGIN, HMI_CONTROL_W, HMI_CONTROL_H, "CO2 conc. [ppm]", 0.0,
 			2000.0);
-	hmi_control_update_pv(&hmi_control_co2, 0.0);
-    hmi_control_update_sv(&hmi_control_co2, 0.0);
-    hmi_control_update_hi(&hmi_control_co2, false);
-    hmi_control_update_lo(&hmi_control_co2, false);
+	hmi_control_set_pv(&hmi_control_co2, 0.0);
+    hmi_control_set_sv(&hmi_control_co2, 0.0);
+    hmi_control_set_hi(&hmi_control_co2, false);
+    hmi_control_set_lo(&hmi_control_co2, false);
 
 	hmi_control_mode_btnmatrix = hmi_control_create_mode(tab,
 			(HMI_MARGIN + HMI_CONTROL_W) * 3 + 10, HMI_MARGIN, 110, 120);
