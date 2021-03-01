@@ -21,11 +21,13 @@ bool pubsub_test()
 
     // create topic
     pubsub_topic_t *topic_int;
-    topic_int = pubsub_register_topic(TOPIC_PUBSUB_TEST_INT);
+    topic_int = pubsub_register_topic(TOPIC_PUBSUB_TEST_INT, PUBSUB_TYPE_INT);
     pubsub_topic_t *topic_bool;
-    topic_bool = pubsub_register_topic(TOPIC_PUBSUB_TEST_BOOL);
+    topic_bool = pubsub_register_topic(TOPIC_PUBSUB_TEST_BOOL,
+            PUBSUB_TYPE_BOOLEAN);
     pubsub_topic_t *topic_double;
-    topic_double = pubsub_register_topic(TOPIC_PUBSUB_TEST_DOUBLE);
+    topic_double = pubsub_register_topic(TOPIC_PUBSUB_TEST_DOUBLE,
+            PUBSUB_TYPE_DOUBLE);
 
     // check
     if (pubsub_topic_count() != 3) {
@@ -34,9 +36,31 @@ bool pubsub_test()
     }
 
     // publish value (no subscribers)
-    pubsub_publish_int(topic_int, 10);
+    pubsub_publish_int(topic_int, 9);
     pubsub_publish_bool(topic_bool, 1);
-    pubsub_publish_double(topic_double, 0.10);
+    pubsub_publish_double(topic_double, 0.09);
+
+    // examine last value
+    int64_t int_value = 0;
+    pubsub_last_int(topic_int, &int_value);
+    if (int_value != 9) {
+        ESP_LOGE(tag, "expect last value 9");
+        success = false;
+    }
+
+    bool bool_value = false;
+    pubsub_last_bool(topic_bool, &bool_value);
+    if (bool_value != true) {
+        ESP_LOGE(tag, "expect last value true");
+        success = false;
+    }
+
+    double double_value = 0.0;
+    pubsub_last_double(topic_double, &double_value);
+    if (double_value < 0.08 || double_value > 0.10) {
+        ESP_LOGE(tag, "expect last value 0.09");
+        success = false;
+    }
 
     // subscribe topic
     QueueHandle_t queueMixed = xQueueCreate(5, sizeof(pubsub_message_t));
@@ -89,6 +113,28 @@ bool pubsub_test()
     }
     if (xQueueReceive(queueInt, &message, 1) == pdTRUE) {
         ESP_LOGE(tag, "expect queue empty");
+        success = false;
+    }
+
+    // examine last value
+    int_value = 0;
+    pubsub_last_int(topic_int, &int_value);
+    if (int_value != 11) {
+        ESP_LOGE(tag, "expect last value 11");
+        success = false;
+    }
+
+    bool_value = false;
+    pubsub_last_bool(topic_bool, &bool_value);
+    if (bool_value != true) {
+        ESP_LOGE(tag, "expect last value true");
+        success = false;
+    }
+
+    double_value = 0.0;
+    pubsub_last_double(topic_double, &double_value);
+    if (double_value < 0.10 || double_value > 0.12) {
+        ESP_LOGE(tag, "expect last value 0.11");
         success = false;
     }
 

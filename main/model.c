@@ -81,58 +81,67 @@ pubsub_topic_t night_auto_setpoint_temperature_topic;
 
 void model_initialize()
 {
-    activity_topic = pubsub_register_topic(TOPIC_ACTIVITY);
+    activity_topic = pubsub_register_topic(TOPIC_ACTIVITY, PUBSUB_TYPE_INT);
 
-    actuator_lamp_topic = pubsub_register_topic(TOPIC_ACTUATOR_LAMP);
-    actuator_exhaust_topic = pubsub_register_topic(TOPIC_ACTUATOR_EXHAUST);
-    actuator_recirc_topic = pubsub_register_topic(TOPIC_ACTUATOR_RECIRC);
-    actuator_heater_topic = pubsub_register_topic(TOPIC_ACTUATOR_HEATER);
+    actuator_lamp_topic = pubsub_register_topic(TOPIC_ACTUATOR_LAMP,
+            PUBSUB_TYPE_INT);
+    actuator_exhaust_topic = pubsub_register_topic(TOPIC_ACTUATOR_EXHAUST,
+            PUBSUB_TYPE_BOOLEAN);
+    actuator_recirc_topic = pubsub_register_topic(TOPIC_ACTUATOR_RECIRC,
+            PUBSUB_TYPE_BOOLEAN);
+    actuator_heater_topic = pubsub_register_topic(TOPIC_ACTUATOR_HEATER,
+            PUBSUB_TYPE_BOOLEAN);
 
-    am2301_status_topic = pubsub_register_topic(TOPIC_AM2301_STATUS);
-    am2301_timestamp_topic = pubsub_register_topic(TOPIC_AM2301_TIMESTAMP);
+    am2301_status_topic = pubsub_register_topic(TOPIC_AM2301_STATUS,
+            PUBSUB_TYPE_INT);
+    am2301_timestamp_topic = pubsub_register_topic(TOPIC_AM2301_TIMESTAMP,
+            PUBSUB_TYPE_INT);
 
-    circadian_topic = pubsub_register_topic(TOPIC_CIRCADIAN);
+    circadian_topic = pubsub_register_topic(TOPIC_CIRCADIAN, PUBSUB_TYPE_INT);
 
-    control_mode_topic = pubsub_register_topic(TOPIC_CONTROL_MODE);
+    control_mode_topic = pubsub_register_topic(TOPIC_CONTROL_MODE,
+            PUBSUB_TYPE_INT);
 
-    control_auto_co2_hi_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_CO2_HI);
-    control_auto_co2_lo_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_CO2_LO);
+    control_auto_co2_hi_topic = pubsub_register_topic(TOPIC_CONTROL_AUTO_CO2_HI,
+            PUBSUB_TYPE_BOOLEAN);
+    control_auto_co2_lo_topic = pubsub_register_topic(TOPIC_CONTROL_AUTO_CO2_LO,
+            PUBSUB_TYPE_BOOLEAN);
     control_auto_humidity_hi_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_HUMIDITY_HI);
+            TOPIC_CONTROL_AUTO_HUMIDITY_HI, PUBSUB_TYPE_BOOLEAN);
     control_auto_humidity_lo_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_HUMIDITY_LO);
+            TOPIC_CONTROL_AUTO_HUMIDITY_LO, PUBSUB_TYPE_BOOLEAN);
     control_auto_temperature_hi_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_TEMPERATURE_HI);
+            TOPIC_CONTROL_AUTO_TEMPERATURE_HI, PUBSUB_TYPE_BOOLEAN);
     control_auto_temperature_lo_topic = pubsub_register_topic(
-            TOPIC_CONTROL_AUTO_TEMPERATURE_LO);
+            TOPIC_CONTROL_AUTO_TEMPERATURE_LO, PUBSUB_TYPE_BOOLEAN);
 
     day_auto_setpoint_temperature_topic = pubsub_register_topic(
-            TOPIC_DAY_AUTO_SETPOINT_TEMPERATURE);
+            TOPIC_DAY_AUTO_SETPOINT_TEMPERATURE, PUBSUB_TYPE_DOUBLE);
     day_auto_setpoint_humidity_topic = pubsub_register_topic(
-            TOPIC_DAY_AUTO_SETPOINT_HUMIDITY);
+            TOPIC_DAY_AUTO_SETPOINT_HUMIDITY, PUBSUB_TYPE_DOUBLE);
     day_auto_setpoint_co2_topic = pubsub_register_topic(
-            TOPIC_DAY_AUTO_SETPOINT_CO2);
+            TOPIC_DAY_AUTO_SETPOINT_CO2, PUBSUB_TYPE_DOUBLE);
 
     manual_setpoint_exhaust_topic = pubsub_register_topic(
-            TOPIC_MANUAL_SETPOINT_EXHAUST);
+            TOPIC_MANUAL_SETPOINT_EXHAUST, PUBSUB_TYPE_BOOLEAN);
     manual_setpoint_heater_topic = pubsub_register_topic(
-            TOPIC_MANUAL_SETPOINT_HEATER);
+            TOPIC_MANUAL_SETPOINT_HEATER, PUBSUB_TYPE_BOOLEAN);
     manual_setpoint_light_topic = pubsub_register_topic(
-            TOPIC_MANUAL_SETPOINT_LAMP);
+            TOPIC_MANUAL_SETPOINT_LAMP, PUBSUB_TYPE_BOOLEAN);
     manual_setpoint_recirc_topic = pubsub_register_topic(
-            TOPIC_MANUAL_SETPOINT_RECIRC);
-    measured_temperature_topic = pubsub_register_topic(
-            TOPIC_MEASURED_TEMPERATURE);
+            TOPIC_MANUAL_SETPOINT_RECIRC, PUBSUB_TYPE_BOOLEAN);
 
-    measured_humidity_topic = pubsub_register_topic(TOPIC_MEASURED_HUMIDITY);
-    measured_co2_topic = pubsub_register_topic(TOPIC_MEASURED_CO2);
+    measured_temperature_topic = pubsub_register_topic(
+            TOPIC_MEASURED_TEMPERATURE, PUBSUB_TYPE_DOUBLE);
+    measured_humidity_topic = pubsub_register_topic(TOPIC_MEASURED_HUMIDITY,
+            PUBSUB_TYPE_DOUBLE);
+    measured_co2_topic = pubsub_register_topic(TOPIC_MEASURED_CO2,
+            PUBSUB_TYPE_DOUBLE);
 
     night_auto_setpoint_temperature_topic = pubsub_register_topic(
-            TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE);
+            TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE, PUBSUB_TYPE_DOUBLE);
     night_auto_setpoint_humidity_topic = pubsub_register_topic(
-            TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY);
+            TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY, PUBSUB_TYPE_DOUBLE);
     night_auto_setpoint_co2_topic = pubsub_register_topic(
-            TOPIC_NIGHT_AUTO_SETPOINT_CO2);
+            TOPIC_NIGHT_AUTO_SETPOINT_CO2, PUBSUB_TYPE_DOUBLE);
 }

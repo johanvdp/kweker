@@ -79,8 +79,13 @@ void app_main()
     am2301.setup(GPIO_AM2301, measured_temperature_topic, measured_humidity_topic,
             am2301_status_topic, am2301_timestamp_topic);
 
+    // universal mixed message type can be received only
     pubsub_message_t log_message;
+
+    // explicit message type required when publishing
     pubsub_message_t activity_message;
+    activity_message.topic = (char *)TOPIC_ACTIVITY;
+    activity_message.type = PUBSUB_TYPE_INT;
 
     // start chain reaction
     ESP_LOGI(TAG, "AM2301 measure");
