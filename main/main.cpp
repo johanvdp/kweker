@@ -11,6 +11,7 @@ extern "C" {
 #include "LED.h"
 #include "DO.h"
 #include "AM2301.h"
+#include "DS3234.h"
 #include "pubsub.h"
 #include "pubsub_test.h"
 #include "model.h"
@@ -28,6 +29,7 @@ extern "C" {
 
 LED led;
 AM2301 am2301;
+DS3234 ds3234;
 DO lamp;
 DO exhaust;
 DO recirc;
@@ -78,6 +80,8 @@ void app_main()
 
     am2301.setup(GPIO_AM2301, measured_temperature_topic, measured_humidity_topic,
             am2301_status_topic, am2301_timestamp_topic);
+
+    ds3234.setup(time_topic);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;

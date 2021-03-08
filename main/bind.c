@@ -25,6 +25,8 @@ static QueueHandle_t actuator_recirc_queue;
 static QueueHandle_t circadian_queue;
 /** toolbar control mode indicator */
 static QueueHandle_t control_mode_queue;
+/** toolbar time indicator */
+static QueueHandle_t time_queue;
 
 static void bind_task(void *pvParameter)
 {
@@ -47,6 +49,11 @@ static void bind_task(void *pvParameter)
         }
         if (xQueueReceive(control_mode_queue, &message, 0)) {
 
+        }
+        if (xQueueReceive(time_queue, &message, 0)) {
+            ESP_LOGI(TAG, "receive time: %lld", message.int_val);
+
+            hmi_set_clock(message.int_val);
         }
         vTaskDelay(1);
     };
@@ -72,6 +79,8 @@ void bind_initialize()
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE);
 
+    time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(time_queue, TOPIC_TIME);
 
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

@@ -9,8 +9,10 @@ extern "C" {
 #include "lvgl.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#include "time.h"
 
 void hmi_initialize();
+void hmi_set_clock(time_t time);
 
 
 /*

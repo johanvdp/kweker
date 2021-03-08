@@ -74,6 +74,8 @@ extern const char *TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY;
 /** Night time temperature setpoint [K] (double) */
 extern const char *TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE;
 
+/** Time (integer) */
+extern const char *TOPIC_TIME;
 
 extern pubsub_topic_t activity_topic;
 
@@ -119,6 +121,7 @@ extern pubsub_topic_t night_auto_setpoint_co2_topic;
 extern pubsub_topic_t night_auto_setpoint_humidity_topic;
 extern pubsub_topic_t night_auto_setpoint_temperature_topic;
 
+extern pubsub_topic_t time_topic;
 
 typedef enum
 {

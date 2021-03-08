@@ -41,6 +41,8 @@ const char *TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY = "night.auto.setpoint.humidity";
 const char *TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE =
         "night.auto.setpoint.temperature";
 
+const char *TOPIC_TIME = "time";
+
 pubsub_topic_t activity_topic;
 
 pubsub_topic_t actuator_exhaust_topic;
@@ -78,6 +80,8 @@ pubsub_topic_t measured_temperature_topic;
 pubsub_topic_t night_auto_setpoint_co2_topic;
 pubsub_topic_t night_auto_setpoint_humidity_topic;
 pubsub_topic_t night_auto_setpoint_temperature_topic;
+
+pubsub_topic_t time_topic;
 
 void model_initialize()
 {
@@ -144,4 +148,6 @@ void model_initialize()
             TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY, PUBSUB_TYPE_DOUBLE);
     night_auto_setpoint_co2_topic = pubsub_register_topic(
             TOPIC_NIGHT_AUTO_SETPOINT_CO2, PUBSUB_TYPE_DOUBLE);
+
+    time_topic = pubsub_register_topic(TOPIC_TIME, PUBSUB_TYPE_INT);
 }

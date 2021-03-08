@@ -217,6 +217,10 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
 
 void pubsub_publish_bool(pubsub_topic_t topic, bool value)
 {
+    if (topic == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_bool topic required");
+        return;
+    }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
         ESP_LOGE(tag, "pubsub_publish_bool type mismatch topic:%s",
@@ -234,13 +238,17 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
 
 void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
 {
+    ESP_LOGI(tag, "pubsub_publish_int topic:%p, value:%lld", topic, value);
+    if (topic == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_int topic required");
+        return;
+    }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_INT) {
         ESP_LOGE(tag, "pubsub_publish_int type mismatch topic:%s",
                 topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_int topic:%p, value:%lld", topic, value);
     pubsub_message_t message;
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_INT;
@@ -250,6 +258,10 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
 
 void pubsub_publish_double(pubsub_topic_t topic, double value)
 {
+    if (topic == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_double topic required");
+        return;
+    }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
         ESP_LOGE(tag, "pubsub_publish_double type mismatch topic:%s",

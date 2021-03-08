@@ -3,6 +3,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "esp_log.h"
+#include "time.h"
 
 #include "lvgl.h"
 #include "lvgl_helpers.h"
@@ -20,6 +22,8 @@
 #define HMI_BUTTON_WIDTH 65
 #define HMI_BUTTON_HEIGHT 26
 #define HMI_MARGIN 5
+
+static const char *TAG = "hmi";
 
 /** current time */
 lv_obj_t *hmi_label_clock;
@@ -44,6 +48,10 @@ SemaphoreHandle_t hmi_semaphore = 0;
 static lv_color_t buf1[DISP_BUF_SIZE];
 static lv_color_t buf2[DISP_BUF_SIZE];
 static lv_disp_buf_t disp_buf;
+
+/** clock format: HH:MM\0 */
+#define CLOCK_TEXT_SIZE 6
+static char clock_text[CLOCK_TEXT_SIZE] = { '0', '0', ':' ,'0', '0', 0 };
 
 /** tab page holder */
 static lv_obj_t *hmi_tabview;
@@ -116,7 +124,7 @@ static lv_obj_t* hmi_create_toolbar(lv_obj_t *parent) {
 	lv_obj_set_size(toolbar, parent_width, HMI_TOOLBAR_HEIGHT);
 
 	hmi_label_clock = hmi_create_label(toolbar, 8, 8,
-			"12:34");
+			clock_text);
 	hmi_label_circadian = hmi_create_label(toolbar, 48, 2,
 			"DAY");
 	hmi_label_control_mode = hmi_create_label(toolbar, 48, 16,
@@ -216,3 +224,11 @@ void hmi_initialize() {
 	xTaskCreatePinnedToCore(&hmi_task, "hmi_task", 4096 * 2, NULL, 0, NULL, 1);
 }
 
+void hmi_set_clock(time_t timestamp) {
+    ESP_LOGD(TAG, "hmi_set_clock time: %ld", timestamp);
+    struct tm brokentime;
+    localtime_r(&timestamp, &brokentime);
+    snprintf(clock_text, CLOCK_TEXT_SIZE, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
+    ESP_LOGI(TAG, "hmi_set_clock time: %s", clock_text);
+    lv_label_set_text(hmi_label_clock, clock_text);
+}
