@@ -51,7 +51,7 @@ static lv_disp_buf_t disp_buf;
 
 /** clock format: HH:MM\0 */
 #define CLOCK_TEXT_SIZE 6
-static char clock_text[CLOCK_TEXT_SIZE] = { '0', '0', ':' ,'0', '0', 0 };
+static char clock_text[CLOCK_TEXT_SIZE] = { '0', '0', ':' , '0', '0', 0 };
 
 /** tab page holder */
 static lv_obj_t *hmi_tabview;
@@ -225,10 +225,10 @@ void hmi_initialize() {
 }
 
 void hmi_set_clock(time_t timestamp) {
-    ESP_LOGD(TAG, "hmi_set_clock time: %ld", timestamp);
+    ESP_LOGD(TAG, "hmi_set_clock time:%ld", timestamp);
     struct tm brokentime;
     localtime_r(&timestamp, &brokentime);
     snprintf(clock_text, CLOCK_TEXT_SIZE, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
-    ESP_LOGI(TAG, "hmi_set_clock time: %s", clock_text);
+    ESP_LOGI(TAG, "hmi_set_clock time:%s", clock_text);
     lv_label_set_text(hmi_label_clock, clock_text);
 }

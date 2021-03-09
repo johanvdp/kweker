@@ -15,7 +15,7 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
         pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
         pubsub_topic_t timestamp_topic)
 {
-    ESP_LOGD(tag, "setup, pin: %d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic, timestamp_topic);
+    ESP_LOGD(tag, "setup, pin:%d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic, timestamp_topic);
 
     if (state != COMPONENT_UNINITIALIZED) {
         state = COMPONENT_FATAL;
@@ -47,7 +47,7 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
             (4 | portPRIVILEGE_BIT), NULL, 1);
     if (ret != pdPASS) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(tag, "setup xTaskCreate failed: %d (FATAL)", ret);
+        ESP_LOGE(tag, "setup xTaskCreate failed:%d (FATAL)", ret);
         return;
     }
 
@@ -60,7 +60,7 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
     ret = gpio_config(&io_conf);
     if (ret != ESP_OK) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(tag, "setup gpio_config failed: %d (FATAL)", ret);
+        ESP_LOGE(tag, "setup gpio_config failed:%d (FATAL)", ret);
         return;
     }
 
@@ -70,13 +70,13 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
     //    BaseType_t ret = gpio_install_isr_service(
     //    ESP_INTR_FLAG_LEVEL3 | ESP_INTR_FLAG_IRAM);
     //    if (ret != ESP_OK) {
-    //        ESP_LOGE(TAG, "gpio_install_isr_service failed: %d (FATAL)", ret);
+    //        ESP_LOGE(TAG, "gpio_install_isr_service failed:%d (FATAL)", ret);
     //        return;
     //    }
     ret = gpio_isr_handler_add(pin, isr_handler, this);
     if (ret != ESP_OK) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(tag, "setup gpio_isr_handler_add failed: %d (FATAL)", ret);
+        ESP_LOGE(tag, "setup gpio_isr_handler_add failed:%d (FATAL)", ret);
         return;
     }
 
@@ -191,7 +191,7 @@ void AM2301::handle_instruction_edge_detected()
             // assume device end start pulse
             // expect data low
             state = WAIT_FOR_DEVICE_DATA_LOW;
-            ESP_LOGV(tag, "expected device data low, bit: %02d", bit);
+            ESP_LOGV(tag, "expected device data low, bit:%02d", bit);
         } else {
             // start data low period
             // expect data high period
@@ -210,7 +210,7 @@ void AM2301::handle_instruction_edge_detected()
                     // data started as zeros, mark only the ones
                     data |= 1ULL << bit;
                 }
-                ESP_LOGV(tag, "device data, bit: %02d, high: %d, value: %d", bit, highDuration, bit_value);
+                ESP_LOGV(tag, "device data, bit:%02d, high:%d, value:%d", bit, highDuration, bit_value);
                 if (bit == 0) {
                     state = WAIT_FOR_DEVICE_RELEASE;
                     frame_finished(data, decoderData.timestamp);
@@ -223,10 +223,10 @@ void AM2301::handle_instruction_edge_detected()
         if (decoderData.level) {
             lowDuration = decoderData.timestamp - previousTimestamp;
             state = WAIT_FOR_DEVICE_DATA_LOW;
-            ESP_LOGV(tag, "device data, bit: %02d, low: %d", bit, lowDuration);
+            ESP_LOGV(tag, "device data, bit:%02d, low:%d", bit, lowDuration);
         } else {
             fire_recoverable(decoderData.timestamp);
-            ESP_LOGW(tag, "bus error, expected high, bit: %02d", bit);
+            ESP_LOGW(tag, "bus error, expected high, bit:%02d", bit);
             one_wire_float();
         }
     } else if (state == WAIT_FOR_DEVICE_RELEASE) {
@@ -264,7 +264,7 @@ void AM2301::handle_instruction_edge_detected()
         // bus alive while not setup correctly
         // ignore everything that follows
     } else {
-        ESP_LOGE(tag, "unknown state: %d, level: %d", state, decoderData.level);
+        ESP_LOGE(tag, "unknown state:%d, level:%d", state, decoderData.level);
     }
     previousTimestamp = decoderData.timestamp;
 }
@@ -283,7 +283,7 @@ void IRAM_ATTR AM2301::run()
             } else if (decoderData.instruction == INSTRUCTION_START) {
                 handle_instruction_start();
             } else {
-                ESP_LOGE(tag, "run, unknown instruction: %d", decoderData.instruction);
+                ESP_LOGE(tag, "run, unknown instruction:%d", decoderData.instruction);
             }
         } else {
             // timeout, no activity
@@ -317,7 +317,7 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp)
         }
         double temperature = t + TEMPERATURE_C_TO_K;
 
-        ESP_LOGI(tag, "frame_finished, T: %.1fK, RH: %.1f%%", temperature, humidity);
+        ESP_LOGI(tag, "frame_finished, T:%.1fK, RH:%.1f%%", temperature, humidity);
 
         pubsub_publish_double(temperature_topic, temperature);
         pubsub_publish_double(humidity_topic, humidity);
@@ -326,7 +326,7 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp)
 
     } else {
         fire_recoverable(timestamp);
-        ESP_LOGW(tag, "frame_finished, invalid checksum: %02X%02X%02X%02X%02X", b4, b3, b2, b1, b0);
+        ESP_LOGW(tag, "frame_finished, invalid checksum:%02X%02X%02X%02X%02X", b4, b3, b2, b1, b0);
         one_wire_float();
     }
 }

@@ -39,7 +39,7 @@ void DS3234::task(TimerHandle_t xTimer)
 
 void DS3234::setup(pubsub_topic_t topic)
 {
-    ESP_LOGD(TAG, "setup, topic: %p", topic);
+    ESP_LOGD(TAG, "setup, topic:%p", topic);
 
     this->timestamp_topic = topic;
 

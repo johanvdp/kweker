@@ -10,7 +10,7 @@ LED::~LED() {
 }
 
 void LED::setup(gpio_num_t pin, bool on, const char* topic) {
-	ESP_LOGD(tag, "setup, pin: %d, on: %d", pin, on);
+	ESP_LOGD(tag, "setup, pin:%d, on:%d", pin, on);
 
 	if (pin < GPIO_NUM_0 || pin >= GPIO_NUM_MAX) {
 		ESP_LOGE(tag, "setup requires GPIO pin number (FATAL)");

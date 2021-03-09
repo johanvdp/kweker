@@ -27,7 +27,7 @@ static double hmi_control_bar_fraction(hmi_control_t *control, double value)
 {
 
     double fraction = (value + control->bar_bias) * control->bar_gain;
-    ESP_LOGD(TAG, "value: %lf, bias: %lf, gain:%lf, fraction:%lf", value,
+    ESP_LOGD(TAG, "value:%lf, bias:%lf, gain:%lf, fraction:%lf", value,
             control->bar_bias, control->bar_gain, fraction);
     return fraction;
 }

@@ -118,8 +118,8 @@ For ease of reference a short module name is chosen.
 | *28* | P17  | U2TXD(5)                | CO2 TXD             | CPU.2.14
 | *27* | P16  | U2RXD(5)                | CO2 RXD             | CPU.2.15
 | *26* | P4   | HSPIHD(2)               | 1 WIRE SERIAL       | CPU.2.11
-| *25* | P0   | *GPIO0*(1,3)            | on board boot logic |
-| *24* | P2   | *GPIO2*(1,3), HSPIWP(2) | on board LED        |
+| *25* | P0   | *GPIO0*(1, 3)           | on board boot logic |
+| *24* | P2   | *GPIO2*(1, 3), HSPIWP(2)| on board LED        |
 | *23* | P15  | HSPICS0(2)              | LCD RESET           | LCD.1.4
 | *22* | P8   | SD_DATA_1(1)            |                     |
 | *21* | P7   | SD_DATA_O(1)            |                     |

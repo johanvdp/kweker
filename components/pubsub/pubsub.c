@@ -333,7 +333,7 @@ bool pubsub_last_bool(pubsub_topic_t topic, bool *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
-        ESP_LOGE(tag, "pubsub_last_bool topic: %s, incorrect type: %d",
+        ESP_LOGE(tag, "pubsub_last_bool topic:%s, incorrect type:%d",
                 topic_detail->topic, topic_detail->type);
         return false;
     }
@@ -353,7 +353,7 @@ bool pubsub_last_int(pubsub_topic_t topic, int64_t *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_INT) {
-        ESP_LOGE(tag, "pubsub_last_int topic: %s, incorrect type: %d",
+        ESP_LOGE(tag, "pubsub_last_int topic:%s, incorrect type:%d",
                 topic_detail->topic, topic_detail->type);
         return false;
     }
@@ -373,7 +373,7 @@ bool pubsub_last_double(pubsub_topic_t topic, double *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
-        ESP_LOGE(tag, "pubsub_last_double topic: %s, incorrect type: %d",
+        ESP_LOGE(tag, "pubsub_last_double topic:%s, incorrect type:%d",
                 topic_detail->topic, topic_detail->type);
         return false;
     }

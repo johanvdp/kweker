@@ -57,7 +57,7 @@ Both parties use open-drain type outputs to pull-down the signal from the floati
 
 This software decodes the incoming signal using the following state model.
 
-[plantuml,States,format=png]
+[plantuml, States, format=png]
 ....
 @startuml
 

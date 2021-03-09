@@ -42,7 +42,7 @@ void app_main()
     BaseType_t ret = gpio_install_isr_service(
     ESP_INTR_FLAG_LEVEL3 | ESP_INTR_FLAG_IRAM);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "gpio_install_isr_service failed: %d (FATAL)", ret);
+        ESP_LOGE(TAG, "gpio_install_isr_service failed:%d (FATAL)", ret);
         return;
     }
 
@@ -111,14 +111,14 @@ void app_main()
         } else {
             // something
             if (strcmp(log_message.topic, TOPIC_MEASURED_TEMPERATURE) == 0) {
-                ESP_LOGI(TAG, "AM2301 T: %.1fK, %.1fC", log_message.double_val,
+                ESP_LOGI(TAG, "AM2301 T:%.1fK, %.1fC", log_message.double_val,
                         log_message.double_val - 273.15);
 
             } else if (strcmp(log_message.topic, TOPIC_MEASURED_HUMIDITY) == 0) {
-                ESP_LOGI(TAG, "AM2301 RH: %.1f%%", log_message.double_val);
+                ESP_LOGI(TAG, "AM2301 RH:%.1f%%", log_message.double_val);
 
             } else if (strcmp(log_message.topic, TOPIC_AM2301_TIMESTAMP) == 0) {
-                ESP_LOGI(TAG, "AM2301 time: %lld", log_message.int_val);
+                ESP_LOGI(TAG, "AM2301 time:%lld", log_message.int_val);
 
             } else if (strcmp(log_message.topic, TOPIC_AM2301_STATUS) == 0) {
                 int64_t status = log_message.int_val;
@@ -165,7 +165,7 @@ void app_main()
                     break;
 
                 } else {
-                    ESP_LOGE(TAG, "status: %lld", status);
+                    ESP_LOGE(TAG, "status:%lld", status);
                 }
             }
         }
