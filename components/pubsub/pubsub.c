@@ -153,9 +153,19 @@ pubsub_topic_t pubsub_register_topic(const char *topic_name,
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
         topic_detail = pubsub_add_topic_detail(topic_name, type);
+        ESP_LOGI(tag, "pubsub_register_topic new topic:%s, topic:%p",
+                topic_name, topic_detail);
+    } else {
+
+        if (topic_detail->type != type) {
+            ESP_LOGE(tag,
+                    "pubsub_register_topic existing topic:%s, topic:%p, type:%d, mismatch new type:%d",
+                    topic_name, topic_detail, topic_detail->type, type);
+        } else {
+            ESP_LOGI(tag, "pubsub_register_topic existing topic:%s, topic:%p",
+                    topic_name, topic_detail);
+        }
     }
-    ESP_LOGI(tag, "pubsub_register_topic topic:%s, topic:%p", topic_name,
-            topic_detail);
     return (pubsub_topic_t) topic_detail;
 }
 
@@ -182,8 +192,9 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
 {
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != message->type) {
-        ESP_LOGE(tag, "pubsub_publish type mismatch topic:%s",
-                topic_detail->topic);
+        ESP_LOGE(tag,
+                "pubsub_publish type mismatch topic:%s, type:%d, message type:%d",
+                topic_detail->topic, topic_detail->type, message->type);
         return;
     }
     ESP_LOGD(tag, "pubsub_publish topic:%p", topic);
@@ -227,13 +238,13 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
                 topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_bool topic:%p, value:%s", topic,
+    ESP_LOGI(tag, "pubsub_publish_bool topic:%s, value:%s", topic_detail->topic,
             value ? "true" : "false");
     pubsub_message_t message;
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_BOOLEAN;
     message.boolean_val = value;
-    pubsub_publish((pubsub_topic_t*) topic_detail, &message);
+    pubsub_publish(topic, &message);
 }
 
 void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
@@ -249,11 +260,13 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
                 topic_detail->topic);
         return;
     }
+    ESP_LOGI(tag, "pubsub_publish_int topic:%s, value:%lld",
+            topic_detail->topic, value);
     pubsub_message_t message;
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_INT;
     message.int_val = value;
-    pubsub_publish((pubsub_topic_t*) topic_detail, &message);
+    pubsub_publish(topic, &message);
 }
 
 void pubsub_publish_double(pubsub_topic_t topic, double value)
@@ -268,12 +281,13 @@ void pubsub_publish_double(pubsub_topic_t topic, double value)
                 topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_int topic:%p, value:%lf", topic, value);
+    ESP_LOGI(tag, "pubsub_publish_double topic:%s, value:%lf",
+            topic_detail->topic, value);
     pubsub_message_t message;
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_DOUBLE;
     message.double_val = value;
-    pubsub_publish((pubsub_topic_t*) topic_detail, &message);
+    pubsub_publish(topic, &message);
 }
 
 uint16_t pubsub_topic_count()
@@ -319,7 +333,8 @@ bool pubsub_last_bool(pubsub_topic_t topic, bool *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
-        ESP_LOGE(tag, "pubsub_last_bool unknown topic type");
+        ESP_LOGE(tag, "pubsub_last_bool topic: %s, incorrect type: %d",
+                topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->boolean_val;
@@ -338,7 +353,8 @@ bool pubsub_last_int(pubsub_topic_t topic, int64_t *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_INT) {
-        ESP_LOGE(tag, "pubsub_last_int unknown topic type");
+        ESP_LOGE(tag, "pubsub_last_int topic: %s, incorrect type: %d",
+                topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->int_val;
@@ -357,7 +373,8 @@ bool pubsub_last_double(pubsub_topic_t topic, double *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
-        ESP_LOGE(tag, "pubsub_last_double unknown topic type");
+        ESP_LOGE(tag, "pubsub_last_double topic: %s, incorrect type: %d",
+                topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->double_val;
