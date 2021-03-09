@@ -10,4 +10,3 @@ The LVGL project (including all repositories) is licensed under MIT license.
 Source https://github.com/lvgl
 
 Documentation: https://docs.lvgl.io/latest/en/html/#
-

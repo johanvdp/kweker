@@ -12,22 +12,22 @@ Low voltage power and control signals.
 | *PSU.3* | CPU.1.1 | 5V
 
 3+| *actuators*
-| *CPU.2.1* | SSR1.4 | GND  
+| *CPU.2.1* | SSR1.4 | GND
 | *CPU.2.2* | SSR1.3 | OUT1 (3.3V)
-| *CPU.2.3* | SSR2.4 | GND  
+| *CPU.2.3* | SSR2.4 | GND
 | *CPU.2.4* | SSR2.3 | OUT2 (3.3V)
-| *CPU.2.5* | SSR3.4 | GND  
+| *CPU.2.5* | SSR3.4 | GND
 | *CPU.2.6* | SSR3.3 | OUT3 (3.3V)
-| *CPU.2.7* | SSR4.4 | GND  
+| *CPU.2.7* | SSR4.4 | GND
 | *CPU.2.8* | SSR4.3 | OUT4 (3.3V)
 
 3+| *humidity & temperature sensor*
-| *CPU.2.9*  | (cable) | 5V 
-| *CPU.2.10* | (cable) | GND 
+| *CPU.2.9*  | (cable) | 5V
+| *CPU.2.10* | (cable) | GND
 | *CPU.2.11* | (cable) | DATA (3.3V)
 
 3+| *CO2 concentration sensor*
-| *CPU.2.12* | (cable) | 5V 
+| *CPU.2.12* | (cable) | 5V
 | *CPU.2.13* | (cable) | GND
 | *CPU.2.14* | (cable) | TX (3.3V)
 | *CPU.2.15* | (cable) | RX (3.3V)

@@ -14,7 +14,6 @@ extern "C" {
 void hmi_initialize();
 void hmi_set_clock(time_t time);
 
-
 /*
  * -------
  * Toolbar

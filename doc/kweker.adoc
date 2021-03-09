@@ -18,11 +18,11 @@ Typical environment for growing cannabis.
 .Temperature
 [%autowidth]
 |===
-| environment| min.[°C] | max.[°C] | description        
-                                                        
-| day        | 25       | 30       | allowed higher     
-| night      | 15       | 20       | not allowed lower  
-| day-night  |          | 10       | difference at most 
+| environment| min.[°C] | max.[°C] | description
+
+| day        | 25       | 30       | allowed higher
+| night      | 15       | 20       | not allowed lower
+| day-night  |          | 10       | difference at most
 |===
 
 === Humidity
@@ -31,9 +31,9 @@ Typical environment for growing cannabis.
 [%autowidth]
 |===
 | environment | min.[%RH] | max.[%RH] | description
-                                        
+
 | sprout      | 70        | 80        | higher
-| vegetative  | 40        | 70        | normal          
+| vegetative  | 40        | 70        | normal
 | bloom       | 20        | 40        | lower
 |===
 
@@ -42,8 +42,8 @@ Typical environment for growing cannabis.
 .CO2 concentration
 [%autowidth]
 |===
-| environment          | min. [ppm] | max. [ppm] | description  
-                                                           
+| environment          | min. [ppm] | max. [ppm] | description
+
 | outdoor              |   250 | 400  | background (normal) outdoor air level.footnote:dhs[https://www.dhs.wisconsin.gov/chemical/carbondioxide.htm]
 | good                 |   400 | 1000 | typical level found in occupied spaces with good air exchange.footnote:dhs[]
 | enriched vegetative  |   800 | 1200 | enriched vegetative towards lower end
@@ -67,13 +67,13 @@ How a positive increase in one phenomenon affects another.
 |===
 |Cause/Effect             |Temperature    | Relative Humidity | CO2 concentration
 
-|Ambient temperature      |+              |-              |            
-|Ambient humidity         |               |+              |             
-|Ambient CO2 concentration|               |               |+             
-|Light on                 |+              |-              |- (more photosynthesis)            
-|Exhaust fan              |towards ambient|towards ambient|towards ambient            
-|Recirculation fan        |               |               |            
-|Heater                   |+              |-              |            
+|Ambient temperature      |+              |-              |
+|Ambient humidity         |               |+              |
+|Ambient CO2 concentration|               |               |+
+|Light on                 |+              |-              |- (more photosynthesis)
+|Exhaust fan              |towards ambient|towards ambient|towards ambient
+|Recirculation fan        |               |               |
+|Heater                   |+              |-              |
 |===
 
 == Model
@@ -96,7 +96,7 @@ How a positive increase in one phenomenon affects another.
 | Exhaust fan switch state | switch state
 | Recirculation fan switch state | switch state
 
-2+| Automatic control 
+2+| Automatic control
 | Begin of day time setpoint | Time
 | Begin of night time setpoint | Time
 | Day temperature setpoint | Temperature
@@ -218,12 +218,12 @@ How a positive increase in one phenomenon affects another.
 .Control
 [ditaa]
 ....
-        +-------------+ ------------+ ------------+      
+        +-------------+ ------------+ ------------+
   12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
 +-------+             +-------------+-------------+-------------------+
 |                                                                     |
 |    T [C]    |    RH [%]   |  CO2 [ppm]  |  MODE       |  OUTPUT     |
-|             |             |             | +---------+ | +---------+ | 
+|             |             |             | +---------+ | +---------+ |
 |     (h)     |     (h)     |     (h)     | | OFF     | | | LIGHT   | |
 |             |             |             | +---------+ | +---------+ |
 |             |             |             |             |             |
@@ -246,14 +246,14 @@ How a positive increase in one phenomenon affects another.
 (H) heater on/off indicator
 (E) exhaust fan on/off indicator
 (R) recirculation on/off indicator
-(h) control level high indicator 
-(l) control level low indicator 
+(h) control level high indicator
+(l) control level low indicator
 ....
 
 .Settings
 [ditaa]
 ....
-        +-------------+ ------------+ ------------+      
+        +-------------+ ------------+ ------------+
   12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
 +-------+-------------+             +-------------+-------------------+
 |                                                                     |
@@ -280,11 +280,11 @@ How a positive increase in one phenomenon affects another.
 .About
 [ditaa]
 ....
-        +-------------+ ------------+ ------------+      
+        +-------------+ ------------+ ------------+
   12:34 |  Control    |  Settings   |  About      | (C)(M)(L)(H)(E)(R)
 +-------+-------------+-------------+             +-------------------+
 |                                                                     |
-| Product description                                                 | 
+| Product description                                                 |
 | ..                                                                  |
 |                                                                     |
 | 3rd party licenses                                                  |
@@ -308,7 +308,7 @@ How a positive increase in one phenomenon affects another.
 === Light
 
 The light is not a means of control. It is strictly following the night/day circadian rhythm that was set.
-The heat of the light does have an effect on temperature and thus humidity of the environment. 
+The heat of the light does have an effect on temperature and thus humidity of the environment.
 
 .Cause and effect
 * ON
@@ -383,7 +383,7 @@ Follows the ambient temperature, humidity, and CO2 concentration.
 2+| *control automatic*
 
 | circadian day | ON
-| circadian night | OFF |           
+| circadian night | OFF |
 |===
 
 === Heater

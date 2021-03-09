@@ -1,7 +1,7 @@
 // The author disclaims copyright to this document.
 == Layout
 
-Modules are placed on DIN rails. Size is an approximation.  
+Modules are placed on DIN rails. Size is an approximation.
 
 .Module sizes
 [%autowidth]

@@ -11,4 +11,3 @@ EXTRA_COMPONENT_DIRS := components/lvgl_esp32_drivers/lvgl_tft components/lvgl_e
 # $(PROJECT_PATH)/xxx didn't work -> use $(abspath xxx) instead
 
 include $(IDF_PATH)/make/project.mk
-

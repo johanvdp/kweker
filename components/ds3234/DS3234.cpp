@@ -10,7 +10,6 @@
 #include "time.h"
 #include "pubsub.h"
 
-
 /** Clock update interval (ms) */
 #define DS3432_LOOK_INTERVAL_MS 60000
 

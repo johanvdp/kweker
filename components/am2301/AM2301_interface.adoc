@@ -8,7 +8,7 @@ Both parties use open-drain type outputs to pull-down the signal from the floati
 ** Host pulls the signal low (Tbe)
 ** Host floats the signal high
 * Phase 2: device response
-** Device pulls the signal low (Trel)    
+** Device pulls the signal low (Trel)
 ** Device floats the signal high (Treh)
 * Phase 3: device exchanges bits (40x)
 ** Device pulls the signal low (Tlow)
@@ -31,7 +31,7 @@ Both parties use open-drain type outputs to pull-down the signal from the floati
 
                            bit39 (0) bit38 (1)             bit0 (0)
 
-    |<--------->|<------->|<--------------------------------------->|<-->|                       
+    |<--------->|<------->|<--------------------------------------->|<-->|
 
        phase 1    phase 2   phase 3 (40 bits)                        phase 4
 
@@ -67,7 +67,7 @@ state BUSY  {
 	WAIT_FOR_DEVICE_DATA_LOW :
 	WAIT_FOR_DEVICE_DATA_HIGH :
 	WAIT_FOR_DEVICE_RELEASE :
-	HOST_BUS_FLOAT : 
+	HOST_BUS_FLOAT :
 	WAIT_FOR_DEVICE_RATE_LIMIT :
 	RECOVERABLE :
 }

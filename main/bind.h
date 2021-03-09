@@ -8,7 +8,6 @@ extern "C" {
 
 void bind_initialize();
 
-
 #ifdef __cplusplus
 }
 #endif

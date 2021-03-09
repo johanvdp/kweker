@@ -9,9 +9,9 @@ Used to switch AC loads on and off.
 |===
 | pin   | description
 
-| *1*   
+| *1*
 .2+| AC switch
-| *2*   
+| *2*
 
 | *3*   | DC control+
 | *4*   | DC control-
