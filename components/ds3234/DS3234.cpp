@@ -20,6 +20,8 @@
 #define DS3432_LOOK_INTERVAL_MS 1000
 #define MAX_TRANSFER_SIZE 64
 #define TEST_BYTES 1
+#define TM_YEAR_OFFSET 1900
+#define TM_MONTH_OFFSET 1
 
 #define TIME_REG 0x00
 #define SRAM_ADDR_REG 0x18
@@ -36,38 +38,82 @@ DS3234::~DS3234()
 {
 }
 
-void DS3234::decodeRawTime(const uint8_t *raw, struct tm *structured)
+void DS3234::encode_time(const time_t time, uint8_t *raw)
 {
-    structured->tm_sec = bcdToInt(raw[0]);
-    structured->tm_min = bcdToInt(raw[1]);
-    structured->tm_hour = bcdTo24Hour(raw[2]);
-    structured->tm_wday = bcdToInt(raw[3]);
-    structured->tm_mday = bcdToInt(raw[4]);
-    structured->tm_mon = bcdToInt(raw[5]);
-    structured->tm_year = bcdToInt(raw[6]);
+    ESP_LOGI(TAG, "encode_time time:%ld", time);
+
+    struct tm structured;
+    gmtime_r(&time, &structured);
+
+    ESP_LOGI(TAG, "encode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
+            structured.tm_year + TM_YEAR_OFFSET, structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
+            structured.tm_wday, structured.tm_hour, structured.tm_min,
+            structured.tm_sec);
+
+    raw[0] = int_to_bcd(structured.tm_sec);
+    raw[1] = int_to_bcd(structured.tm_min);
+    // can read 12 hour time
+    // but will always set 24 hour
+    raw[2] = int_to_bcd(structured.tm_hour);
+    raw[3] = int_to_bcd(structured.tm_wday);
+    raw[4] = int_to_bcd(structured.tm_mday);
+    // already in century 20xx
+    raw[5] = int_to_bcd(structured.tm_mon) | 0x80;
+    raw[6] = int_to_bcd(structured.tm_year % 100);
+
+    ESP_LOGI(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
+            raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+
 }
 
-uint8_t DS3234::bcdToInt(uint8_t bcd)
+time_t DS3234::decode_time(const uint8_t *raw)
+{
+    ESP_LOGI(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
+            raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+
+    struct tm structured;
+    structured.tm_sec = bcd_to_int(raw[0]);
+    structured.tm_min = bcd_to_int(raw[1]);
+    // can read 12 hour time
+    // but will always set 24 hour
+    structured.tm_hour = hour_to_int(raw[2]);
+    structured.tm_wday = bcd_to_int(raw[3]);
+    structured.tm_mday = bcd_to_int(raw[4]);
+    structured.tm_mon = bcd_to_int(raw[5]);
+    structured.tm_year = bcd_to_int(raw[6]);
+
+    ESP_LOGI(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
+            structured.tm_year + TM_YEAR_OFFSET, structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
+            structured.tm_wday, structured.tm_hour, structured.tm_min,
+            structured.tm_sec);
+
+    time_t time = mktime(&structured);
+    ESP_LOGI(TAG, "decode_time time:%ld", time);
+    return time;
+}
+
+uint8_t DS3234::bcd_to_int(uint8_t bcd)
 {
     return bcd - 6 * (bcd >> 4);
 }
 
-uint8_t DS3234::intToBcd(uint8_t dec)
+uint8_t DS3234::int_to_bcd(uint8_t dec)
 {
     return dec + 6 * (dec / 10);
 }
 
-uint8_t DS3234::bcdTo24Hour(uint8_t bcdHour)
+uint8_t DS3234::hour_to_int(uint8_t bcdHour)
 {
     uint8_t hour;
-    if (bcdHour & 0x40) {
-        bool isPm = ((bcdHour & 0x20) != 0);
-        hour = bcdToInt(bcdHour & 0x1f);
+    bool is12 = bcdHour & 0x40;
+    if (is12) {
+        bool isPm = bcdHour & 0x20;
+        hour = bcd_to_int(bcdHour & 0x1f);
         if (isPm) {
             hour += 12;
         }
     } else {
-        hour = bcdToInt(bcdHour);
+        hour = bcd_to_int(bcdHour);
     }
     return hour;
 }
@@ -86,7 +132,7 @@ void DS3234::task(void *pvParameter)
     }
 }
 
-void DS3234::setup(pubsub_topic_t topic)
+void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 {
     ESP_LOGI(TAG, "setup, topic:%p, this:%p", topic, this);
 
@@ -103,6 +149,9 @@ void DS3234::setup(pubsub_topic_t topic)
         return;
     }
 
+    time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(time_queue, topic_name);
+
     // start periodic task
     esp_err_t ret = xTaskCreate(&task, "setup", 4096, this, tskIDLE_PRIORITY,
     NULL);
@@ -112,7 +161,7 @@ void DS3234::setup(pubsub_topic_t topic)
     }
 }
 
-void DS3234::writeData(const uint8_t cmd, const uint8_t *data, const int len)
+void DS3234::write_data(const uint8_t cmd, const uint8_t *data, const int len)
 {
     ESP_LOGD(TAG, "writeData cmd:%02X, len:%d", cmd, len);
     memcpy(tx, data, len);
@@ -134,9 +183,9 @@ void DS3234::writeData(const uint8_t cmd, const uint8_t *data, const int len)
     spi_device_release_bus(device_handle);
 }
 
-void DS3234::readData(const uint8_t cmd, uint8_t *data, const int len)
+void DS3234::read_data(const uint8_t cmd, uint8_t *data, const int len)
 {
-    ESP_LOGD(TAG, "readData cmd:%02X, len:%d", cmd, len);
+    ESP_LOGD(TAG, "read_data cmd:%02X, len:%d", cmd, len);
     spi_transaction_t transaction;
     memset(&transaction, 0, sizeof(spi_transaction_t));
     transaction.flags = 0;
@@ -157,7 +206,7 @@ void DS3234::readData(const uint8_t cmd, uint8_t *data, const int len)
     memcpy(data, rx, len);
 }
 
-bool DS3234::selfTest()
+bool DS3234::self_test()
 {
     uint8_t addr = 0;
     uint8_t data[MAX_TRANSFER_SIZE];
@@ -165,13 +214,13 @@ bool DS3234::selfTest()
     for (int i = 0; i < MAX_TRANSFER_SIZE; i++) {
         data[i] = i;
     }
-    writeData(SRAM_ADDR_REG, &addr, 1);
-    writeData(SRAM_DATA_REG, data, MAX_TRANSFER_SIZE);
+    write_data(SRAM_ADDR_REG, &addr, 1);
+    write_data(SRAM_DATA_REG, data, MAX_TRANSFER_SIZE);
     // scrub
     memset(data, 0, MAX_TRANSFER_SIZE);
     // read
-    writeData(SRAM_ADDR_REG, &addr, 1);
-    readData(SRAM_DATA_REG, data, MAX_TRANSFER_SIZE);
+    write_data(SRAM_ADDR_REG, &addr, 1);
+    read_data(SRAM_DATA_REG, data, MAX_TRANSFER_SIZE);
     // compare
     bool success = true;
     for (int i = 0; i < MAX_TRANSFER_SIZE; i++) {
@@ -239,29 +288,33 @@ void DS3234::run()
     gpio_set_drive_capability(GPIO_NUM_15, GPIO_DRIVE_CAP_0);
     gpio_set_level(GPIO_NUM_15, 1);
 
-    if (selfTest() == false) {
+    if (self_test() == false) {
         ESP_LOGE(TAG, "run self test failed (FATAL)");
         return;
     }
 
-    // periodic read time
+    // periodic list for set time changes and publish time updates
     uint8_t raw[] = { 0, 0, 0, 0, 0, 0, 0 };
-    struct tm structured;
+    time_t time = -1;
+    pubsub_message_t message;
     while (true) {
 
-        readData(TIME_REG, raw, 7);
-        ESP_LOGI(TAG, "raw: %02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1],
-                raw[2], raw[3], raw[4], raw[5], raw[6]);
-        decodeRawTime(raw, &structured);
-        ESP_LOGI(TAG, "%02d:%02d:%02d, wday:%d, mday:%d, mon:%d, year:%d, ",
-                structured.tm_hour, structured.tm_min, structured.tm_sec,
-                structured.tm_wday, structured.tm_mday, structured.tm_mon,
-                structured.tm_year);
+        if (xQueueReceive(time_queue, &message,
+                DS3432_LOOK_INTERVAL_MS / portTICK_PERIOD_MS)) {
 
-        time_t timestamp = mktime(&structured);
-        pubsub_publish_int(timestamp_topic, timestamp);
+            // ignore own publish action
+            if (time != message.int_val) {
+                ESP_LOGI(TAG, "run set time");
+                encode_time(message.int_val, raw);
+                write_data(TIME_REG, raw, 7);
+            }
+        } else {
 
-        vTaskDelay(DS3432_LOOK_INTERVAL_MS / portTICK_PERIOD_MS);
+            ESP_LOGI(TAG, "run read time");
+            read_data(TIME_REG, raw, 7);
+            time = decode_time(raw);
+            pubsub_publish_int(timestamp_topic, time);
+        }
     };
 }
 

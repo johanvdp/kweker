@@ -227,7 +227,7 @@ void hmi_initialize() {
 void hmi_set_clock(time_t timestamp) {
     ESP_LOGD(TAG, "hmi_set_clock time:%ld", timestamp);
     struct tm brokentime;
-    localtime_r(&timestamp, &brokentime);
+    gmtime_r(&timestamp, &brokentime);
     snprintf(clock_text, CLOCK_TEXT_SIZE, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
     ESP_LOGI(TAG, "hmi_set_clock time:%s", clock_text);
     lv_label_set_text(hmi_label_clock, clock_text);

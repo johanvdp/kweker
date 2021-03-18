@@ -81,7 +81,7 @@ void app_main()
     am2301.setup(GPIO_AM2301, measured_temperature_topic, measured_humidity_topic,
             am2301_status_topic, am2301_timestamp_topic);
 
-    ds3234.setup(time_topic);
+    ds3234.setup(time_topic, TOPIC_TIME);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;
