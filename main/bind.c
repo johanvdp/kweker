@@ -51,7 +51,7 @@ static void bind_task(void *pvParameter)
 
         }
         if (xQueueReceive(time_queue, &message, 0)) {
-            ESP_LOGI(TAG, "receive time:%lld", message.int_val);
+            ESP_LOGD(TAG, "receive time:%lld", message.int_val);
 
             hmi_set_clock(message.int_val);
         }

@@ -228,6 +228,8 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
 
 void pubsub_publish_bool(pubsub_topic_t topic, bool value)
 {
+    const char *str_value = value ? "true" : "false";
+    ESP_LOGD(tag, "pubsub_publish_bool topic:%p, value:%s", topic, str_value);
     if (topic == NULL) {
         ESP_LOGE(tag, "pubsub_publish_bool topic required");
         return;
@@ -239,7 +241,7 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
         return;
     }
     ESP_LOGI(tag, "pubsub_publish_bool topic:%s, value:%s", topic_detail->topic,
-            value ? "true" : "false");
+            str_value);
     pubsub_message_t message;
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_BOOLEAN;
@@ -249,7 +251,7 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
 
 void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
 {
-    ESP_LOGI(tag, "pubsub_publish_int topic:%p, value:%lld", topic, value);
+    ESP_LOGD(tag, "pubsub_publish_int topic:%p, value:%lld", topic, value);
     if (topic == NULL) {
         ESP_LOGE(tag, "pubsub_publish_int topic required");
         return;
@@ -271,6 +273,7 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
 
 void pubsub_publish_double(pubsub_topic_t topic, double value)
 {
+    ESP_LOGD(tag, "pubsub_publish_double topic:%p, value:%lf", topic, value);
     if (topic == NULL) {
         ESP_LOGE(tag, "pubsub_publish_double topic required");
         return;

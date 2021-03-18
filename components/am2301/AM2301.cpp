@@ -317,7 +317,7 @@ void AM2301::frame_finished(int64_t frame, int64_t timestamp)
         }
         double temperature = t + TEMPERATURE_C_TO_K;
 
-        ESP_LOGI(tag, "frame_finished, T:%.1fK, RH:%.1f%%", temperature, humidity);
+        ESP_LOGD(tag, "frame_finished, T:%.1fK, RH:%.1f%%", temperature, humidity);
 
         pubsub_publish_double(temperature_topic, temperature);
         pubsub_publish_double(humidity_topic, humidity);

@@ -16,11 +16,20 @@
 #include "stdbool.h"
 #include "string.h"
 
-/** Clock update interval (ms) */
+/** Time update interval (ms) */
 #define DS3432_LOOK_INTERVAL_MS 1000
+/**
+ * Limit for non-DMA SPI transfers.
+ * Can not use DMA because need HALF DUPLEX transfers to avoid data corruption.
+ */
 #define MAX_TRANSFER_SIZE 64
-#define TEST_BYTES 1
+/**
+ * struct tm year epoch is 1900
+ */
 #define TM_YEAR_OFFSET 1900
+/**
+ * struct tm month is zero based
+ */
 #define TM_MONTH_OFFSET 1
 
 #define TIME_REG 0x00
@@ -40,13 +49,14 @@ DS3234::~DS3234()
 
 void DS3234::encode_time(const time_t time, uint8_t *raw)
 {
-    ESP_LOGI(TAG, "encode_time time:%ld", time);
+    ESP_LOGD(TAG, "encode_time time:%ld", time);
 
     struct tm structured;
     gmtime_r(&time, &structured);
 
     ESP_LOGI(TAG, "encode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
-            structured.tm_year + TM_YEAR_OFFSET, structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
+            structured.tm_year + TM_YEAR_OFFSET,
+            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
             structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
@@ -61,14 +71,14 @@ void DS3234::encode_time(const time_t time, uint8_t *raw)
     raw[5] = int_to_bcd(structured.tm_mon) | 0x80;
     raw[6] = int_to_bcd(structured.tm_year % 100);
 
-    ESP_LOGI(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
+    ESP_LOGD(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
             raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
 }
 
 time_t DS3234::decode_time(const uint8_t *raw)
 {
-    ESP_LOGI(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
+    ESP_LOGD(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
             raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
     struct tm structured;
@@ -83,12 +93,13 @@ time_t DS3234::decode_time(const uint8_t *raw)
     structured.tm_year = bcd_to_int(raw[6]);
 
     ESP_LOGI(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
-            structured.tm_year + TM_YEAR_OFFSET, structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
+            structured.tm_year + TM_YEAR_OFFSET,
+            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
             structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
     time_t time = mktime(&structured);
-    ESP_LOGI(TAG, "decode_time time:%ld", time);
+    ESP_LOGD(TAG, "decode_time time:%ld", time);
     return time;
 }
 
@@ -134,7 +145,7 @@ void DS3234::task(void *pvParameter)
 
 void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 {
-    ESP_LOGI(TAG, "setup, topic:%p, this:%p", topic, this);
+    ESP_LOGI(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name, this);
 
     this->timestamp_topic = topic;
 
@@ -149,7 +160,8 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
         return;
     }
 
-    time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    // when time set actions arrive fast
+    time_queue = xQueueCreate(10, sizeof(pubsub_message_t));
     pubsub_add_subscription(time_queue, topic_name);
 
     // start periodic task
@@ -164,7 +176,9 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 void DS3234::write_data(const uint8_t cmd, const uint8_t *data, const int len)
 {
     ESP_LOGD(TAG, "writeData cmd:%02X, len:%d", cmd, len);
+    assert(len <= MAX_TRANSFER_SIZE);
     memcpy(tx, data, len);
+
     spi_transaction_t transaction;
     memset(&transaction, 0, sizeof(spi_transaction_t));
     transaction.flags = 0;
@@ -186,6 +200,8 @@ void DS3234::write_data(const uint8_t cmd, const uint8_t *data, const int len)
 void DS3234::read_data(const uint8_t cmd, uint8_t *data, const int len)
 {
     ESP_LOGD(TAG, "read_data cmd:%02X, len:%d", cmd, len);
+    assert(len <= MAX_TRANSFER_SIZE);
+
     spi_transaction_t transaction;
     memset(&transaction, 0, sizeof(spi_transaction_t));
     transaction.flags = 0;
@@ -226,9 +242,12 @@ bool DS3234::self_test()
     for (int i = 0; i < MAX_TRANSFER_SIZE; i++) {
         if (data[i] != i) {
             success = false;
-            ESP_LOGD(TAG, "selfTest failed [%d/%d]", i, MAX_TRANSFER_SIZE);
+            ESP_LOGE(TAG, "self_test failed [%d/%d]", i, MAX_TRANSFER_SIZE);
             break;
         }
+    }
+    if (success) {
+        ESP_LOGI(TAG, "self_test OK");
     }
     return success;
 }
@@ -262,7 +281,7 @@ void DS3234::run()
     memset(&devcfg, 0, sizeof(spi_device_interface_config_t));
     devcfg.command_bits = 8;
     devcfg.mode = 3;
-    devcfg.clock_speed_hz = 50000;
+    devcfg.clock_speed_hz = 1000000;
     devcfg.spics_io_num = -1;
     devcfg.flags = SPI_DEVICE_HALFDUPLEX;
     devcfg.dummy_bits = 0;
@@ -273,6 +292,8 @@ void DS3234::run()
         return;
     }
 
+    // manually drive CS to create extra time before first CLK signal
+    // DS3234 determines SPI mode depending on level at CS start.
     gpio_config_t io_conf;
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.pin_bit_mask = (1ULL << GPIO_NUM_15);
@@ -293,7 +314,7 @@ void DS3234::run()
         return;
     }
 
-    // periodic list for set time changes and publish time updates
+    // periodic listen for set time changes and publish time updates
     uint8_t raw[] = { 0, 0, 0, 0, 0, 0, 0 };
     time_t time = -1;
     pubsub_message_t message;
@@ -304,13 +325,13 @@ void DS3234::run()
 
             // ignore own publish action
             if (time != message.int_val) {
-                ESP_LOGI(TAG, "run set time");
+                ESP_LOGD(TAG, "run set time");
                 encode_time(message.int_val, raw);
                 write_data(TIME_REG, raw, 7);
             }
         } else {
 
-            ESP_LOGI(TAG, "run read time");
+            ESP_LOGD(TAG, "run read time");
             read_data(TIME_REG, raw, 7);
             time = decode_time(raw);
             pubsub_publish_int(timestamp_topic, time);
