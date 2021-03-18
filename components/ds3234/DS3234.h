@@ -21,12 +21,6 @@ public:
      */
     void setup(pubsub_topic_t timestamp_topic);
 
-    /**
-     * Run self test. Erases memory.
-     * @return 0 when OK.
-     */
-    bool selfTest();
-
 private:
 
     gpio_num_t cs_pin = GPIO_NUM_NC;
@@ -43,6 +37,12 @@ private:
     void *tx;
     void *rx;
     void run();
+
+    /**
+     * Run self test. Erases memory.
+     * @return true when OK.
+     */
+    bool selfTest();
 
     void writeData(const uint8_t cmd, const uint8_t *data, const int len);
     void readData(const uint8_t cmd, uint8_t *data, const int len);

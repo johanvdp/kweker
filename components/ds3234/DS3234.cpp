@@ -18,7 +18,7 @@
 
 /** Clock update interval (ms) */
 #define DS3432_LOOK_INTERVAL_MS 1000
-#define MAX_TRANSFER_SIZE 256
+#define MAX_TRANSFER_SIZE 64
 #define TEST_BYTES 1
 
 #define TIME_REG 0x00
@@ -93,9 +93,15 @@ void DS3234::setup(pubsub_topic_t topic)
     this->timestamp_topic = topic;
 
     tx = malloc(MAX_TRANSFER_SIZE);
-    assert(tx != NULL);
+    if (tx == NULL) {
+        ESP_LOGE(TAG, "run malloc tx failed (FATAL)");
+        return;
+    }
     rx = malloc(MAX_TRANSFER_SIZE);
-    assert(rx != NULL);
+    if (rx == NULL) {
+        ESP_LOGE(TAG, "run malloc rx failed (FATAL)");
+        return;
+    }
 
     // start periodic task
     esp_err_t ret = xTaskCreate(&task, "setup", 4096, this, tskIDLE_PRIORITY,
@@ -120,12 +126,12 @@ void DS3234::writeData(const uint8_t cmd, const uint8_t *data, const int len)
     transaction.tx_buffer = tx;
     transaction.rx_buffer = NULL;
 
-//    spi_device_acquire_bus(read_device, portMAX_DELAY);
+    spi_device_acquire_bus(device_handle, portMAX_DELAY);
     gpio_set_level(GPIO_NUM_15, 0);
     esp_err_t ret = spi_device_transmit(device_handle, &transaction);
     gpio_set_level(GPIO_NUM_15, 1);
     assert(ret==ESP_OK);
-//    spi_device_release_bus(read_device);
+    spi_device_release_bus(device_handle);
 }
 
 void DS3234::readData(const uint8_t cmd, uint8_t *data, const int len)
@@ -141,12 +147,12 @@ void DS3234::readData(const uint8_t cmd, uint8_t *data, const int len)
     transaction.tx_buffer = NULL;
     transaction.rx_buffer = rx;
 
-//    spi_device_acquire_bus(read_device, portMAX_DELAY);
+    spi_device_acquire_bus(device_handle, portMAX_DELAY);
     gpio_set_level(GPIO_NUM_15, 0);
     esp_err_t ret = spi_device_transmit(device_handle, &transaction);
     gpio_set_level(GPIO_NUM_15, 1);
     assert(ret==ESP_OK);
-//    spi_device_release_bus(read_device);
+    spi_device_release_bus(device_handle);
 
     memcpy(data, rx, len);
 }
@@ -171,6 +177,8 @@ bool DS3234::selfTest()
     for (int i = 0; i < MAX_TRANSFER_SIZE; i++) {
         if (data[i] != i) {
             success = false;
+            ESP_LOGD(TAG, "selfTest failed [%d/%d]", i, MAX_TRANSFER_SIZE);
+            break;
         }
     }
     return success;
@@ -181,7 +189,7 @@ bool DS3234::selfTest()
  */
 void DS3234::run()
 {
-    ESP_LOGI(TAG, "run, this:%p", this);
+    ESP_LOGD(TAG, "run, this:%p", this);
 
     // configure spi bus
     spi_bus_config_t buscfg;
@@ -196,7 +204,7 @@ void DS3234::run()
     esp_err_t ret = spi_bus_initialize(HSPI_HOST, &buscfg, 0);
     ESP_ERROR_CHECK(ret);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "setup spi_bus_initialize failed (FATAL)");
+        ESP_LOGE(TAG, "run spi_bus_initialize failed (FATAL)");
         return;
     }
 
@@ -212,7 +220,7 @@ void DS3234::run()
     devcfg.queue_size = 1;
     ret = spi_bus_add_device(HSPI_HOST, &devcfg, &device_handle);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "setup spi_bus_add_device (READ) failed (FATAL)");
+        ESP_LOGE(TAG, "run spi_bus_add_device (READ) failed (FATAL)");
         return;
     }
 
@@ -224,20 +232,20 @@ void DS3234::run()
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     ret = gpio_config(&io_conf);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "setup gpio_config failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "run gpio_config failed:%d (FATAL)", ret);
         return;
     }
 
     gpio_set_drive_capability(GPIO_NUM_15, GPIO_DRIVE_CAP_0);
     gpio_set_level(GPIO_NUM_15, 1);
 
-    tx = malloc(MAX_TRANSFER_SIZE);
-    assert(tx != NULL);
-    rx = malloc(MAX_TRANSFER_SIZE);
-    assert(rx != NULL);
+    if (selfTest() == false) {
+        ESP_LOGE(TAG, "run self test failed (FATAL)");
+        return;
+    }
 
+    // periodic read time
     uint8_t raw[] = { 0, 0, 0, 0, 0, 0, 0 };
-
     struct tm structured;
     while (true) {
 
