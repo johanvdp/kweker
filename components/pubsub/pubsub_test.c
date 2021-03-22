@@ -64,11 +64,11 @@ bool pubsub_test()
 
     // subscribe topic
     QueueHandle_t queueMixed = xQueueCreate(5, sizeof(pubsub_message_t));
-    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_INT);
-    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_BOOL);
-    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_DOUBLE);
+    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_INT, false);
+    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_BOOL, false);
+    pubsub_add_subscription(queueMixed, TOPIC_PUBSUB_TEST_DOUBLE, false);
     QueueHandle_t queueInt = xQueueCreate(5, sizeof(pubsub_message_t));
-    pubsub_add_subscription(queueInt, TOPIC_PUBSUB_TEST_INT);
+    pubsub_add_subscription(queueInt, TOPIC_PUBSUB_TEST_INT, false);
 
     // check
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_BOOL) == 1) {

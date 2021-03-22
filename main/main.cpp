@@ -75,10 +75,7 @@ void app_main()
         ESP_LOGE(TAG, "setup, failed to create log queue (FATAL)");
         return;
     }
-    pubsub_add_subscription(log_queue, TOPIC_AM2301_STATUS);
-    pubsub_add_subscription(log_queue, TOPIC_MEASURED_TEMPERATURE);
-    pubsub_add_subscription(log_queue, TOPIC_MEASURED_HUMIDITY);
-    pubsub_add_subscription(log_queue, TOPIC_AM2301_TIMESTAMP);
+    pubsub_add_subscription(log_queue, TOPIC_AM2301_STATUS, false);
 
     am2301.setup(GPIO_AM2301, measured_temperature_topic,
             measured_humidity_topic, am2301_status_topic,
@@ -93,11 +90,6 @@ void app_main()
     pubsub_message_t activity_message;
     activity_message.topic = (char*) TOPIC_ACTIVITY;
     activity_message.type = PUBSUB_TYPE_INT;
-
-    // start chain reaction
-    ESP_LOGI(TAG, "AM2301 measure");
-    activity_message.int_val = 1;
-    pubsub_publish(activity_topic, &activity_message);
 
     while (1) {
 

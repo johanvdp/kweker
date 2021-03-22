@@ -163,7 +163,7 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 
     // when time set actions arrive fast
     time_queue = xQueueCreate(10, sizeof(pubsub_message_t));
-    pubsub_add_subscription(time_queue, topic_name);
+    pubsub_add_subscription(time_queue, topic_name, false);
 
     // start periodic task
     esp_err_t ret = xTaskCreate(&task, TAG,

@@ -149,61 +149,61 @@ static void bind_control_task(void *pvParameter)
 void bind_control_initialize()
 {
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE);
+    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE, true);
 
     manual_setpoint_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_exhaust_queue,
-            TOPIC_MANUAL_SETPOINT_EXHAUST);
+            TOPIC_MANUAL_SETPOINT_EXHAUST, true);
 
     manual_setpoint_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_heater_queue,
-            TOPIC_MANUAL_SETPOINT_HEATER);
+            TOPIC_MANUAL_SETPOINT_HEATER, true);
 
     manual_setpoint_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_lamp_queue,
-            TOPIC_MANUAL_SETPOINT_LAMP);
+            TOPIC_MANUAL_SETPOINT_LAMP, true);
 
     manual_setpoint_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_recirc_queue,
-            TOPIC_MANUAL_SETPOINT_RECIRC);
+            TOPIC_MANUAL_SETPOINT_RECIRC, true);
 
     day_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_co2_queue,
-            TOPIC_DAY_AUTO_SETPOINT_CO2);
+            TOPIC_DAY_AUTO_SETPOINT_CO2, true);
 
     day_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_humidity_queue,
-            TOPIC_DAY_AUTO_SETPOINT_HUMIDITY);
+            TOPIC_DAY_AUTO_SETPOINT_HUMIDITY, true);
 
     day_auto_setpoint_temperature_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_temperature_queue,
-            TOPIC_DAY_AUTO_SETPOINT_TEMPERATURE);
+            TOPIC_DAY_AUTO_SETPOINT_TEMPERATURE, true);
 
     night_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_co2_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_CO2);
+            TOPIC_NIGHT_AUTO_SETPOINT_CO2, true);
 
     night_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_humidity_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY);
+            TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY, true);
 
     night_auto_setpoint_temperature_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_temperature_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE);
+            TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE, true);
 
     measured_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(measured_co2_queue, TOPIC_MEASURED_CO2);
+    pubsub_add_subscription(measured_co2_queue, TOPIC_MEASURED_CO2, true);
 
     measured_humidity_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(measured_humidity_queue, TOPIC_MEASURED_HUMIDITY);
+    pubsub_add_subscription(measured_humidity_queue, TOPIC_MEASURED_HUMIDITY, true);
 
     measured_temperature_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(measured_temperature_queue,
-            TOPIC_MEASURED_TEMPERATURE);
+            TOPIC_MEASURED_TEMPERATURE, true);
 
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),

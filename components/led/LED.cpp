@@ -27,7 +27,7 @@ void LED::setup(gpio_num_t pin, bool on, const char* topic) {
         ESP_LOGE(TAG, "setup, failed to create queue (FATAL)");
         return;
     }
-    pubsub_add_subscription(led_queue, topic);
+    pubsub_add_subscription(led_queue, topic, false);
 
 	this->pin = pin;
 	this->on = on;

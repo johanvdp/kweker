@@ -20,17 +20,18 @@ public:
 	/**
 	 * Setup once before use.
 	 * @param pin one wire output pin
-	 * @param on level used as on
+	 * @param active_high true if active high output
 	 * @param topic topic receiving messages
 	 */
-	void setup(gpio_num_t pin, bool on, const char* topic);
+	void setup(gpio_num_t pin, bool active_high, const char* topic);
 
 private:
 	gpio_num_t pin = GPIO_NUM_NC;
-	bool on = true;
+	bool active_high = true;
 	QueueHandle_t queue = 0;
 
 	void run();
+	void write(bool on);
 
 	static void task(void *pvParameter);
 };

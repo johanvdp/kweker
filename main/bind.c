@@ -62,25 +62,25 @@ static void bind_task(void *pvParameter)
 void bind_initialize()
 {
     actuator_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_exhaust_queue, TOPIC_ACTUATOR_EXHAUST);
+    pubsub_add_subscription(actuator_exhaust_queue, TOPIC_ACTUATOR_EXHAUST, true);
 
     actuator_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_heater_queue, TOPIC_ACTUATOR_HEATER);
+    pubsub_add_subscription(actuator_heater_queue, TOPIC_ACTUATOR_HEATER, true);
 
     actuator_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_lamp_queue, TOPIC_ACTUATOR_LAMP);
+    pubsub_add_subscription(actuator_lamp_queue, TOPIC_ACTUATOR_LAMP, true);
 
     actuator_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_recirc_queue, TOPIC_ACTUATOR_RECIRC);
+    pubsub_add_subscription(actuator_recirc_queue, TOPIC_ACTUATOR_RECIRC, true);
 
     circadian_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(circadian_queue, TOPIC_CIRCADIAN);
+    pubsub_add_subscription(circadian_queue, TOPIC_CIRCADIAN, true);
 
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE);
+    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE, true);
 
     time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(time_queue, TOPIC_TIME);
+    pubsub_add_subscription(time_queue, TOPIC_TIME, true);
 
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

@@ -9,8 +9,8 @@ DO::DO() {
 DO::~DO() {
 }
 
-void DO::setup(gpio_num_t pin, bool on, const char* topic) {
-	ESP_LOGD(TAG, "setup, pin:%d, on:%d", pin, on);
+void DO::setup(gpio_num_t pin, bool active_high, const char* topic) {
+	ESP_LOGD(TAG, "setup, pin:%d, topic:%s, active_high:%s", pin, topic, active_high ? "true" : "false");
 
 	if (pin < GPIO_NUM_0 || pin >= GPIO_NUM_MAX) {
 		ESP_LOGE(TAG, "setup requires GPIO pin number (FATAL)");
@@ -27,10 +27,9 @@ void DO::setup(gpio_num_t pin, bool on, const char* topic) {
         ESP_LOGE(TAG, "setup, failed to create queue (FATAL)");
         return;
     }
-    pubsub_add_subscription(queue, topic);
 
 	this->pin = pin;
-	this->on = on;
+	this->active_high = active_high;
 	this->queue = queue;
 
 	gpio_pad_select_gpio(pin);
@@ -40,21 +39,29 @@ void DO::setup(gpio_num_t pin, bool on, const char* topic) {
 	if (ret != pdPASS) {
 		ESP_LOGE(TAG, "setup, failed to create task (FATAL)");
 	}
+
+	// need pin to output initial value
+    pubsub_add_subscription(queue, topic, true);
 }
 
 void DO::run() {
 	pubsub_message_t message;
 	while (true) {
 		if (xQueueReceive(queue, &message, portMAX_DELAY)) {
-			ESP_LOGD(TAG, "DO pin:%d=%s", pin, message.boolean_val ? "on" : "off");
-			// on value | pin
-			//  0     0 |   1
-            //  0     1 |   0
-			//  1     0 |   0
-			//  1     1 |   1
-			gpio_set_level(pin, message.boolean_val == on);
+		    write(message.boolean_val);
 		}
 	};
+}
+
+void DO::write(bool active) {
+    // on active | output
+    //  0      0 |      1
+    //  0      1 |      0
+    //  1      0 |      0
+    //  1      1 |      1
+    bool output = active == active_high;
+    ESP_LOGD(TAG, "write, pin:%d, output:%s(%d)", pin, active ? "on" : "off", output);
+    gpio_set_level(pin, output);
 }
 
 /**

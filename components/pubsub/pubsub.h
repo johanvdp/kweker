@@ -37,7 +37,7 @@ typedef void *pubsub_topic_t;
 extern void pubsub_initialize();
 
 extern void pubsub_add_subscription(QueueHandle_t subscriber_queue,
-        const char *topic_name);
+        const char *topic_name, bool hot);
 extern void pubsub_remove_subscription(QueueHandle_t subscriber_queue,
         const char *topic_name);
 

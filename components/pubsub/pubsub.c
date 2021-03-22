@@ -99,11 +99,22 @@ static pubsub_topic_detail_t* pubsub_add_topic_detail(const char *topic_name,
     return topic_detail;
 }
 
+static void pubsub_publish_one(QueueHandle_t queue, pubsub_message_t *message)
+{
+    ESP_LOGD(tag, "pubsub_publish_one queue:%p", queue);
+    BaseType_t result = xQueueSendToBack(queue, message, 0);
+    if (result != pdTRUE) {
+        // todo handle errors
+        ESP_LOGE(tag, "pubsub_publish_one error");
+    } else {
+        ESP_LOGV(tag, "pubsub_publish_one ok");
+    }
+}
 /**
  * Add subscription to topic name.
  */
 void pubsub_add_subscription(QueueHandle_t subscriber_queue,
-        const char *topic_name)
+        const char *topic_name, bool hot)
 {
     ESP_LOGI(tag, "pubsub_add_subscription topic:%s, queue:%p", topic_name,
             subscriber_queue);
@@ -118,6 +129,23 @@ void pubsub_add_subscription(QueueHandle_t subscriber_queue,
     pubsub_subscriber_t *subscriber = pubsub_create_subscriber(
             subscriber_queue);
     LIST_INSERT_HEAD(&(topic_detail->subscribers), subscriber, pointers);
+    // publish last known value if hot
+    if (hot) {
+        pubsub_message_t message;
+        message.topic = topic_detail->topic;
+        message.type = topic_detail->type;
+        pubsub_type_t type = topic_detail->type;
+        if (type == PUBSUB_TYPE_INT) {
+            message.int_val = topic_detail->int_val;
+        } else if (type == PUBSUB_TYPE_DOUBLE) {
+            message.double_val = topic_detail->double_val;
+        } else if (type == PUBSUB_TYPE_BOOLEAN) {
+            message.boolean_val = topic_detail->boolean_val;
+        } else {
+            ESP_LOGE(tag, "pubsub_add_subscription invalid type:%d", type);
+        }
+        pubsub_publish_one(subscriber->queue, &message);
+    }
 }
 
 /**
@@ -214,15 +242,7 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
     pubsub_subscriber_t *subscriber;
     LIST_FOREACH(subscriber, &(topic_detail->subscribers), pointers)
     {
-        QueueHandle_t queue = subscriber->queue;
-        ESP_LOGD(tag, "pubsub_publish queue:%p", queue);
-        BaseType_t result = xQueueSendToBack(queue, message, 0);
-        if (result != pdTRUE) {
-            // todo handle errors
-            ESP_LOGE(tag, "publish send error");
-        } else {
-            ESP_LOGV(tag, "publish send ok");
-        }
+        pubsub_publish_one(subscriber->queue, message);
     }
 }
 
