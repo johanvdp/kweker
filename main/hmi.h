@@ -11,32 +11,18 @@ extern "C" {
 #include "freertos/semphr.h"
 #include "time.h"
 
-void hmi_initialize();
-void hmi_set_clock(time_t time);
-
 /*
  * -------
  * Toolbar
  * -------
  */
 
-/** Synchronize all access to LVGL using this one semaphore */
-extern SemaphoreHandle_t hmi_semaphore;
+/** Synchronize all access to the hmi using one semaphore */
+bool hmi_semaphore_take(const char *function_name);
+void hmi_semaphore_give();
 
-/** current time [24h] */
-extern lv_obj_t *hmi_label_clock;
-/** current circadian [day, night] */
-extern lv_obj_t *hmi_label_circadian;
-/** current control mode [off, manual, automatic] */
-extern lv_obj_t *hmi_label_control_mode;
-/** current light switch state [off, on] */
-extern lv_obj_t *hmi_led_light_switch;
-/** current heater switch state [off, on] */
-extern lv_obj_t *hmi_led_heater_switch;
-/** current exhaust fan switch state [off, on] */
-extern lv_obj_t *hmi_led_exhaust_switch;
-/** current recirculation fan switch state [off, on] */
-extern lv_obj_t *hmi_led_recirculation_switch;
+void hmi_initialize();
+void hmi_set_clock(time_t time);
 
 #ifdef __cplusplus
 }

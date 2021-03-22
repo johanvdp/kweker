@@ -57,50 +57,66 @@ static lv_coord_t hmi_control_get_y(hmi_control_t *control, double value)
 
 void hmi_control_set_pv(hmi_control_t *target, double pv)
 {
+    if (hmi_semaphore_take("hmi_control_set_pv")) {
 
-    lv_obj_t *bar = target->bar;
-    lv_obj_t *label_pv = target->label_pv;
+        lv_obj_t *bar = target->bar;
+        lv_obj_t *label_pv = target->label_pv;
 
-    lv_coord_t bar_x = lv_obj_get_x(bar);
-    lv_coord_t bar_width = lv_obj_get_width(bar);
+        lv_coord_t bar_x = lv_obj_get_x(bar);
+        lv_coord_t bar_width = lv_obj_get_width(bar);
 
-    int16_t value = hmi_control_bar_value(target, pv);
-    lv_bar_set_value(bar, value, LV_ANIM_OFF);
-    lv_label_set_text_fmt(label_pv, "=%.1lf", pv);
-    lv_coord_t pv_y = hmi_control_get_y(target, pv);
-    lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
+        int16_t value = hmi_control_bar_value(target, pv);
+        lv_bar_set_value(bar, value, LV_ANIM_OFF);
+        lv_label_set_text_fmt(label_pv, "=%.1lf", pv);
+        lv_coord_t pv_y = hmi_control_get_y(target, pv);
+        lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
+
+        hmi_semaphore_give();
+    }
 }
 
 void hmi_control_set_sv(hmi_control_t *target, double sv)
 {
+    if (hmi_semaphore_take("hmi_control_set_sv")) {
 
-    lv_obj_t *bar = target->bar;
-    lv_obj_t *label_sv = target->label_sv;
-    lv_coord_t bar_x = lv_obj_get_x(bar);
+        lv_obj_t *bar = target->bar;
+        lv_obj_t *label_sv = target->label_sv;
+        lv_coord_t bar_x = lv_obj_get_x(bar);
 
-    lv_label_set_text_fmt(label_sv, "%.1lf>", sv);
-    lv_coord_t label_width = lv_obj_get_width(label_sv);
-    lv_coord_t sv_y = hmi_control_get_y(target, sv);
-    lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
+        lv_label_set_text_fmt(label_sv, "%.1lf>", sv);
+        lv_coord_t label_width = lv_obj_get_width(label_sv);
+        lv_coord_t sv_y = hmi_control_get_y(target, sv);
+        lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
+
+        hmi_semaphore_give();
+    }
 }
 
 void hmi_control_set_hi(hmi_control_t *target, bool hi)
 {
+    if (hmi_semaphore_take("hmi_control_set_hi")) {
 
-    lv_obj_t *label_hi = target->label_hi;
+        lv_obj_t *label_hi = target->label_hi;
 
-    lv_obj_set_style_local_text_color(label_hi, LV_LABEL_PART_MAIN,
-            LV_STATE_DEFAULT, hi ? LV_COLOR_RED : LV_COLOR_GRAY);
+        lv_obj_set_style_local_text_color(label_hi, LV_LABEL_PART_MAIN,
+                LV_STATE_DEFAULT, hi ? LV_COLOR_RED : LV_COLOR_GRAY);
+
+        hmi_semaphore_give();
+    }
 }
 
 void hmi_control_set_lo(hmi_control_t *target, bool lo)
 {
+    if (hmi_semaphore_take("hmi_control_set_lo")) {
 
-    lv_obj_t *label_lo = target->label_lo;
+        lv_obj_t *label_lo = target->label_lo;
 
-    // lo
-    lv_obj_set_style_local_text_color(label_lo, LV_LABEL_PART_MAIN,
-            LV_STATE_DEFAULT, lo ? LV_COLOR_RED : LV_COLOR_GRAY);
+        // lo
+        lv_obj_set_style_local_text_color(label_lo, LV_LABEL_PART_MAIN,
+                LV_STATE_DEFAULT, lo ? LV_COLOR_RED : LV_COLOR_GRAY);
+
+        hmi_semaphore_give();
+    }
 }
 
 static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent,
@@ -289,14 +305,18 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
 
 void hmi_control_set_control_mode(model_control_mode_t mode)
 {
-    if (mode == MODEL_CONTROL_MODE_OFF) {
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
-                LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
-                LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    } else if (mode == MODEL_CONTROL_MODE_AUTO) {
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
-                LV_BTNMATRIX_CTRL_CLICK_TRIG);
+    if (hmi_semaphore_take("hmi_control_set_control_mode")) {
+
+        if (mode == MODEL_CONTROL_MODE_OFF) {
+            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
+                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
+        } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
+            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
+                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
+        } else if (mode == MODEL_CONTROL_MODE_AUTO) {
+            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
+                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
+        }
+        hmi_semaphore_give();
     }
 }
