@@ -35,7 +35,7 @@ void DO::setup(gpio_num_t pin, bool on, const char* topic) {
 
 	gpio_pad_select_gpio(pin);
 	gpio_set_direction(pin, GPIO_MODE_OUTPUT);
-	BaseType_t ret = xTaskCreate(&task, "setup", 1024, this,
+	BaseType_t ret = xTaskCreate(&task, "setup", 2048, this,
 			(tskIDLE_PRIORITY + 1), NULL);
 	if (ret != pdPASS) {
 		ESP_LOGE(tag, "setup, failed to create task (FATAL)");

@@ -55,7 +55,7 @@ private:
     /**
      * From time to raw time.
      */
-    void encode_time(const time_t time, uint8_t *raw);
+    void encode_time(time_t time, uint8_t *raw);
     /**
      * From raw time to time.
      */

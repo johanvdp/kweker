@@ -47,7 +47,7 @@ DS3234::~DS3234()
 {
 }
 
-void DS3234::encode_time(const time_t time, uint8_t *raw)
+void DS3234::encode_time(time_t time, uint8_t *raw)
 {
     ESP_LOGD(TAG, "encode_time time:%ld", time);
 
@@ -145,7 +145,8 @@ void DS3234::task(void *pvParameter)
 
 void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 {
-    ESP_LOGI(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name, this);
+    ESP_LOGI(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name,
+            this);
 
     this->timestamp_topic = topic;
 
@@ -165,8 +166,9 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
     pubsub_add_subscription(time_queue, topic_name);
 
     // start periodic task
-    esp_err_t ret = xTaskCreate(&task, "setup", 4096, this, tskIDLE_PRIORITY,
-    NULL);
+    esp_err_t ret = xTaskCreate(&task, "setup",
+            2048, this, tskIDLE_PRIORITY,
+            NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
         return;
