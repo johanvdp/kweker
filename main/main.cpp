@@ -27,6 +27,8 @@ extern "C" {
 #define GPIO_RECIRC (gpio_num_t)CONFIG_GPIO_RECIRC
 #define GPIO_HEATER (gpio_num_t)CONFIG_GPIO_HEATER
 
+#define MEASUREMENT_PERIOD_MS 5000
+
 LED led;
 AM2301 am2301;
 DS3234 ds3234;
@@ -80,7 +82,7 @@ void app_main()
 
     am2301.setup(GPIO_AM2301, measured_temperature_topic,
             measured_humidity_topic, am2301_status_topic,
-            am2301_timestamp_topic);
+            am2301_timestamp_topic, MEASUREMENT_PERIOD_MS);
 
     ds3234.setup(time_topic, TOPIC_TIME);
 
@@ -96,20 +98,10 @@ void app_main()
     ESP_LOGI(TAG, "AM2301 measure");
     activity_message.int_val = 1;
     pubsub_publish(activity_topic, &activity_message);
-    am2301.measure();
 
     while (1) {
 
-        BaseType_t result = xQueueReceive(log_queue, &log_message,
-                5000 / portTICK_PERIOD_MS);
-        if (result == pdFALSE) {
-            // nothing, re-try
-            ESP_LOGI(TAG, "AM2301 measure");
-            activity_message.int_val = 1;
-            pubsub_publish(activity_topic, &activity_message);
-            am2301.measure();
-
-        } else {
+        if (xQueueReceive(log_queue, &log_message, portMAX_DELAY)) {
             // something
             if (strcmp(log_message.topic, TOPIC_AM2301_STATUS) == 0) {
                 int64_t status = log_message.int_val;
@@ -117,49 +109,32 @@ void app_main()
 
                     ESP_LOGI(TAG, "AM2301 OK");
 
+                    // blink 1x
                     activity_message.int_val = 1;
                     pubsub_publish(activity_topic, &activity_message);
-
-                    // again
-                    vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-                    ESP_LOGI(TAG, "AM2301 measure");
-                    activity_message.int_val = 1;
-                    pubsub_publish(activity_topic, &activity_message);
-                    am2301.measure();
 
                 } else if (status
                         == AM2301::result_status_t::RESULT_RECOVERABLE) {
 
                     ESP_LOGW(TAG, "AM2301 RECOVERABLE");
 
+                    // blink 2x
                     activity_message.int_val = 2;
                     pubsub_publish(activity_topic, &activity_message);
-
-                    // hold-off
-                    vTaskDelay(10000 / portTICK_PERIOD_MS);
-
-                    ESP_LOGI(TAG, "AM2301 measure");
-                    activity_message.int_val = 1;
-                    pubsub_publish(activity_topic, &activity_message);
-                    am2301.measure();
 
                 } else if (status == AM2301::result_status_t::RESULT_FATAL) {
 
                     ESP_LOGE(TAG, "AM2301 FATAL");
-
-                    activity_message.int_val = 10;
-                    ESP_LOGI(TAG, "pubsub_publish 10");
-                    pubsub_publish(activity_topic, &activity_message);
-
                     // give up
                     break;
 
                 } else {
+                    // unknown
                     ESP_LOGE(TAG, "status:%lld", status);
                 }
             }
         }
     }
 }
+
 }

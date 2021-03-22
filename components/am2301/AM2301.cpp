@@ -13,7 +13,7 @@ AM2301::~AM2301()
 
 void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
         pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
-        pubsub_topic_t timestamp_topic)
+        pubsub_topic_t timestamp_topic, uint32_t measurement_period_ms)
 {
     ESP_LOGD(TAG, "setup, pin:%d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic, timestamp_topic);
 
@@ -30,6 +30,12 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
     }
     this->pin = pin;
 
+    if (measurement_period_ms < MINIMUM_MEASUREMENT_PERIOD_MS) {
+        state = COMPONENT_FATAL;
+        ESP_LOGE(TAG, "setup requires measurement_period_ms >  %d (FATAL)", MINIMUM_MEASUREMENT_PERIOD_MS);
+        return;
+    }
+    this->measurement_period_ms = measurement_period_ms;
     this->temperature_topic = temperature_topic;
     this->humidity_topic = humidity_topic;
     this->status_topic = status_topic;
@@ -81,24 +87,6 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
     }
 
     state = COMPONENT_READY;
-}
-
-bool AM2301::measure()
-{
-    ESP_LOGD(TAG, "measure");
-
-    if (state == COMPONENT_FATAL) {
-        ESP_LOGE(TAG, "measure component state (FATAL)");
-        return false;
-    } else if (state == COMPONENT_UNINITIALIZED) {
-        ESP_LOGE(TAG, "measure component not setup");
-        return false;
-    } else if (state != COMPONENT_READY) {
-        ESP_LOGE(TAG, "measure component not ready");
-        return false;
-    }
-
-    return queue_instruction_start();
 }
 
 /**
@@ -277,7 +265,7 @@ void IRAM_ATTR AM2301::run()
 {
     while (true) {
         if (xQueueReceive(decoderQueue, &decoderData,
-                MINIMUM_MEASUREMENT_INTERVAL_TICKS)) {
+                measurement_period_ms / portTICK_PERIOD_MS)) {
             if (decoderData.instruction == INSTRUCTION_EDGE_DETECTED) {
                 handle_instruction_edge_detected();
             } else if (decoderData.instruction == INSTRUCTION_START) {
@@ -288,6 +276,7 @@ void IRAM_ATTR AM2301::run()
         } else {
             // timeout, no activity
             state = COMPONENT_READY;
+            queue_instruction_start();
         }
         vPortYield();
     }

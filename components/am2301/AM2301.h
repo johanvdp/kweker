@@ -23,24 +23,18 @@ public:
 	/**
 	 * Setup once before use.
 	 * @param pin one wire (input/output) pin
-	 * @param temperature_topic temperature measurement topic.
-	 * @param humidity_topic humidity measurement topic.
-	 * @param status_topic measurement status topic.
-	 * @param timestamp_topic measurement timestamp topic.
+	 * @param temperature_topic temperature measurement topic [double, K].
+	 * @param humidity_topic humidity measurement topic [double, %].
+	 * @param status_topic measurement status topic [int, model_component_status_t].
+	 * @param timestamp_topic measurement timestamp topic [int, timt_t].
+	 * @param measurement_period_ms measurement period [ms].
 	 */
 	void setup(gpio_num_t pin,
 			pubsub_topic_t temperature_topic,
 			pubsub_topic_t humidity_topic,
 			pubsub_topic_t status_topic,
-			pubsub_topic_t timestamp_topic);
-	/**
-	 * Asyncronously request measurement.
-	 * Asyncronously publishes the result (of type pubsub_message_t).
-	 * Do not request more than one measurement per MINIMUM_MEASUREMENT_INTERVAL_MS.
-	 *
-	 * @return true if request was succesful. False if rejected.
-	 */
-	bool measure();
+			pubsub_topic_t timestamp_topic,
+			uint32_t measurement_period_ms);
 
 	typedef enum {
 		RESULT_OK = 0,
@@ -49,6 +43,8 @@ public:
 		//
 		RESULT_FATAL,
 	} result_status_t;
+
+	static constexpr int MINIMUM_MEASUREMENT_PERIOD_MS = 2000;
 
 private:
 	/**
@@ -93,6 +89,7 @@ private:
 	 */
 	gpio_num_t pin = GPIO_NUM_NC;
 
+	uint32_t measurement_period_ms = MINIMUM_MEASUREMENT_PERIOD_MS;
 	/**
 	 * Queue to receive
 	 * - ISR edge detection data, and
@@ -147,7 +144,6 @@ private:
 
 	static constexpr float TEMPERATURE_C_TO_K = 273.15;
 	static constexpr int NUMBER_OF_EDGES_IN_DATA_FRAME = 100;
-	static constexpr TickType_t MINIMUM_MEASUREMENT_INTERVAL_TICKS = 2000 / portTICK_PERIOD_MS;
 	static constexpr int MICRO_PER_MILLI = 1000;
 
 	static void IRAM_ATTR task(void *pvParameter);
