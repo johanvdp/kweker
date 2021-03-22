@@ -25,7 +25,7 @@ public:
 	 * @param pin one wire (input/output) pin
 	 * @param temperature_topic temperature measurement topic [double, K].
 	 * @param humidity_topic humidity measurement topic [double, %].
-	 * @param status_topic measurement status topic [int, model_component_status_t].
+	 * @param status_topic measurement status topic [int, result_status_t].
 	 * @param timestamp_topic measurement timestamp topic [int, timt_t].
 	 * @param measurement_period_ms measurement period [ms].
 	 */
@@ -89,7 +89,11 @@ private:
 	 */
 	gpio_num_t pin = GPIO_NUM_NC;
 
+	/**
+	 * Measurement period [ms].
+	 */
 	uint32_t measurement_period_ms = MINIMUM_MEASUREMENT_PERIOD_MS;
+
 	/**
 	 * Queue to receive
 	 * - ISR edge detection data, and
@@ -127,7 +131,7 @@ private:
 	// used to calculate bit value when both low and high duration are known
 	int32_t highDuration = 0;
 	// data read from decoder queue
-	AM2301::decoder_data_t decoderData;
+	decoder_data_t decoderData;
 	// component state
 	component_state_t state = COMPONENT_UNINITIALIZED;
 
