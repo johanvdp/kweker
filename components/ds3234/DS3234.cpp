@@ -166,7 +166,7 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
     pubsub_add_subscription(time_queue, topic_name);
 
     // start periodic task
-    esp_err_t ret = xTaskCreate(&task, "setup",
+    esp_err_t ret = xTaskCreate(&task, TAG,
             2048, this, tskIDLE_PRIORITY,
             NULL);
     if (ret != pdPASS) {

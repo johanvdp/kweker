@@ -221,7 +221,7 @@ void hmi_initialize() {
 	/* If you want to use a task to create the graphic, you NEED to create a Pinned task
 	 * Otherwise there can be problem such as memory corruption and so on.
 	 * NOTE: When not using Wi-Fi nor Bluetooth you can pin the guiTask to core 0 */
-	xTaskCreatePinnedToCore(&hmi_task, "hmi_task", 4096 * 2, NULL, 0, NULL, 1);
+	xTaskCreatePinnedToCore(&hmi_task, TAG, 4096 * 2, NULL, 0, NULL, 1);
 }
 
 void hmi_set_clock(time_t timestamp) {
