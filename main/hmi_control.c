@@ -289,13 +289,13 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
 
 void hmi_control_set_control_mode(model_control_mode_t mode)
 {
-    if (mode == HMI_CONTROL_MODE_OFF) {
+    if (mode == MODEL_CONTROL_MODE_OFF) {
         lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    } else if (mode == HMI_CONTROL_MODE_MANUAL) {
+    } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
         lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    } else if (mode == HMI_CONTROL_MODE_AUTO) {
+    } else if (mode == MODEL_CONTROL_MODE_AUTO) {
         lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);
     }
