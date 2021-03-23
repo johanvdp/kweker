@@ -6,9 +6,6 @@
 extern "C" {
 #endif
 
-#include "stdint.h"
-#include "stdbool.h"
-
 void bind_control_initialize();
 
 #ifdef __cplusplus

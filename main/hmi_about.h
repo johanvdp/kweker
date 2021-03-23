@@ -15,9 +15,6 @@ extern "C" {
  */
 lv_obj_t* hmi_about_create_tab(lv_obj_t *parent);
 
-/** about page content */
-extern lv_obj_t *hmi_label_about;
-
 #ifdef __cplusplus
 }
 #endif

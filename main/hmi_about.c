@@ -1,7 +1,8 @@
 // The author disclaims copyright to this source code.
 #include "hmi_about.h"
 
-lv_obj_t *hmi_label_about;
+/** about page content */
+static lv_obj_t *hmi_label_about;
 
 lv_obj_t* hmi_about_create_tab(lv_obj_t *parent)
 {

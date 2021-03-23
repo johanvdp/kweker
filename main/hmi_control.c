@@ -303,20 +303,32 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
     return tab;
 }
 
-void hmi_control_set_control_mode(model_control_mode_t mode)
+void hmi_control_set_control_mode_off()
 {
-    if (hmi_semaphore_take("hmi_control_set_control_mode")) {
+    if (hmi_semaphore_take("hmi_control_set_control_mode_off")) {
 
-        if (mode == MODEL_CONTROL_MODE_OFF) {
-            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
-                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
-        } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
-            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
-                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
-        } else if (mode == MODEL_CONTROL_MODE_AUTO) {
-            lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
-                    LV_BTNMATRIX_CTRL_CLICK_TRIG);
-        }
+        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
+                LV_BTNMATRIX_CTRL_CLICK_TRIG);
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_control_set_control_mode_manual()
+{
+    if (hmi_semaphore_take("hmi_control_set_control_mode_manaul")) {
+
+        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
+                LV_BTNMATRIX_CTRL_CLICK_TRIG);
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_control_set_control_mode_auto()
+{
+    if (hmi_semaphore_take("hmi_control_set_control_mode_auto")) {
+
+        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
+                LV_BTNMATRIX_CTRL_CLICK_TRIG);
         hmi_semaphore_give();
     }
 }

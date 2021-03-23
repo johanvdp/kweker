@@ -6,8 +6,6 @@
 extern "C" {
 #endif
 
-#include "time.h"
-
 void bind_settings_initialize();
 
 #ifdef __cplusplus
