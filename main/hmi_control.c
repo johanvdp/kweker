@@ -16,9 +16,11 @@ hmi_control_t hmi_control_humidity;
 hmi_control_t hmi_control_co2;
 
 /** selector control mode */
-lv_obj_t *hmi_control_mode_btnmatrix;
+static lv_obj_t *hmi_control_mode_btnmatrix;
 /** setpoint manual control */
-lv_obj_t *hmi_control_manual_btnmatrix;
+static lv_obj_t *hmi_control_manual_btnmatrix;
+
+static hmi_control_mode_callback_t hmi_control_mode_callback;
 
 /**
  * Calculate fraction of value on control bar.
@@ -190,6 +192,22 @@ static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent,
     target->label_sv = label_sv;
 }
 
+static void hmi_control_control_mode_cb(lv_obj_t *button, lv_event_t e)
+{
+    if (e == LV_EVENT_VALUE_CHANGED) {
+        if (hmi_control_mode_callback != NULL) {
+            uint16_t index = lv_btnmatrix_get_active_btn(button);
+            if (index == 0) {
+                hmi_control_mode_callback(HMI_CONTROL_MODE_OFF);
+            } else if (index == 1) {
+                hmi_control_mode_callback(HMI_CONTROL_MODE_MANUAL);
+            } else if (index == 2) {
+                hmi_control_mode_callback(HMI_CONTROL_MODE_AUTO);
+            }
+        }
+    }
+}
+
 static const char *hmi_control_mode_map[] = { "Off", "\n", "Manual", "\n",
         "Auto", "" };
 
@@ -224,6 +242,8 @@ static lv_obj_t* hmi_control_create_mode(lv_obj_t *parent, lv_coord_t x,
     lv_obj_set_size(matrix, cont_coords.x2 - cont_coords.x1 - 10,
             cont_coords.y2 - label_coords.y2 - 10);
     lv_obj_align(matrix, label, LV_ALIGN_OUT_BOTTOM_MID, 0, HMI_MARGIN);
+
+    lv_obj_set_event_cb(matrix, hmi_control_control_mode_cb);
     return matrix;
 }
 
@@ -303,32 +323,16 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
     return tab;
 }
 
-void hmi_control_set_control_mode_off()
+void hmi_control_set_control_mode(hmi_control_mode_t mode)
 {
-    if (hmi_semaphore_take("hmi_control_set_control_mode_off")) {
+    if (hmi_semaphore_take("hmi_control_set_control_mode")) {
 
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 0,
+        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, mode,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);
         hmi_semaphore_give();
     }
 }
 
-void hmi_control_set_control_mode_manual()
-{
-    if (hmi_semaphore_take("hmi_control_set_control_mode_manual")) {
-
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
-                LV_BTNMATRIX_CTRL_CLICK_TRIG);
-        hmi_semaphore_give();
-    }
-}
-
-void hmi_control_set_control_mode_auto()
-{
-    if (hmi_semaphore_take("hmi_control_set_control_mode_auto")) {
-
-        lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 2,
-                LV_BTNMATRIX_CTRL_CLICK_TRIG);
-        hmi_semaphore_give();
-    }
+void hmi_control_set_control_mode_callback(hmi_control_mode_callback_t *callback) {
+    hmi_control_mode_callback = callback;
 }

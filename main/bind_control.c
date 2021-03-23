@@ -64,11 +64,11 @@ static void bind_control_task(void *pvParameter)
         if (xQueueReceive(control_mode_queue, &message, 0)) {
             model_control_mode_t mode = (model_control_mode_t) message.int_val;
             if (mode == MODEL_CONTROL_MODE_OFF) {
-                hmi_control_set_control_mode_off();
+                hmi_control_set_control_mode(HMI_CONTROL_MODE_OFF);
             } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
-                hmi_control_set_control_mode_manual();
+                hmi_control_set_control_mode(HMI_CONTROL_MODE_MANUAL);
             } else if (mode == MODEL_CONTROL_MODE_AUTO) {
-                hmi_control_set_control_mode_auto();
+                hmi_control_set_control_mode(HMI_CONTROL_MODE_AUTO);
             }
         }
         if (xQueueReceive(day_auto_setpoint_co2_queue, &message, 0)) {
@@ -181,10 +181,16 @@ static void bind_control_subscribe()
     pubsub_add_subscription(measured_temperature_queue, MODEL_TEMP_PV, true);
 }
 
+static void bind_control_mode_callback(hmi_control_mode_t mode) {
+    pubsub_publish_int(model_control_mode, mode);
+}
+
 void bind_control_initialize()
 {
     bind_control_subscribe();
 
+    hmi_control_set_control_mode_callback(&bind_control_mode_callback);
+    
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),
             NULL);
@@ -192,4 +198,6 @@ void bind_control_initialize()
         ESP_LOGE(TAG, "failed to create task (FATAL)");
     }
 }
+
+
 
