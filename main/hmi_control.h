@@ -26,12 +26,6 @@ typedef struct
     lv_obj_t *label_hi;
 } hmi_control_t;
 
-typedef enum
-{
-    HMI_CONTROL_MODE_OFF = 0,
-    HMI_CONTROL_MODE_MANUAL = 1,
-    HMI_CONTROL_MODE_AUTO = 2
-} hmi_control_mode_t;
 
 typedef void (*hmi_control_mode_callback_t)(hmi_control_mode_t mode);
 

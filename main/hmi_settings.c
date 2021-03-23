@@ -8,6 +8,8 @@
 #define HMI_COLUMN2 360
 #define HMI_COLUMN_TIME_SEPARATOR 310
 
+static const char *TAG = "hmi_settings";
+
 /** set current time hour */
 lv_obj_t *hmi_spinbox_time_hour;
 /** set current time minute */
@@ -251,4 +253,18 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_settings_create_button_theme(tab, HMI_COLUMN2, 9 * HMI_SETTING_HEIGHT);
 
     return tab;
+}
+
+void hmi_settings_set_clock(time_t timestamp)
+{
+    if (hmi_semaphore_take("hmi_settings_set_clock")) {
+
+        struct tm brokentime;
+        gmtime_r(&timestamp, &brokentime);
+
+        lv_spinbox_set_value(hmi_spinbox_time_hour, brokentime.tm_hour);
+        lv_spinbox_set_value(hmi_spinbox_time_minute, brokentime.tm_min);
+
+        hmi_semaphore_give();
+    }
 }

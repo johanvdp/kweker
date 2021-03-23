@@ -11,55 +11,53 @@
 #include "bind_control.h"
 #include "bind_settings.h"
 
-static const char *TAG = "hmi_bind";
+static const char *TAG = "bind";
 
 /** toolbar exhaust indicator */
-static QueueHandle_t actuator_exhaust_queue;
+static QueueHandle_t exhaust;
 /** toolbar heater indicator */
-static QueueHandle_t actuator_heater_queue;
+static QueueHandle_t heater;
 /** toolbar lamp indicator */
-static QueueHandle_t actuator_lamp_queue;
+static QueueHandle_t lamp;
 /** toolbar recirculation indicator */
-static QueueHandle_t actuator_recirc_queue;
+static QueueHandle_t recirc;
 /** toolbar circadian indicator */
-static QueueHandle_t circadian_queue;
+static QueueHandle_t circadian;
 /** toolbar control mode indicator */
-static QueueHandle_t control_mode_queue;
+static QueueHandle_t control_mode;
 /** toolbar time indicator */
-static QueueHandle_t time_queue;
+static QueueHandle_t bind_time;
 
 static void bind_task(void *pvParameter)
 {
     pubsub_message_t message;
     while (true) {
-        if (xQueueReceive(actuator_exhaust_queue, &message, 0)) {
+        if (xQueueReceive(exhaust, &message, 0)) {
 
         }
-        if (xQueueReceive(actuator_heater_queue, &message, 0)) {
+        if (xQueueReceive(heater, &message, 0)) {
 
         }
-        if (xQueueReceive(actuator_lamp_queue, &message, 0)) {
+        if (xQueueReceive(lamp, &message, 0)) {
 
         }
-        if (xQueueReceive(actuator_recirc_queue, &message, 0)) {
+        if (xQueueReceive(recirc, &message, 0)) {
 
         }
-        if (xQueueReceive(circadian_queue, &message, 0)) {
+        if (xQueueReceive(circadian, &message, 0)) {
 
         }
-        if (xQueueReceive(control_mode_queue, &message, 0)) {
+        if (xQueueReceive(control_mode, &message, 0)) {
             model_control_mode_t mode = (model_control_mode_t) message.int_val;
             if (mode == MODEL_CONTROL_MODE_OFF) {
-                hmi_set_control_mode_off();
+                hmi_set_control_mode(HMI_CONTROL_MODE_OFF);
             } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
-                hmi_set_control_mode_manual();
+                hmi_set_control_mode(HMI_CONTROL_MODE_MANUAL);
             } else if (mode == MODEL_CONTROL_MODE_AUTO) {
-                hmi_set_control_mode_auto();
+                hmi_set_control_mode(HMI_CONTROL_MODE_AUTO);
             }
         }
-        if (xQueueReceive(time_queue, &message, 0)) {
-            ESP_LOGD(TAG, "receive time:%lld", message.int_val);
-
+        if (xQueueReceive(bind_time, &message, 0)) {
             hmi_set_clock(message.int_val);
         }
         vTaskDelay(1);
@@ -68,26 +66,26 @@ static void bind_task(void *pvParameter)
 
 static void bind_subscribe()
 {
-    actuator_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_exhaust_queue, MODEL_EXHAUST, true);
+    exhaust = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(exhaust, MODEL_EXHAUST, true);
 
-    actuator_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_heater_queue, MODEL_HEATER, true);
+    heater = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(heater, MODEL_HEATER, true);
 
-    actuator_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_lamp_queue, MODEL_LAMP, true);
+    lamp = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(lamp, MODEL_LAMP, true);
 
-    actuator_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_recirc_queue, MODEL_RECIRC, true);
+    recirc = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(recirc, MODEL_RECIRC, true);
 
-    circadian_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(circadian_queue, MODEL_CIRCADIAN, true);
+    circadian = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(circadian, MODEL_CIRCADIAN, true);
 
-    control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
+    control_mode = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(control_mode, MODEL_CONTROL_MODE, true);
 
-    time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(time_queue, MODEL_TIME, true);
+    bind_time = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(bind_time, MODEL_TIME, true);
 }
 
 void bind_initialize()

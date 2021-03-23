@@ -197,13 +197,7 @@ static void hmi_control_control_mode_cb(lv_obj_t *button, lv_event_t e)
     if (e == LV_EVENT_VALUE_CHANGED) {
         if (hmi_control_mode_callback != NULL) {
             uint16_t index = lv_btnmatrix_get_active_btn(button);
-            if (index == 0) {
-                hmi_control_mode_callback(HMI_CONTROL_MODE_OFF);
-            } else if (index == 1) {
-                hmi_control_mode_callback(HMI_CONTROL_MODE_MANUAL);
-            } else if (index == 2) {
-                hmi_control_mode_callback(HMI_CONTROL_MODE_AUTO);
-            }
+            hmi_control_mode_callback(index);
         }
     }
 }
@@ -229,10 +223,10 @@ static lv_obj_t* hmi_control_create_mode(lv_obj_t *parent, lv_coord_t x,
 
     lv_btnmatrix_set_map(matrix, hmi_control_mode_map);
     lv_btnmatrix_set_one_check(matrix, true);
-    lv_btnmatrix_set_btn_ctrl(matrix, 0, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, 1, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, 2, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, 0, LV_BTNMATRIX_CTRL_CHECK_STATE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF, LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_MANUAL, LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_AUTO, LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF, LV_BTNMATRIX_CTRL_CHECK_STATE);
 
     // use remaining size
     lv_area_t label_coords;
