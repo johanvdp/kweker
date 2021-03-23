@@ -107,16 +107,18 @@ void model_initialize()
     model_temp_hi = pubsub_register_topic(MODEL_TEMP_HI, PUBSUB_TYPE_BOOLEAN);
     model_temp_lo = pubsub_register_topic(MODEL_TEMP_LO, PUBSUB_TYPE_BOOLEAN);
 
-    model_temp_sv_day = pubsub_register_topic(MODEL_TEMP_SV_DAY, PUBSUB_TYPE_DOUBLE);
-    model_hum_sv_day = pubsub_register_topic(MODEL_HUM_SV_DAY, PUBSUB_TYPE_DOUBLE);
-    model_co2_sv_day = pubsub_register_topic(MODEL_CO2_SV_DAY, PUBSUB_TYPE_DOUBLE);
+    model_temp_sv_day = pubsub_register_topic(MODEL_TEMP_SV_DAY,
+            PUBSUB_TYPE_DOUBLE);
+    model_hum_sv_day = pubsub_register_topic(MODEL_HUM_SV_DAY,
+            PUBSUB_TYPE_DOUBLE);
+    model_co2_sv_day = pubsub_register_topic(MODEL_CO2_SV_DAY,
+            PUBSUB_TYPE_DOUBLE);
 
     model_exhaust_sv = pubsub_register_topic(MODEL_EXHAUST_SV,
             PUBSUB_TYPE_BOOLEAN);
     model_heater_sv = pubsub_register_topic(MODEL_HEATER_SV,
             PUBSUB_TYPE_BOOLEAN);
-    light_sv_man = pubsub_register_topic(MODEL_LAMP_SV,
-            PUBSUB_TYPE_BOOLEAN);
+    light_sv_man = pubsub_register_topic(MODEL_LAMP_SV, PUBSUB_TYPE_BOOLEAN);
     model_recirc_sv = pubsub_register_topic(MODEL_RECIRC_SV,
             PUBSUB_TYPE_BOOLEAN);
 

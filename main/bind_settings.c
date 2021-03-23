@@ -21,7 +21,6 @@ static void bind_settings_task(void *pvParameter)
 
 void bind_settings_initialize()
 {
-
     BaseType_t ret = xTaskCreate(&bind_settings_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {

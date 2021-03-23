@@ -62,8 +62,14 @@ static void bind_control_task(void *pvParameter)
     pubsub_message_t message;
     while (true) {
         if (xQueueReceive(control_mode_queue, &message, 0)) {
-            hmi_control_set_control_mode(
-                    (model_control_mode_t) message.int_val);
+            model_control_mode_t mode = (model_control_mode_t) message.int_val;
+            if (mode == MODEL_CONTROL_MODE_OFF) {
+                hmi_control_set_control_mode_off();
+            } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
+                hmi_control_set_control_mode_manual();
+            } else if (mode == MODEL_CONTROL_MODE_AUTO) {
+                hmi_control_set_control_mode_auto();
+            }
         }
         if (xQueueReceive(day_auto_setpoint_co2_queue, &message, 0)) {
             // if day
@@ -116,35 +122,35 @@ static void bind_control_task(void *pvParameter)
     };
 }
 
-void bind_control_initialize()
+static void bind_control_subscribe()
 {
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
     manual_setpoint_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_exhaust_queue, MODEL_EXHAUST_SV,
-            true);
+    true);
 
     manual_setpoint_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_heater_queue, MODEL_HEATER_SV,
-            true);
+    true);
 
     manual_setpoint_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_lamp_queue, MODEL_LAMP_SV,
-            true);
+    true);
 
     manual_setpoint_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(manual_setpoint_recirc_queue, MODEL_RECIRC_SV,
-            true);
+    true);
 
     day_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_co2_queue, MODEL_CO2_SV_DAY,
-            true);
+    true);
 
     day_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_humidity_queue, MODEL_HUM_SV_DAY,
-            true);
+    true);
 
     day_auto_setpoint_temperature_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
@@ -153,7 +159,7 @@ void bind_control_initialize()
 
     night_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_co2_queue, MODEL_CO2_SV_NIGHT,
-            true);
+    true);
 
     night_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
@@ -173,6 +179,11 @@ void bind_control_initialize()
 
     measured_temperature_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(measured_temperature_queue, MODEL_TEMP_PV, true);
+}
+
+void bind_control_initialize()
+{
+    bind_control_subscribe();
 
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),

@@ -191,7 +191,7 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_spinbox_time_hour = hmi_settings_create_spinbox_hour(tab, HMI_COLUMN1,
             0 * HMI_SETTING_HEIGHT);
     hmi_spinbox_time_minute = hmi_settings_create_spinbox_minute(tab,
-            HMI_COLUMN2, 0 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 0 * HMI_SETTING_HEIGHT);
     hmi_settings_create_label(tab, HMI_COLUMN_TIME_SEPARATOR,
             0 * HMI_SETTING_HEIGHT, ":");
 
@@ -199,9 +199,9 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_settings_create_label(tab, HMI_MARGIN, 1 * HMI_SETTING_HEIGHT,
             "Begin of day time:");
     hmi_spinbox_begin_of_day_hour = hmi_settings_create_spinbox_hour(tab,
-            HMI_COLUMN1, 1 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN1, 1 * HMI_SETTING_HEIGHT);
     hmi_spinbox_begin_of_day_minute = hmi_settings_create_spinbox_minute(tab,
-            HMI_COLUMN2, 1 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 1 * HMI_SETTING_HEIGHT);
     hmi_settings_create_label(tab, HMI_COLUMN_TIME_SEPARATOR,
             1 * HMI_SETTING_HEIGHT, ":");
 
@@ -209,9 +209,9 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_settings_create_label(tab, HMI_MARGIN, 2 * HMI_SETTING_HEIGHT,
             "Begin of night time:");
     hmi_spinbox_begin_of_night_hour = hmi_settings_create_spinbox_hour(tab,
-            HMI_COLUMN1, 2 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN1, 2 * HMI_SETTING_HEIGHT);
     hmi_spinbox_begin_of_night_minute = hmi_settings_create_spinbox_minute(tab,
-            HMI_COLUMN2, 2 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 2 * HMI_SETTING_HEIGHT);
     hmi_settings_create_label(tab, HMI_COLUMN_TIME_SEPARATOR,
             2 * HMI_SETTING_HEIGHT, ":");
 
@@ -219,12 +219,12 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_settings_create_label(tab, HMI_MARGIN, 3 * HMI_SETTING_HEIGHT,
             "Day temperature:");
     hmi_spinbox_day_temperature = hmi_settings_create_spinbox_temperature(tab,
-            HMI_COLUMN2, 3 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 3 * HMI_SETTING_HEIGHT);
     /** set day humidity */
     hmi_settings_create_label(tab, HMI_MARGIN, 4 * HMI_SETTING_HEIGHT,
             "Day humidity:");
     hmi_spinbox_day_humidity = hmi_settings_create_spinbox_humidity(tab,
-            HMI_COLUMN2, 4 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 4 * HMI_SETTING_HEIGHT);
     /** set day CO2 concentration */
     hmi_settings_create_label(tab, HMI_MARGIN, 5 * HMI_SETTING_HEIGHT,
             "Day CO2 concentration:");
@@ -234,12 +234,12 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     hmi_settings_create_label(tab, HMI_MARGIN, 6 * HMI_SETTING_HEIGHT,
             "Night temperature:");
     hmi_spinbox_night_temperature = hmi_settings_create_spinbox_temperature(tab,
-            HMI_COLUMN2, 6 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 6 * HMI_SETTING_HEIGHT);
     /** set night humidity */
     hmi_settings_create_label(tab, HMI_MARGIN, 7 * HMI_SETTING_HEIGHT,
             "Night humidity:");
     hmi_spinbox_night_humidity = hmi_settings_create_spinbox_humidity(tab,
-            HMI_COLUMN2, 7 * HMI_SETTING_HEIGHT);
+    HMI_COLUMN2, 7 * HMI_SETTING_HEIGHT);
     /** set night CO2 concentration */
     hmi_settings_create_label(tab, HMI_MARGIN, 8 * HMI_SETTING_HEIGHT,
             "Night CO2 concentration:");

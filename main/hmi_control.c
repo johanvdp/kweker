@@ -315,7 +315,7 @@ void hmi_control_set_control_mode_off()
 
 void hmi_control_set_control_mode_manual()
 {
-    if (hmi_semaphore_take("hmi_control_set_control_mode_manaul")) {
+    if (hmi_semaphore_take("hmi_control_set_control_mode_manual")) {
 
         lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, 1,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);

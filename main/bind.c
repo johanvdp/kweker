@@ -48,7 +48,14 @@ static void bind_task(void *pvParameter)
 
         }
         if (xQueueReceive(control_mode_queue, &message, 0)) {
-
+            model_control_mode_t mode = (model_control_mode_t) message.int_val;
+            if (mode == MODEL_CONTROL_MODE_OFF) {
+                hmi_set_control_mode_off();
+            } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
+                hmi_set_control_mode_manual();
+            } else if (mode == MODEL_CONTROL_MODE_AUTO) {
+                hmi_set_control_mode_auto();
+            }
         }
         if (xQueueReceive(time_queue, &message, 0)) {
             ESP_LOGD(TAG, "receive time:%lld", message.int_val);
@@ -59,7 +66,7 @@ static void bind_task(void *pvParameter)
     };
 }
 
-void bind_initialize()
+static void bind_subscribe()
 {
     actuator_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(actuator_exhaust_queue, MODEL_EXHAUST, true);
@@ -81,6 +88,11 @@ void bind_initialize()
 
     time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(time_queue, MODEL_TIME, true);
+}
+
+void bind_initialize()
+{
+    bind_subscribe();
 
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

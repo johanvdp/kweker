@@ -266,3 +266,29 @@ void hmi_semaphore_give()
     xSemaphoreGive(hmi_semaphore);
 }
 
+void hmi_set_control_mode_off()
+{
+    if (hmi_semaphore_take("hmi_set_control_mode_off")) {
+
+        lv_label_set_text(hmi_label_control_mode, "OFF");
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_set_control_mode_manual()
+{
+    if (hmi_semaphore_take("hmi_set_control_mode_manual")) {
+
+        lv_label_set_text(hmi_label_control_mode, "MANUAL");
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_set_control_mode_auto()
+{
+    if (hmi_semaphore_take("hmi_set_control_mode_auto")) {
+
+        lv_label_set_text(hmi_label_control_mode, "AUTO");
+        hmi_semaphore_give();
+    }
+}

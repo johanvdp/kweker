@@ -23,6 +23,9 @@ void hmi_semaphore_give();
 
 void hmi_initialize();
 void hmi_set_clock(time_t time);
+void hmi_set_control_mode_off();
+void hmi_set_control_mode_manual();
+void hmi_set_control_mode_auto();
 
 #ifdef __cplusplus
 }
