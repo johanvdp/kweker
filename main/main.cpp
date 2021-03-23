@@ -77,10 +77,10 @@ void app_main()
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, temp_pv, hum_pv, model_am2301_status,
+    am2301.setup(GPIO_AM2301, model_temp_pv, model_hum_pv, model_am2301_status,
             model_am2301_timestamp, MEASUREMENT_PERIOD_MS);
 
-    ds3234.setup(time_topic, MODEL_TIME);
+    ds3234.setup(model_time, MODEL_TIME);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;

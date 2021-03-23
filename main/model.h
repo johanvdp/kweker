@@ -104,24 +104,24 @@ extern pubsub_topic_t model_temp_lo;
 
 extern pubsub_topic_t model_control_mode;
 
-extern pubsub_topic_t co2_sv_day;
-extern pubsub_topic_t hum_sv_day;
-extern pubsub_topic_t temp_sv_day;
+extern pubsub_topic_t model_co2_sv_day;
+extern pubsub_topic_t model_hum_sv_day;
+extern pubsub_topic_t model_temp_sv_day;
 
-extern pubsub_topic_t exhaust_sv_man;
-extern pubsub_topic_t heater_sv_man;
-extern pubsub_topic_t manual_setpoint_lamp_topic;
-extern pubsub_topic_t recirc_sv_man;
+extern pubsub_topic_t model_exhaust_sv;
+extern pubsub_topic_t model_heater_sv;
+extern pubsub_topic_t model_lamp_sv;
+extern pubsub_topic_t model_recirc_sv;
 
-extern pubsub_topic_t co2_pv;
-extern pubsub_topic_t hum_pv;
-extern pubsub_topic_t temp_pv;
+extern pubsub_topic_t model_co2_pv;
+extern pubsub_topic_t model_hum_pv;
+extern pubsub_topic_t model_temp_pv;
 
-extern pubsub_topic_t co2_sv_night;
-extern pubsub_topic_t hum_sv_night;
-extern pubsub_topic_t temp_sv_night;
+extern pubsub_topic_t model_co2_sv_night;
+extern pubsub_topic_t model_hum_sv_night;
+extern pubsub_topic_t model_temp_sv_night;
 
-extern pubsub_topic_t time_topic;
+extern pubsub_topic_t model_time;
 
 typedef enum
 {
