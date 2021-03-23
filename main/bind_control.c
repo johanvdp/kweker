@@ -57,36 +57,6 @@ static QueueHandle_t night_auto_setpoint_humidity_queue;
 /** automatic control setpoint night time temperature */
 static QueueHandle_t night_auto_setpoint_temperature_queue;
 
-static void hmi_control_set_temperature_hi(bool hi)
-{
-    hmi_control_set_hi(&hmi_control_temperature, hi);
-}
-
-static void hmi_control_set_temperature_lo(bool lo)
-{
-    hmi_control_set_lo(&hmi_control_temperature, lo);
-}
-
-static void hmi_control_set_humidity_hi(bool hi)
-{
-    hmi_control_set_hi(&hmi_control_humidity, hi);
-}
-
-static void hmi_control_set_humidity_lo(bool lo)
-{
-    hmi_control_set_lo(&hmi_control_humidity, lo);
-}
-
-static void hmi_control_set_co2_hi(bool hi)
-{
-    hmi_control_set_hi(&hmi_control_co2, hi);
-}
-
-static void hmi_control_set_co2_lo(bool lo)
-{
-    hmi_control_set_lo(&hmi_control_co2, lo);
-}
-
 static void bind_control_task(void *pvParameter)
 {
     pubsub_message_t message;
@@ -144,6 +114,19 @@ static void bind_control_task(void *pvParameter)
         }
         vTaskDelay(1);
     };
+}
+
+static void bind_control_mode_button_cb(lv_obj_t *button, lv_event_t e) {
+
+    if (e == LV_EVENT_VALUE_CHANGED) {
+        if (lv_btnmatrix_get_active_btn(button) == 0) {
+            pubsub_publish_int(topic, value)
+        } else if (lv_btnmatrix_get_active_btn(button) == 1) {
+
+        } else if (lv_btnmatrix_get_active_btn(button) == 2) {
+
+        }
+    }
 }
 
 void bind_control_initialize()
@@ -204,6 +187,8 @@ void bind_control_initialize()
     measured_temperature_queue = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(measured_temperature_queue,
             TOPIC_MEASURED_TEMPERATURE, true);
+
+    lv_obj_set_event_cb(hmi_control_mode_btnmatrix, event_cb);
 
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),
