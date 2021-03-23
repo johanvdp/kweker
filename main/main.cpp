@@ -63,11 +63,11 @@ void app_main()
     model_initialize();
     bind_initialize();
 
-    led.setup(GPIO_LED, true, TOPIC_ACTIVITY);
-    lamp.setup(GPIO_LAMP, true, TOPIC_ACTUATOR_LAMP);
-    exhaust.setup(GPIO_EXHAUST, true, TOPIC_ACTUATOR_EXHAUST);
-    recirc.setup(GPIO_RECIRC, true, TOPIC_ACTUATOR_RECIRC);
-    heater.setup(GPIO_HEATER, true, TOPIC_ACTUATOR_HEATER);
+    led.setup(GPIO_LED, true, MODEL_ACTIVITY);
+    lamp.setup(GPIO_LAMP, true, MODEL_LAMP);
+    exhaust.setup(GPIO_EXHAUST, true, MODEL_EXHAUST);
+    recirc.setup(GPIO_RECIRC, true, MODEL_RECIRC);
+    heater.setup(GPIO_HEATER, true, MODEL_HEATER);
 
     // LOG: big queue not useful
     QueueHandle_t log_queue = xQueueCreate(10, sizeof(pubsub_message_t));
@@ -75,27 +75,26 @@ void app_main()
         ESP_LOGE(TAG, "setup, failed to create log queue (FATAL)");
         return;
     }
-    pubsub_add_subscription(log_queue, TOPIC_AM2301_STATUS, false);
+    pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, measured_temperature_topic,
-            measured_humidity_topic, am2301_status_topic,
-            am2301_timestamp_topic, MEASUREMENT_PERIOD_MS);
+    am2301.setup(GPIO_AM2301, temp_pv, hum_pv, model_am2301_status,
+            model_am2301_timestamp, MEASUREMENT_PERIOD_MS);
 
-    ds3234.setup(time_topic, TOPIC_TIME);
+    ds3234.setup(time_topic, MODEL_TIME);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;
 
     // explicit message type required when publishing
     pubsub_message_t activity_message;
-    activity_message.topic = (char*) TOPIC_ACTIVITY;
+    activity_message.topic = (char*) MODEL_ACTIVITY;
     activity_message.type = PUBSUB_TYPE_INT;
 
     while (1) {
 
         if (xQueueReceive(log_queue, &log_message, portMAX_DELAY)) {
             // something
-            if (strcmp(log_message.topic, TOPIC_AM2301_STATUS) == 0) {
+            if (strcmp(log_message.topic, MODEL_AM2301_STATUS) == 0) {
                 int64_t status = log_message.int_val;
                 if (status == AM2301::result_status_t::RESULT_OK) {
 
@@ -103,7 +102,7 @@ void app_main()
 
                     // blink 1x
                     activity_message.int_val = 1;
-                    pubsub_publish(activity_topic, &activity_message);
+                    pubsub_publish(model_activity, &activity_message);
 
                 } else if (status
                         == AM2301::result_status_t::RESULT_RECOVERABLE) {
@@ -112,7 +111,7 @@ void app_main()
 
                     // blink 2x
                     activity_message.int_val = 2;
-                    pubsub_publish(activity_topic, &activity_message);
+                    pubsub_publish(model_activity, &activity_message);
 
                 } else if (status == AM2301::result_status_t::RESULT_FATAL) {
 

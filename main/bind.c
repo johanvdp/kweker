@@ -11,7 +11,7 @@
 #include "bind_control.h"
 #include "bind_settings.h"
 
-static const char* TAG = "hmi_bind";
+static const char *TAG = "hmi_bind";
 
 /** toolbar exhaust indicator */
 static QueueHandle_t actuator_exhaust_queue;
@@ -62,25 +62,25 @@ static void bind_task(void *pvParameter)
 void bind_initialize()
 {
     actuator_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_exhaust_queue, TOPIC_ACTUATOR_EXHAUST, true);
+    pubsub_add_subscription(actuator_exhaust_queue, MODEL_EXHAUST, true);
 
     actuator_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_heater_queue, TOPIC_ACTUATOR_HEATER, true);
+    pubsub_add_subscription(actuator_heater_queue, MODEL_HEATER, true);
 
     actuator_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_lamp_queue, TOPIC_ACTUATOR_LAMP, true);
+    pubsub_add_subscription(actuator_lamp_queue, MODEL_LAMP, true);
 
     actuator_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(actuator_recirc_queue, TOPIC_ACTUATOR_RECIRC, true);
+    pubsub_add_subscription(actuator_recirc_queue, MODEL_RECIRC, true);
 
     circadian_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(circadian_queue, TOPIC_CIRCADIAN, true);
+    pubsub_add_subscription(circadian_queue, MODEL_CIRCADIAN, true);
 
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE, true);
+    pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
     time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(time_queue, TOPIC_TIME, true);
+    pubsub_add_subscription(time_queue, MODEL_TIME, true);
 
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

@@ -9,7 +9,7 @@
 #include "model.h"
 #include "hmi_settings.h"
 
-static const char* TAG = "bind_control";
+static const char *TAG = "bind_control";
 
 static void bind_settings_task(void *pvParameter)
 {
@@ -19,7 +19,8 @@ static void bind_settings_task(void *pvParameter)
     };
 }
 
-void bind_settings_initialize() {
+void bind_settings_initialize()
+{
 
     BaseType_t ret = xTaskCreate(&bind_settings_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

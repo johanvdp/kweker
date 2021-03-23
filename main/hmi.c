@@ -249,7 +249,8 @@ void hmi_set_clock(time_t timestamp)
     }
 }
 
-bool hmi_semaphore_take(const char *function_name) {
+bool hmi_semaphore_take(const char *function_name)
+{
     bool success;
     if (xSemaphoreTake(hmi_semaphore, HMI_SEMAPHORE_TICKS)) {
         success = true;
@@ -260,8 +261,8 @@ bool hmi_semaphore_take(const char *function_name) {
     return success;
 }
 
-void hmi_semaphore_give() {
+void hmi_semaphore_give()
+{
     xSemaphoreGive(hmi_semaphore);
 }
-
 

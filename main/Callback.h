@@ -6,11 +6,13 @@
 #include <functional>
 
 template<typename T>
-struct ActualType {
+struct ActualType
+{
     typedef T type;
 };
 template<typename T>
-struct ActualType<T*> {
+struct ActualType<T*>
+{
     typedef typename ActualType<T>::type type;
 };
 
@@ -18,14 +20,17 @@ template<typename T, unsigned int n, typename CallerType>
 struct Callback;
 
 template<typename Ret, typename ... Params, unsigned int n, typename CallerType>
-struct Callback<Ret(Params...), n, CallerType> {
+struct Callback<Ret(Params...), n, CallerType>
+{
     typedef Ret (*ret_cb)(Params...);
     template<typename ... Args>
-    static Ret callback(Args ... args) {
+    static Ret callback(Args ... args)
+    {
         func(args...);
     }
 
-    static ret_cb getCallback(std::function<Ret(Params...)> fn) {
+    static ret_cb getCallback(std::function<Ret(Params...)> fn)
+    {
         func = fn;
         return static_cast<ret_cb>(Callback<Ret(Params...), n, CallerType>::callback);
     }

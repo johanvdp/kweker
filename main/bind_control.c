@@ -116,79 +116,63 @@ static void bind_control_task(void *pvParameter)
     };
 }
 
-static void bind_control_mode_button_cb(lv_obj_t *button, lv_event_t e) {
-
-    if (e == LV_EVENT_VALUE_CHANGED) {
-        if (lv_btnmatrix_get_active_btn(button) == 0) {
-            pubsub_publish_int(topic, value)
-        } else if (lv_btnmatrix_get_active_btn(button) == 1) {
-
-        } else if (lv_btnmatrix_get_active_btn(button) == 2) {
-
-        }
-    }
-}
-
 void bind_control_initialize()
 {
     control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(control_mode_queue, TOPIC_CONTROL_MODE, true);
+    pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
     manual_setpoint_exhaust_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(manual_setpoint_exhaust_queue,
-            TOPIC_MANUAL_SETPOINT_EXHAUST, true);
+    pubsub_add_subscription(manual_setpoint_exhaust_queue, MODEL_EXHAUST_SV,
+            true);
 
     manual_setpoint_heater_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(manual_setpoint_heater_queue,
-            TOPIC_MANUAL_SETPOINT_HEATER, true);
+    pubsub_add_subscription(manual_setpoint_heater_queue, MODEL_HEATER_SV,
+            true);
 
     manual_setpoint_lamp_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(manual_setpoint_lamp_queue,
-            TOPIC_MANUAL_SETPOINT_LAMP, true);
+    pubsub_add_subscription(manual_setpoint_lamp_queue, MODEL_LAMP_SV,
+            true);
 
     manual_setpoint_recirc_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(manual_setpoint_recirc_queue,
-            TOPIC_MANUAL_SETPOINT_RECIRC, true);
+    pubsub_add_subscription(manual_setpoint_recirc_queue, MODEL_RECIRC_SV,
+            true);
 
     day_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(day_auto_setpoint_co2_queue,
-            TOPIC_DAY_AUTO_SETPOINT_CO2, true);
+    pubsub_add_subscription(day_auto_setpoint_co2_queue, MODEL_CO2_SV_DAY,
+            true);
 
     day_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
-    pubsub_add_subscription(day_auto_setpoint_humidity_queue,
-            TOPIC_DAY_AUTO_SETPOINT_HUMIDITY, true);
+    pubsub_add_subscription(day_auto_setpoint_humidity_queue, MODEL_HUM_SV_DAY,
+            true);
 
     day_auto_setpoint_temperature_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(day_auto_setpoint_temperature_queue,
-            TOPIC_DAY_AUTO_SETPOINT_TEMPERATURE, true);
+            MODEL_TEMP_SV_DAY, true);
 
     night_auto_setpoint_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(night_auto_setpoint_co2_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_CO2, true);
+    pubsub_add_subscription(night_auto_setpoint_co2_queue, MODEL_CO2_SV_NIGHT,
+            true);
 
     night_auto_setpoint_humidity_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_humidity_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_HUMIDITY, true);
+            MODEL_HUM_SV_NIGHT, true);
 
     night_auto_setpoint_temperature_queue = xQueueCreate(2,
             sizeof(pubsub_message_t));
     pubsub_add_subscription(night_auto_setpoint_temperature_queue,
-            TOPIC_NIGHT_AUTO_SETPOINT_TEMPERATURE, true);
+            MODEL_TEMP_SV_NIGHT, true);
 
     measured_co2_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(measured_co2_queue, TOPIC_MEASURED_CO2, true);
+    pubsub_add_subscription(measured_co2_queue, MODEL_CO2_PV, true);
 
     measured_humidity_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(measured_humidity_queue, TOPIC_MEASURED_HUMIDITY, true);
+    pubsub_add_subscription(measured_humidity_queue, MODEL_HUM_PV, true);
 
     measured_temperature_queue = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(measured_temperature_queue,
-            TOPIC_MEASURED_TEMPERATURE, true);
-
-    lv_obj_set_event_cb(hmi_control_mode_btnmatrix, event_cb);
+    pubsub_add_subscription(measured_temperature_queue, MODEL_TEMP_PV, true);
 
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),

@@ -16,14 +16,15 @@ extern "C" {
  * ------------
  */
 
-typedef struct {
-	lv_obj_t *bar;
+typedef struct
+{
+    lv_obj_t *bar;
     double bar_bias;
     double bar_gain;
-	lv_obj_t *label_sv;
-	lv_obj_t *label_pv;
-	lv_obj_t *label_lo;
-	lv_obj_t *label_hi;
+    lv_obj_t *label_sv;
+    lv_obj_t *label_pv;
+    lv_obj_t *label_lo;
+    lv_obj_t *label_hi;
 } hmi_control_t;
 
 /** temperature control */
