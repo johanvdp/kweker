@@ -31,9 +31,15 @@ static void bind_settings_subscribe()
     pubsub_add_subscription(bind_time, MODEL_TIME, true);
 }
 
+static void bind_settings_time_callback(time_t time) {
+    pubsub_publish_int(model_time, time);
+}
+
 void bind_settings_initialize()
 {
     bind_settings_subscribe();
+
+    hmi_settings_set_time_callback(&bind_settings_time_callback);
 
     BaseType_t ret = xTaskCreate(&bind_settings_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);

@@ -7,14 +7,19 @@
 #define HMI_COLUMN1 200
 #define HMI_COLUMN2 360
 #define HMI_COLUMN_TIME_SEPARATOR 310
-#define HMI_ONE_MINUTE_IN_MS 60000
+#define HMI_ONE_MINUTE_IN_S 60
 
 static const char *TAG = "hmi_settings";
 
-/** set current time hour */
-static lv_obj_t *hmi_spinbox_time_hour;
-/** set current time minute */
-static lv_obj_t *hmi_spinbox_time_minute;
+typedef struct
+{
+    lv_obj_t *textarea;
+    time_t time;
+    hmi_settings_time_callback_t callback;
+} hmi_timebox_t;
+
+/** set current time */
+static hmi_timebox_t hmi_timebox_time;
 /** set begin of day time hour */
 static lv_obj_t *hmi_spinbox_begin_of_day_hour;
 /** set begin of day time minute */
@@ -36,7 +41,6 @@ static lv_obj_t *hmi_spinbox_night_humidity;
 /** set night CO2 concentration */
 static lv_obj_t *hmi_spinbox_night_co2;
 
-static hmi_settings_time_callback_t set_time_callback;
 static hmi_settings_time_callback_t set_day_callback;
 static hmi_settings_time_callback_t set_night_callback;
 static hmi_settings_double_callback_t set_temp_day_callback;
@@ -101,17 +105,19 @@ static void hmi_settings_spinbox_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
 }
 
 static lv_obj_t* hmi_settings_create_spinbox(lv_obj_t *parent, lv_coord_t x,
-        lv_coord_t y, lv_coord_t w, uint8_t digit_count,
-        uint8_t separator_position, int32_t range_min, int32_t range_max,
-        uint32_t step)
+        lv_coord_t y, uint8_t digit_count, uint8_t separator_position,
+        int32_t range_min, int32_t range_max, uint32_t step)
 {
 
     lv_obj_t *spinbox = lv_spinbox_create(parent, NULL);
     lv_obj_set_pos(spinbox, x, y);
-    lv_obj_set_width(spinbox, w);
+    lv_obj_set_width(spinbox, HMI_SETTING_WIDTH);
     lv_textarea_set_text_align(spinbox, LV_LABEL_ALIGN_RIGHT);
-    // avoid sea of blinking cursors
+    // not selectable nor blinking cursors
     lv_textarea_set_cursor_blink_time(spinbox, 0);
+    lv_textarea_set_cursor_hidden(spinbox, true);
+    lv_textarea_set_text_sel(spinbox, false);
+
     lv_spinbox_set_digit_format(spinbox, digit_count, separator_position);
     lv_spinbox_set_range(spinbox, range_min, range_max);
     lv_spinbox_set_step(spinbox, step);
@@ -142,44 +148,114 @@ static lv_obj_t* hmi_settings_create_spinbox(lv_obj_t *parent, lv_coord_t x,
     return spinbox;
 }
 
+static void hmi_settings_timebox_increment_event_cb(lv_obj_t *btn, lv_event_t e)
+{
+
+    if (e == LV_EVENT_SHORT_CLICKED || e == LV_EVENT_LONG_PRESSED_REPEAT) {
+        hmi_timebox_t *timebox = (hmi_timebox_t*) btn->user_data;
+        if (timebox->callback != NULL) {
+            // to next whole minute
+            time_t new_time = timebox->time + HMI_ONE_MINUTE_IN_S;
+            uint32_t to_next_minute = HMI_ONE_MINUTE_IN_S - new_time % HMI_ONE_MINUTE_IN_S;
+            timebox->callback(new_time + to_next_minute);
+        }
+    }
+}
+
+static void hmi_settings_timebox_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
+{
+
+    if (e == LV_EVENT_SHORT_CLICKED || e == LV_EVENT_LONG_PRESSED_REPEAT) {
+        hmi_timebox_t *timebox = (hmi_timebox_t*) btn->user_data;
+        if (timebox->callback != NULL) {
+            // to previous whole minute
+            time_t new_time = timebox->time - HMI_ONE_MINUTE_IN_S;
+            uint32_t to_prev_minute = new_time % HMI_ONE_MINUTE_IN_S;
+            timebox->callback(new_time - to_prev_minute);
+        }
+    }
+}
+
+static void hmi_settings_create_timebox(lv_obj_t *parent,
+        lv_coord_t x, lv_coord_t y, hmi_timebox_t *timebox)
+{
+    lv_obj_t *textarea = lv_textarea_create(parent, NULL);
+    timebox->textarea = textarea;
+
+    lv_obj_set_click(lv_page_get_scrollable(textarea), false);
+    lv_theme_apply(textarea, LV_THEME_SPINBOX);
+    // not selectable nor blinking cursors
+    lv_textarea_set_one_line(textarea, true);
+    lv_textarea_set_text_sel(textarea, false);
+    lv_textarea_set_cursor_blink_time(textarea, 0);
+    lv_textarea_set_cursor_hidden(textarea, true);
+
+    lv_obj_set_pos(textarea, x, y);
+    lv_obj_set_width(textarea, HMI_SETTING_WIDTH);
+    lv_textarea_set_text_align(textarea, LV_LABEL_ALIGN_RIGHT);
+
+    lv_coord_t height = lv_obj_get_height(textarea);
+
+    lv_obj_t *btn_plus = lv_btn_create(parent, NULL);
+    /** link to corresponding timebox for use in event handler */
+    btn_plus->user_data = timebox;
+    lv_obj_set_size(btn_plus, height, height);
+    lv_obj_align(btn_plus, textarea, LV_ALIGN_OUT_RIGHT_MID, HMI_MARGIN, 0);
+    lv_theme_apply(btn_plus, LV_THEME_SPINBOX_BTN);
+    lv_obj_set_style_local_value_str(btn_plus, LV_BTN_PART_MAIN,
+            LV_STATE_DEFAULT,
+            LV_SYMBOL_PLUS);
+    lv_obj_set_event_cb(btn_plus, hmi_settings_timebox_increment_event_cb);
+
+    lv_obj_t *btn_min = lv_btn_create(parent, btn_plus);
+    /** link to corresponding spinbox for use in event handler */
+    btn_min->user_data = timebox;
+    lv_obj_align(btn_min, textarea, LV_ALIGN_OUT_LEFT_MID, -HMI_MARGIN, 0);
+    lv_obj_set_style_local_value_str(btn_min, LV_BTN_PART_MAIN,
+            LV_STATE_DEFAULT,
+            LV_SYMBOL_MINUS);
+    lv_obj_set_event_cb(btn_min, hmi_settings_timebox_decrement_event_cb);
+}
+
+static void hmi_settings_create_timebox_time(lv_obj_t *parent,
+        lv_coord_t x, lv_coord_t y, hmi_timebox_t *timebox)
+{
+    hmi_settings_create_timebox(parent, x, y, timebox);
+}
+
 static lv_obj_t* hmi_settings_create_spinbox_hour(lv_obj_t *parent,
         lv_coord_t x, lv_coord_t y)
 {
 
-    return hmi_settings_create_spinbox(parent, x, y, HMI_SETTING_WIDTH, 2, 0, 0,
-            23, 1);
+    return hmi_settings_create_spinbox(parent, x, y, 2, 0, 0, 23, 1);
 }
 
 static lv_obj_t* hmi_settings_create_spinbox_minute(lv_obj_t *parent,
         lv_coord_t x, lv_coord_t y)
 {
 
-    return hmi_settings_create_spinbox(parent, x, y, HMI_SETTING_WIDTH, 2, 0, 0,
-            59, 1);
+    return hmi_settings_create_spinbox(parent, x, y, 2, 0, 0, 59, 1);
 }
 
 static lv_obj_t* hmi_settings_create_spinbox_temperature(lv_obj_t *parent,
         lv_coord_t x, lv_coord_t y)
 {
 
-    return hmi_settings_create_spinbox(parent, x, y, HMI_SETTING_WIDTH, 3, 2, 0,
-            500, 1);
+    return hmi_settings_create_spinbox(parent, x, y, 3, 2, 0, 500, 1);
 }
 
 static lv_obj_t* hmi_settings_create_spinbox_humidity(lv_obj_t *parent,
         lv_coord_t x, lv_coord_t y)
 {
 
-    return hmi_settings_create_spinbox(parent, x, y, HMI_SETTING_WIDTH, 3, 2, 0,
-            999, 1);
+    return hmi_settings_create_spinbox(parent, x, y, 3, 2, 0, 999, 1);
 }
 
 static lv_obj_t* hmi_settings_create_spinbox_co2(lv_obj_t *parent, lv_coord_t x,
         lv_coord_t y)
 {
 
-    return hmi_settings_create_spinbox(parent, x, y, HMI_SETTING_WIDTH, 4, 0, 0,
-            5000, 1);
+    return hmi_settings_create_spinbox(parent, x, y, 4, 0, 0, 5000, 1);
 }
 
 static lv_obj_t* hmi_settings_create_label(lv_obj_t *parent, lv_coord_t x,
@@ -201,12 +277,8 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     /** set current time */
     hmi_settings_create_label(tab, HMI_MARGIN, 0 * HMI_SETTING_HEIGHT,
             "Current time:");
-    hmi_spinbox_time_hour = hmi_settings_create_spinbox_hour(tab, HMI_COLUMN1,
-            0 * HMI_SETTING_HEIGHT);
-    hmi_spinbox_time_minute = hmi_settings_create_spinbox_minute(tab,
-    HMI_COLUMN2, 0 * HMI_SETTING_HEIGHT);
-    hmi_settings_create_label(tab, HMI_COLUMN_TIME_SEPARATOR,
-            0 * HMI_SETTING_HEIGHT, ":");
+    hmi_settings_create_timebox_time(tab, HMI_COLUMN2,
+            0 * HMI_SETTING_HEIGHT, &hmi_timebox_time);
 
     /** set begin of day time */
     hmi_settings_create_label(tab, HMI_MARGIN, 1 * HMI_SETTING_HEIGHT,
@@ -268,13 +340,16 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
 
 void hmi_settings_set_time(time_t timestamp)
 {
-    if (hmi_semaphore_take("hmi_settings_set_clock")) {
+    if (hmi_semaphore_take("hmi_settings_set_time")) {
+
+        hmi_timebox_time.time = timestamp;
 
         struct tm brokentime;
         gmtime_r(&timestamp, &brokentime);
-
-        lv_spinbox_set_value(hmi_spinbox_time_hour, brokentime.tm_hour);
-        lv_spinbox_set_value(hmi_spinbox_time_minute, brokentime.tm_min);
+        // HH:MM\0
+        char text[] = { 0, 0, 0, 0, 0, 0 };
+        strftime(text, sizeof text, "%H:%M", &brokentime);
+        lv_textarea_set_text(hmi_timebox_time.textarea, text);
 
         hmi_semaphore_give();
     }
@@ -313,7 +388,7 @@ void hmi_settings_set_night(time_t timestamp)
 
 void hmi_settings_set_time_callback(hmi_settings_time_callback_t callback)
 {
-    set_time_callback = callback;
+    hmi_timebox_time.callback = callback;
 }
 
 void hmi_settings_set_day_callback(hmi_settings_time_callback_t callback)
