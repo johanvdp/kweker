@@ -36,10 +36,12 @@ const char *MODEL_LAMP_SV = "light.sv";
 const char *MODEL_RECIRC_SV = "recirc.sv";
 
 const char *MODEL_CO2_SV_NIGHT = "co2.sv.night";
-const char *MODEL_HUM_SV_NIGHT = "humidity.sv.night";
+const char *MODEL_HUM_SV_NIGHT = "hum.sv.night";
 const char *MODEL_TEMP_SV_NIGHT = "temp.sv.night";
 
-const char *MODEL_TIME = "time";
+const char *MODEL_CURRENT_TIME = "time";
+const char *MODEL_BEGIN_OF_DAY = "day";
+const char *MODEL_BEGIN_OF_NIGHT = "night";
 
 pubsub_topic_t model_activity;
 
@@ -68,7 +70,7 @@ pubsub_topic_t model_temp_sv_day;
 
 pubsub_topic_t model_exhaust_sv;
 pubsub_topic_t model_heater_sv;
-pubsub_topic_t light_sv_man;
+pubsub_topic_t model_light_sv;
 pubsub_topic_t model_recirc_sv;
 
 pubsub_topic_t model_co2_pv;
@@ -79,7 +81,9 @@ pubsub_topic_t model_co2_sv_night;
 pubsub_topic_t model_hum_sv_night;
 pubsub_topic_t model_temp_sv_night;
 
-pubsub_topic_t model_time;
+pubsub_topic_t model_current_time;
+pubsub_topic_t model_begin_of_day;
+pubsub_topic_t model_begin_of_night;
 
 void model_initialize()
 {
@@ -118,7 +122,7 @@ void model_initialize()
             PUBSUB_TYPE_BOOLEAN);
     model_heater_sv = pubsub_register_topic(MODEL_HEATER_SV,
             PUBSUB_TYPE_BOOLEAN);
-    light_sv_man = pubsub_register_topic(MODEL_LAMP_SV, PUBSUB_TYPE_BOOLEAN);
+    model_light_sv = pubsub_register_topic(MODEL_LAMP_SV, PUBSUB_TYPE_BOOLEAN);
     model_recirc_sv = pubsub_register_topic(MODEL_RECIRC_SV,
             PUBSUB_TYPE_BOOLEAN);
 
@@ -133,5 +137,10 @@ void model_initialize()
     model_co2_sv_night = pubsub_register_topic(MODEL_CO2_SV_NIGHT,
             PUBSUB_TYPE_DOUBLE);
 
-    model_time = pubsub_register_topic(MODEL_TIME, PUBSUB_TYPE_INT);
+    model_current_time = pubsub_register_topic(MODEL_CURRENT_TIME,
+            PUBSUB_TYPE_INT);
+    model_begin_of_day = pubsub_register_topic(MODEL_BEGIN_OF_DAY,
+            PUBSUB_TYPE_INT);
+    model_begin_of_night = pubsub_register_topic(MODEL_BEGIN_OF_NIGHT,
+            PUBSUB_TYPE_INT);
 }

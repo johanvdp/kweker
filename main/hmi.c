@@ -28,7 +28,7 @@
 static const char *TAG = "hmi";
 
 /** current time [24h] */
-static lv_obj_t *hmi_label_clock;
+static lv_obj_t *hmi_label_current_time;
 /** current circadian [day, night] */
 static lv_obj_t *hmi_label_circadian;
 /** current control mode [off, manual, automatic] */
@@ -50,10 +50,6 @@ static SemaphoreHandle_t hmi_semaphore = 0;
 static lv_color_t buf1[DISP_BUF_SIZE];
 static lv_color_t buf2[DISP_BUF_SIZE];
 static lv_disp_buf_t disp_buf;
-
-/** clock format: HH:MM\0 */
-#define CLOCK_TEXT_SIZE 6
-static char clock_text[CLOCK_TEXT_SIZE] = { '0', '0', ':', '0', '0', 0 };
 
 /** tab page holder */
 static lv_obj_t *hmi_tabview;
@@ -130,7 +126,7 @@ static lv_obj_t* hmi_create_toolbar(lv_obj_t *parent)
     uint16_t parent_width = lv_obj_get_width(parent);
     lv_obj_set_size(toolbar, parent_width, HMI_TOOLBAR_HEIGHT);
 
-    hmi_label_clock = hmi_create_label(toolbar, 8, 8, clock_text);
+    hmi_label_current_time = hmi_create_label(toolbar, 8, 8, "--:--");
     hmi_label_circadian = hmi_create_label(toolbar, 48, 2, "DAY");
     hmi_label_control_mode = hmi_create_label(toolbar, 48, 16, "OFF");
 
@@ -233,17 +229,19 @@ void hmi_initialize()
     xTaskCreatePinnedToCore(&hmi_task, TAG, 4096 * 2, NULL, 0, NULL, 1);
 }
 
-void hmi_set_clock(time_t timestamp)
+void hmi_set_current_time(time_t timestamp)
 {
-    if (hmi_semaphore_take("hmi_set_clock")) {
+    if (hmi_semaphore_take("hmi_set_current_time")) {
 
-        ESP_LOGD(TAG, "hmi_set_clock time:%ld", timestamp);
+        ESP_LOGD(TAG, "hmi_set_current_time time:%ld", timestamp);
         struct tm brokentime;
         gmtime_r(&timestamp, &brokentime);
-        snprintf(clock_text, CLOCK_TEXT_SIZE, "%02d:%02d", brokentime.tm_hour,
+        // HH:MM\0
+        char text[] = { 0, 0, 0, 0, 0, 0 };
+        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour,
                 brokentime.tm_min);
-        ESP_LOGI(TAG, "hmi_set_clock time:%s", clock_text);
-        lv_label_set_text(hmi_label_clock, clock_text);
+        ESP_LOGI(TAG, "hmi_set_current_time time:%s", text);
+        lv_label_set_text(hmi_label_current_time, text);
 
         hmi_semaphore_give();
     }

@@ -74,8 +74,12 @@ extern const char *MODEL_HUM_SV_NIGHT;
 /** Night time temperature setpoint [K] (double) */
 extern const char *MODEL_TEMP_SV_NIGHT;
 
-/** Time (integer) */
-extern const char *MODEL_TIME;
+/** Current time (integer) */
+extern const char *MODEL_CURRENT_TIME;
+/** Begin of day (integer) */
+extern const char *MODEL_BEGIN_OF_DAY;
+/** Begin of night (integer) */
+extern const char *MODEL_BEGIN_OF_NIGHT;
 
 extern pubsub_topic_t model_activity;
 
@@ -121,7 +125,9 @@ extern pubsub_topic_t model_co2_sv_night;
 extern pubsub_topic_t model_hum_sv_night;
 extern pubsub_topic_t model_temp_sv_night;
 
-extern pubsub_topic_t model_time;
+extern pubsub_topic_t model_current_time;
+extern pubsub_topic_t model_begin_of_day;
+extern pubsub_topic_t model_begin_of_night;
 
 typedef enum
 {

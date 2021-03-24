@@ -25,8 +25,8 @@ static QueueHandle_t recirc;
 static QueueHandle_t circadian;
 /** toolbar control mode indicator */
 static QueueHandle_t control_mode;
-/** toolbar time indicator */
-static QueueHandle_t bind_time;
+/** toolbar current time indicator */
+static QueueHandle_t current_time;
 
 static void bind_task(void *pvParameter)
 {
@@ -57,8 +57,8 @@ static void bind_task(void *pvParameter)
                 hmi_set_control_mode(HMI_CONTROL_MODE_AUTO);
             }
         }
-        if (xQueueReceive(bind_time, &message, 0)) {
-            hmi_set_clock(message.int_val);
+        if (xQueueReceive(current_time, &message, 0)) {
+            hmi_set_current_time(message.int_val);
         }
         vTaskDelay(1);
     };
@@ -84,8 +84,8 @@ static void bind_subscribe()
     control_mode = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode, MODEL_CONTROL_MODE, true);
 
-    bind_time = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(bind_time, MODEL_TIME, true);
+    current_time = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(current_time, MODEL_CURRENT_TIME, true);
 }
 
 void bind_initialize()

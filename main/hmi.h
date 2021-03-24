@@ -29,7 +29,7 @@ bool hmi_semaphore_take(const char *function_name);
 void hmi_semaphore_give();
 
 void hmi_initialize();
-void hmi_set_clock(time_t time);
+void hmi_set_current_time(time_t time);
 void hmi_set_control_mode(hmi_control_mode_t mode);
 
 #ifdef __cplusplus
