@@ -8,6 +8,17 @@
 
 static const char *TAG = "hmi_control";
 
+typedef struct
+{
+    lv_obj_t *bar;
+    double bar_bias;
+    double bar_gain;
+    lv_obj_t *label_sv;
+    lv_obj_t *label_pv;
+    lv_obj_t *label_lo;
+    lv_obj_t *label_hi;
+} hmi_control_t;
+
 /** temperature control */
 hmi_control_t hmi_control_temperature;
 /** humidity control */
@@ -57,7 +68,7 @@ static lv_coord_t hmi_control_get_y(hmi_control_t *control, double value)
     return y + height - (fraction * height) - 5;
 }
 
-void hmi_control_set_pv(hmi_control_t *target, double pv)
+static void hmi_control_set_pv(hmi_control_t *target, double pv)
 {
     if (hmi_semaphore_take("hmi_control_set_pv")) {
 
@@ -77,7 +88,7 @@ void hmi_control_set_pv(hmi_control_t *target, double pv)
     }
 }
 
-void hmi_control_set_sv(hmi_control_t *target, double sv)
+static void hmi_control_set_sv(hmi_control_t *target, double sv)
 {
     if (hmi_semaphore_take("hmi_control_set_sv")) {
 
@@ -94,7 +105,7 @@ void hmi_control_set_sv(hmi_control_t *target, double sv)
     }
 }
 
-void hmi_control_set_hi(hmi_control_t *target, bool hi)
+static void hmi_control_set_hi(hmi_control_t *target, bool hi)
 {
     if (hmi_semaphore_take("hmi_control_set_hi")) {
 
@@ -107,7 +118,7 @@ void hmi_control_set_hi(hmi_control_t *target, bool hi)
     }
 }
 
-void hmi_control_set_lo(hmi_control_t *target, bool lo)
+static void hmi_control_set_lo(hmi_control_t *target, bool lo)
 {
     if (hmi_semaphore_take("hmi_control_set_lo")) {
 
@@ -223,10 +234,14 @@ static lv_obj_t* hmi_control_create_mode(lv_obj_t *parent, lv_coord_t x,
 
     lv_btnmatrix_set_map(matrix, hmi_control_mode_map);
     lv_btnmatrix_set_one_check(matrix, true);
-    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_MANUAL, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_AUTO, LV_BTNMATRIX_CTRL_CHECKABLE);
-    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF, LV_BTNMATRIX_CTRL_CHECK_STATE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF,
+            LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_MANUAL,
+            LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_AUTO,
+            LV_BTNMATRIX_CTRL_CHECKABLE);
+    lv_btnmatrix_set_btn_ctrl(matrix, HMI_CONTROL_MODE_OFF,
+            LV_BTNMATRIX_CTRL_CHECK_STATE);
 
     // use remaining size
     lv_area_t label_coords;
@@ -327,6 +342,70 @@ void hmi_control_set_control_mode(hmi_control_mode_t mode)
     }
 }
 
-void hmi_control_set_control_mode_callback(hmi_control_mode_callback_t *callback) {
+void hmi_control_set_control_mode_callback(hmi_control_mode_callback_t callback)
+{
     hmi_control_mode_callback = callback;
+}
+
+void hmi_control_set_temp_pv(double pv)
+{
+    // model in K, display in C
+    hmi_control_set_pv(&hmi_control_temperature, pv - 273.15);
+}
+
+void hmi_control_set_temp_sv(double sv)
+{
+    hmi_control_set_sv(&hmi_control_temperature, sv);
+}
+
+void hmi_control_set_temp_hi(bool hi)
+{
+    hmi_control_set_hi(&hmi_control_temperature, hi);
+}
+
+void hmi_control_set_temp_lo(bool lo)
+{
+    hmi_control_set_lo(&hmi_control_temperature, lo);
+}
+
+
+void hmi_control_set_hum_pv(double pv)
+{
+    hmi_control_set_pv(&hmi_control_humidity, pv);
+}
+
+void hmi_control_set_hum_sv(double sv)
+{
+    hmi_control_set_sv(&hmi_control_humidity, sv);
+}
+
+void hmi_control_set_hum_hi(bool hi)
+{
+    hmi_control_set_hi(&hmi_control_humidity, hi);
+}
+
+void hmi_control_set_hum_lo(bool lo)
+{
+    hmi_control_set_lo(&hmi_control_humidity, lo);
+}
+
+
+void hmi_control_set_co2_pv(double pv)
+{
+    hmi_control_set_pv(&hmi_control_co2, pv);
+}
+
+void hmi_control_set_co2_sv(double sv)
+{
+    hmi_control_set_sv(&hmi_control_co2, sv);
+}
+
+void hmi_control_set_co2_hi(bool hi)
+{
+    hmi_control_set_hi(&hmi_control_co2, hi);
+}
+
+void hmi_control_set_co2_lo(bool lo)
+{
+    hmi_control_set_lo(&hmi_control_co2, lo);
 }

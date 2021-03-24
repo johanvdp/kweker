@@ -19,7 +19,7 @@ static void bind_settings_task(void *pvParameter)
     pubsub_message_t message;
     while (true) {
         if (xQueueReceive(bind_time, &message, 0)) {
-            hmi_settings_set_clock(message.int_val);
+            hmi_settings_set_time(message.int_val);
         }
         vTaskDelay(1);
     };

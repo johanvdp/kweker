@@ -73,15 +73,15 @@ static void bind_control_task(void *pvParameter)
         }
         if (xQueueReceive(co2_sv_day, &message, 0)) {
             // if day
-            hmi_control_set_sv(&hmi_control_co2, message.double_val);
+            hmi_control_set_co2_sv(message.double_val);
         }
         if (xQueueReceive(hum_sv_day, &message, 0)) {
             // if day
-            hmi_control_set_sv(&hmi_control_humidity, message.double_val);
+            hmi_control_set_hum_sv(message.double_val);
         }
         if (xQueueReceive(temp_sv_day, &message, 0)) {
             // if day
-            hmi_control_set_sv(&hmi_control_temperature, message.double_val);
+            hmi_control_set_temp_sv(message.double_val);
         }
         if (xQueueReceive(exhaust_sv, &message, 0)) {
 
@@ -96,27 +96,25 @@ static void bind_control_task(void *pvParameter)
 
         }
         if (xQueueReceive(co2_pv, &message, 0)) {
-            hmi_control_set_pv(&hmi_control_co2, message.double_val);
+            hmi_control_set_co2_pv(message.double_val);
         }
         if (xQueueReceive(hum_pv, &message, 0)) {
-            hmi_control_set_pv(&hmi_control_humidity, message.double_val);
+            hmi_control_set_co2_pv(message.double_val);
         }
         if (xQueueReceive(temp_pv, &message, 0)) {
-            // convert from Kelvin to degrees Celcius
-            hmi_control_set_pv(&hmi_control_temperature,
-                    message.double_val - 273.15);
+            hmi_control_set_temp_pv(message.double_val);
         }
         if (xQueueReceive(co2_sv_night, &message, 0)) {
             // if night
-            hmi_control_set_sv(&hmi_control_co2, message.double_val);
+            hmi_control_set_co2_sv(message.double_val);
         }
         if (xQueueReceive(hum_sv_night, &message, 0)) {
             // if night
-            hmi_control_set_sv(&hmi_control_humidity, message.double_val);
+            hmi_control_set_hum_sv(message.double_val);
         }
         if (xQueueReceive(temp_sv_night, &message, 0)) {
             // if night
-            hmi_control_set_sv(&hmi_control_temperature, message.double_val);
+            hmi_control_set_temp_sv(message.double_val);
         }
         vTaskDelay(1);
     };
@@ -190,7 +188,7 @@ void bind_control_initialize()
     bind_control_subscribe();
 
     hmi_control_set_control_mode_callback(&bind_control_mode_callback);
-    
+
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),
             NULL);
