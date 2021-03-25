@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _HMI_H_
 #define _HMI_H_
 
@@ -6,10 +7,12 @@
 extern "C" {
 #endif
 
-#include "lvgl.h"
+#include <time.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "time.h"
+
+#include "lvgl.h"
 
 /*
  * -------

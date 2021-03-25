@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #include "model.h"
 
 const char *MODEL_ACTIVITY = "activity";

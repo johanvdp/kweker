@@ -1,20 +1,23 @@
 // The author disclaims copyright to this source code.
-#include "DS3234.h"
+
+#include <time.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include "hal/gpio_types.h"
+#include "driver/spi_master.h"
+#include "esp_system.h"
+#include "esp_log.h"
+#include "esp_err.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/timers.h"
-#include "driver/spi_master.h"
-#include "esp_system.h"
-#include "esp_heap_caps.h"
-#include "esp_log.h"
-#include "esp_err.h"
-#include "hal/gpio_types.h"
-#include "time.h"
+
 #include "pubsub.h"
-#include "stdio.h"
-#include "stdbool.h"
-#include "string.h"
+
+#include "DS3234.h"
 
 /** Time update interval (ms) */
 #define DS3432_LOOK_INTERVAL_MS 1000

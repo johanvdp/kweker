@@ -1,13 +1,16 @@
 // The author disclaims copyright to this source code.
-#include "bind_control.h"
 
-#include <freertos/FreeRTOS.h>
+#include "esp_log.h"
+
+#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "esp_log.h"
+
 #include "pubsub.h"
+
 #include "model.h"
 #include "hmi_control.h"
+#include "bind_control.h"
 
 static const char *TAG = "bind_control";
 

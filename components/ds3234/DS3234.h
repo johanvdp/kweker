@@ -1,11 +1,14 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _DS3234_H_
 #define _DS3234_H_
 
-#include "pubsub.h"
-#include "freertos/timers.h"
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
+
+#include "freertos/timers.h"
+
+#include "pubsub.h"
 
 /**
  * DS3234 time.

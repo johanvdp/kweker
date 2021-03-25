@@ -1,12 +1,15 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _DO_H_
 #define _DO_H_
+
+#include "driver/gpio.h"
+#include "esp_log.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
+
 #include "pubsub.h"
 
 /**

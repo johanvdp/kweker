@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #include "hmi_settings.h"
 
 #define HMI_MARGIN 5

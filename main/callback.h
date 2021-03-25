@@ -2,6 +2,14 @@
 // https://stackoverflow.com/users/6829808/evgeniy-alexeev
 // https://stackoverflow.com/help/licensing
 // CC BY-SA 3.0.
+
+#ifndef _CALLBACK_H_
+#define _CALLBACK_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <type_traits>
 #include <functional>
 
@@ -43,3 +51,9 @@ template<typename Ret, typename ... Params, unsigned int n, typename CallerType>
 std::function<Ret(Params...)> Callback<Ret(Params...), n, CallerType>::func;
 
 #define GETCB(ptrtype, callertype) Callback<ActualType<ptrtype>::type, __COUNTER__, callertype>::getCallback
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _CALLBACK_H_ */

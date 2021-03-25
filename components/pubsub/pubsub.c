@@ -1,12 +1,15 @@
 // The author disclaims copyright to this source code.
 
-#include "pubsub.h"
+#include <string.h>
+#include <sys/queue.h>
+
+#include "esp_log.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
-#include <sys/queue.h>
-#include <string.h>
-#include "esp_log.h"
+
+#include "pubsub.h"
 
 static const char *tag = "pubsub";
 

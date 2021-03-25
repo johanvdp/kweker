@@ -1,14 +1,18 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _AM2301_H_
 #define _AM2301_H_
+
+#include <math.h>
+
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "esp_err.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "math.h"
-#include "driver/gpio.h"
-#include "esp_log.h"
-#include "esp_err.h"
+
 #include "pubsub.h"
 
 /**

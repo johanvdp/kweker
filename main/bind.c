@@ -1,13 +1,16 @@
 // The author disclaims copyright to this source code.
-#include "bind.h"
+
+#include "esp_log.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
-#include "esp_log.h"
-#include "model.h"
+
 #include "pubsub.h"
+
+#include "model.h"
 #include "hmi.h"
+#include "bind.h"
 #include "bind_control.h"
 #include "bind_settings.h"
 

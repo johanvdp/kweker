@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _BIND_CONTROL_H_
 #define _BIND_CONTROL_H_
 

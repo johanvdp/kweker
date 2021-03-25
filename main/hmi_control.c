@@ -1,6 +1,8 @@
 // The author disclaims copyright to this source code.
-#include "hmi_control.h"
+
 #include "esp_log.h"
+
+#include "hmi_control.h"
 
 #define HMI_CONTROL_W 110
 #define HMI_CONTROL_H 270

@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _HMI_CONTROL_H_
 #define _HMI_CONTROL_H_
 
@@ -7,6 +8,7 @@ extern "C" {
 #endif
 
 #include "lvgl.h"
+
 #include "hmi.h"
 
 /*

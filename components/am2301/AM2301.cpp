@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #include "AM2301.h"
 
 static const char *TAG = "AM2301";

@@ -1,20 +1,25 @@
 // The author disclaims copyright to this source code.
+
 extern "C" {
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
+#include <string.h>
+
 #include "esp_system.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
-#include "string.h"
-#include "hmi.h"
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+
+#include "pubsub.h"
+#include "pubsub_test.h"
 #include "LED.h"
 #include "DO.h"
 #include "AM2301.h"
 #include "DS3234.h"
-#include "pubsub.h"
-#include "pubsub_test.h"
+
 #include "model.h"
+#include "hmi.h"
 #include "bind.h"
 
 #define TAG "main"

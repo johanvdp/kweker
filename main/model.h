@@ -1,4 +1,5 @@
 // The author disclaims copyright to this source code.
+
 #ifndef _MODEL_H_
 #define _MODEL_H_
 

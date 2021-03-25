@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#include "stdbool.h"
+#include <stdbool.h>
 
 /**
  * Run self test.
