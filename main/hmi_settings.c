@@ -173,27 +173,24 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     lv_obj_t *tab = lv_tabview_add_tab(parent, "Settings");
 
     /** set current time */
-    hmi_timespinner_current_time.granularity = HMI_CURRENT_TIME_GRANULARITY_S;
-    hmi_timespinner_current_time.dateless = false;
     hmi_settings_create_label(tab, HMI_MARGIN, 0 * HMI_SETTING_HEIGHT,
             "Current time:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 0 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
-            &hmi_timespinner_current_time);
+    hmi_timespinner_create(tab, HMI_VALUE_X, 0 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH,
+    HMI_CURRENT_TIME_GRANULARITY_S, false, &hmi_timespinner_current_time);
 
     /** set begin of day */
-    hmi_timespinner_begin_of_day.granularity = HMI_NIGHT_DAY_GRANULARITY_S;
-    hmi_timespinner_begin_of_day.dateless = true;
     hmi_settings_create_label(tab, HMI_MARGIN, 1 * HMI_SETTING_HEIGHT,
             "Begin of day:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 1 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    hmi_timespinner_create(tab, HMI_VALUE_X, 1 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_NIGHT_DAY_GRANULARITY_S, true,
             &hmi_timespinner_begin_of_day);
 
     /** set begin of night */
-    hmi_timespinner_begin_of_night.granularity = HMI_NIGHT_DAY_GRANULARITY_S;
-    hmi_timespinner_begin_of_night.dateless = true;
     hmi_settings_create_label(tab, HMI_MARGIN, 2 * HMI_SETTING_HEIGHT,
             "Begin of night:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 2 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    hmi_timespinner_create(tab, HMI_VALUE_X, 2 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_NIGHT_DAY_GRANULARITY_S, true,
             &hmi_timespinner_begin_of_night);
 
     /** set day temperature */
@@ -234,37 +231,19 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     return tab;
 }
 
-static void hmi_settings_set_time(hmi_timespinner_t *spinner, time_t timestamp)
-{
-    if (hmi_semaphore_take("hmi_settings_set_time")) {
-
-        spinner->time = timestamp;
-
-        struct tm brokentime;
-        gmtime_r(&timestamp, &brokentime);
-        // HH:MM\0
-        char text[] = { 0, 0, 0, 0, 0, 0 };
-        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour,
-                brokentime.tm_min);
-        lv_textarea_set_text(spinner->textarea, text);
-
-        hmi_semaphore_give();
-    }
-}
-
 void hmi_settings_set_current_time(time_t timestamp)
 {
-    hmi_settings_set_time(&hmi_timespinner_current_time, timestamp);
+    hmi_timespinner_set_time(&hmi_timespinner_current_time, timestamp);
 }
 
 void hmi_settings_set_begin_of_day(time_t timestamp)
 {
-    hmi_settings_set_time(&hmi_timespinner_begin_of_day, timestamp);
+    hmi_timespinner_set_time(&hmi_timespinner_begin_of_day, timestamp);
 }
 
 void hmi_settings_set_begin_of_night(time_t timestamp)
 {
-    hmi_settings_set_time(&hmi_timespinner_begin_of_night, timestamp);
+    hmi_timespinner_set_time(&hmi_timespinner_begin_of_night, timestamp);
 }
 
 void hmi_settings_set_current_time_callback(

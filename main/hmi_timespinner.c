@@ -48,10 +48,12 @@ static void hmi_timespinner_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
 }
 
 void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x,
-        lv_coord_t y, lv_coord_t width, hmi_timespinner_t *spinner)
+        lv_coord_t y, lv_coord_t width, uint32_t granularity, bool dateless, hmi_timespinner_t *spinner)
 {
     lv_obj_t *textarea = lv_textarea_create(parent, NULL);
     spinner->textarea = textarea;
+    spinner->granularity = granularity;
+    spinner->dateless = dateless;
 
     lv_obj_set_click(lv_page_get_scrollable(textarea), false);
     lv_theme_apply(textarea, LV_THEME_SPINBOX);
@@ -86,4 +88,22 @@ void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x,
             LV_STATE_DEFAULT,
             LV_SYMBOL_MINUS);
     lv_obj_set_event_cb(btn_min, hmi_timespinner_decrement_event_cb);
+}
+
+void hmi_timespinner_set_time(hmi_timespinner_t *spinner, time_t timestamp)
+{
+    if (hmi_semaphore_take("hmi_timespinner_set_time")) {
+
+        spinner->time = timestamp;
+
+        struct tm brokentime;
+        gmtime_r(&timestamp, &brokentime);
+        // HH:MM\0
+        char text[] = { 0, 0, 0, 0, 0, 0 };
+        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour,
+                brokentime.tm_min);
+        lv_textarea_set_text(spinner->textarea, text);
+
+        hmi_semaphore_give();
+    }
 }
