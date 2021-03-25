@@ -102,7 +102,7 @@ static void bind_control_task(void *pvParameter)
             hmi_control_set_co2_pv(message.double_val);
         }
         if (xQueueReceive(hum_pv, &message, 0)) {
-            hmi_control_set_co2_pv(message.double_val);
+            hmi_control_set_hum_pv(message.double_val);
         }
         if (xQueueReceive(temp_pv, &message, 0)) {
             hmi_control_set_temp_pv(message.double_val);

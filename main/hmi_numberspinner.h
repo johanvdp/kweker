@@ -22,7 +22,7 @@ typedef struct
     char *representation;
     size_t representation_size;
     char *representation_format;
-    hmi_time_callback_t callback;
+    hmi_double_callback_t callback;
 } hmi_numberspinner_t;
 
 void hmi_numberspinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,

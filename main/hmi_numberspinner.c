@@ -11,12 +11,12 @@ static void hmi_numberspinner_increment_event_cb(lv_obj_t *btn, lv_event_t e)
         if (spinner->callback != NULL) {
             // to next granularity
             double value = spinner->value;
-            int multiples = (int) (value / spinner->granularity);
+            uint32_t multiples = (int) (value / spinner->granularity);
             double rounded = spinner->granularity * multiples;
             double next = rounded + spinner->granularity;
             // limit to boundary
-            if (value > spinner->max) {
-                value = spinner->max;
+            if (next > spinner->max) {
+                next = spinner->max;
             }
             spinner->callback(next);
         }
@@ -34,8 +34,8 @@ static void hmi_numberspinner_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
             double rounded = spinner->granularity * multiples;
             double prev = rounded - spinner->granularity;
             // limit to boundary
-            if (value < spinner->min) {
-                value = spinner->min;
+            if (prev < spinner->min) {
+                prev = spinner->min;
             }
             spinner->callback(prev);
         }
