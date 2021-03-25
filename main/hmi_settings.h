@@ -17,9 +17,6 @@ extern "C" {
  * -------------
  */
 
-typedef void (*hmi_settings_time_callback_t)(time_t time);
-typedef void (*hmi_settings_double_callback_t)(double value);
-
 lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent);
 
 void hmi_settings_set_current_time(time_t timestamp);
