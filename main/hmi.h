@@ -22,8 +22,8 @@ extern "C" {
  * -------
  */
 
-typedef void (*hmi_settings_time_callback_t)(time_t time);
-typedef void (*hmi_settings_double_callback_t)(double value);
+typedef void (*hmi_time_callback_t)(time_t time);
+typedef void (*hmi_double_callback_t)(double value);
 
 typedef enum
 {

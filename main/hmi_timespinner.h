@@ -18,7 +18,7 @@ typedef struct
     time_t time;
     uint32_t granularity;
     bool dateless;
-    hmi_settings_time_callback_t callback;
+    hmi_time_callback_t callback;
 } hmi_timespinner_t;
 
 void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,

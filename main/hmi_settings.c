@@ -30,12 +30,12 @@ static lv_obj_t *hmi_spinbox_night_humidity;
 /** set night CO2 concentration */
 static lv_obj_t *hmi_spinbox_night_co2;
 
-static hmi_settings_double_callback_t set_temp_day_callback;
-static hmi_settings_double_callback_t set_temp_night_callback;
-static hmi_settings_double_callback_t set_hum_day_callback;
-static hmi_settings_double_callback_t set_hum_night_callback;
-static hmi_settings_double_callback_t set_co2_day_callback;
-static hmi_settings_double_callback_t set_co2_night_callback;
+static hmi_double_callback_t set_temp_day_callback;
+static hmi_double_callback_t set_temp_night_callback;
+static hmi_double_callback_t set_hum_day_callback;
+static hmi_double_callback_t set_hum_night_callback;
+static hmi_double_callback_t set_co2_day_callback;
+static hmi_double_callback_t set_co2_night_callback;
 
 static void hmi_settings_button_theme_cb(lv_obj_t *button, lv_event_t e)
 {
@@ -247,52 +247,52 @@ void hmi_settings_set_begin_of_night(time_t timestamp)
 }
 
 void hmi_settings_set_current_time_callback(
-        hmi_settings_time_callback_t callback)
+        hmi_time_callback_t callback)
 {
     hmi_timespinner_current_time.callback = callback;
 }
 
 void hmi_settings_set_begin_of_day_callback(
-        hmi_settings_time_callback_t callback)
+        hmi_time_callback_t callback)
 {
     hmi_timespinner_begin_of_day.callback = callback;
 }
 
 void hmi_settings_set_begin_of_night_callback(
-        hmi_settings_time_callback_t callback)
+        hmi_time_callback_t callback)
 {
     hmi_timespinner_begin_of_night.callback = callback;
 }
 
-void hmi_settings_set_temp_day_callback(hmi_settings_double_callback_t callback)
+void hmi_settings_set_temp_day_callback(hmi_double_callback_t callback)
 {
     set_temp_day_callback = callback;
 }
 
 void hmi_settings_set_temp_night_callback(
-        hmi_settings_double_callback_t callback)
+        hmi_double_callback_t callback)
 {
     set_temp_night_callback = callback;
 }
 
-void hmi_settings_set_hum_day_callback(hmi_settings_double_callback_t callback)
+void hmi_settings_set_hum_day_callback(hmi_double_callback_t callback)
 {
     set_hum_day_callback = callback;
 }
 
 void hmi_settings_set_hum_night_callback(
-        hmi_settings_double_callback_t callback)
+        hmi_double_callback_t callback)
 {
     set_hum_night_callback = callback;
 }
 
-void hmi_settings_set_co2_day_callback(hmi_settings_double_callback_t callback)
+void hmi_settings_set_co2_day_callback(hmi_double_callback_t callback)
 {
     set_co2_day_callback = callback;
 }
 
 void hmi_settings_set_co2_night_callback(
-        hmi_settings_double_callback_t callback)
+        hmi_double_callback_t callback)
 {
     set_co2_night_callback = callback;
 }
