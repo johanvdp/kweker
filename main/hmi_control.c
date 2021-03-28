@@ -35,7 +35,7 @@ static lv_obj_t *hmi_control_mode_btnmatrix;
 static lv_obj_t *hmi_control_manual_btnmatrix;
 
 static hmi_control_mode_callback_t hmi_control_mode_callback;
-static hmi_bool_callback_t hmi_control_lamp_sv_callback;
+static hmi_bool_callback_t hmi_control_light_sv_callback;
 static hmi_bool_callback_t hmi_control_heater_sv_callback;
 static hmi_bool_callback_t hmi_control_exhaust_sv_callback;
 static hmi_bool_callback_t hmi_control_recirc_sv_callback;
@@ -271,8 +271,8 @@ static void hmi_control_manual_cb(lv_obj_t *button, lv_event_t e)
         bool checked = lv_btnmatrix_get_btn_ctrl(button, index,
                 LV_BTNMATRIX_CTRL_CHECK_STATE);
 
-        if (index == 0 && hmi_control_lamp_sv_callback != NULL) {
-            hmi_control_lamp_sv_callback(checked);
+        if (index == 0 && hmi_control_light_sv_callback != NULL) {
+            hmi_control_light_sv_callback(checked);
         } else if (index == 1 && hmi_control_heater_sv_callback != NULL) {
             hmi_control_heater_sv_callback(checked);
         } else if (index == 2 && hmi_control_exhaust_sv_callback != NULL) {
@@ -450,14 +450,14 @@ static void hmi_control_set_manual_btn(uint16_t btn_id, bool active)
     }
 }
 
-void hmi_control_set_lamp_sv(bool active)
+void hmi_control_set_light_sv(bool active)
 {
     hmi_control_set_manual_btn(0, active);
 }
 
-void hmi_control_set_lamp_sv_callback(hmi_bool_callback_t callback)
+void hmi_control_set_light_sv_callback(hmi_bool_callback_t callback)
 {
-    hmi_control_lamp_sv_callback = callback;
+    hmi_control_light_sv_callback = callback;
 }
 
 void hmi_control_set_heater_sv(bool active)

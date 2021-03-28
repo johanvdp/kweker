@@ -14,12 +14,12 @@ menu "Kweker"
         help
             GPIO number (GPIO_NUM_xx) to AM2301 sensor.
 
-    config GPIO_LAMP
-        int "Lamp GPIO number"
+    config GPIO_LIGHT
+        int "Light GPIO number"
         range 0 33
         default 33
         help
-            GPIO number (GPIO_NUM_xx) to lamp SSR.
+            GPIO number (GPIO_NUM_xx) to light SSR.
 
     config GPIO_EXHAUST
         int "Exhaust fan GPIO number"

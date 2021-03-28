@@ -47,7 +47,7 @@ void hmi_set_current_time(time_t time);
 void hmi_set_control_mode(hmi_control_mode_t mode);
 void hmi_set_circadian(bool day);
 
-void hmi_set_lamp(bool active);
+void hmi_set_light(bool active);
 void hmi_set_exhaust(bool active);
 void hmi_set_heater(bool active);
 void hmi_set_recirc(bool active);

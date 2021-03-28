@@ -41,8 +41,8 @@ void hmi_control_set_co2_lo(bool lo);
 void hmi_control_set_control_mode(hmi_control_mode_t mode);
 void hmi_control_set_control_mode_callback(hmi_control_mode_callback_t callback);
 
-void hmi_control_set_lamp_sv(bool active);
-void hmi_control_set_lamp_sv_callback(hmi_bool_callback_t callback);
+void hmi_control_set_light_sv(bool active);
+void hmi_control_set_light_sv_callback(hmi_bool_callback_t callback);
 void hmi_control_set_exhaust_sv(bool active);
 void hmi_control_set_exhaust_sv_callback(hmi_bool_callback_t callback);
 void hmi_control_set_recirc_sv(bool active);

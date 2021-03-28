@@ -6,7 +6,7 @@ const char *MODEL_ACTIVITY = "activity";
 
 const char *MODEL_EXHAUST = "exhaust.out";
 const char *MODEL_HEATER = "heater.out";
-const char *MODEL_LAMP = "lamp.out";
+const char *MODEL_LIGHT = "light.out";
 const char *MODEL_RECIRC = "recirc.out";
 
 const char *MODEL_AM2301_STATUS = "am2301.status";
@@ -33,7 +33,7 @@ const char *MODEL_TEMP_PV = "temp.pv";
 
 const char *MODEL_EXHAUST_SV = "exhaust.sv";
 const char *MODEL_HEATER_SV = "heater.sv";
-const char *MODEL_LAMP_SV = "light.sv";
+const char *MODEL_LIGHT_SV = "light.sv";
 const char *MODEL_RECIRC_SV = "recirc.sv";
 
 const char *MODEL_CO2_SV_NIGHT = "co2.sv.night";
@@ -48,7 +48,7 @@ pubsub_topic_t model_activity;
 
 pubsub_topic_t model_exhaust;
 pubsub_topic_t model_heater;
-pubsub_topic_t model_lamp;
+pubsub_topic_t model_light;
 pubsub_topic_t model_recirc;
 
 pubsub_topic_t model_am2301_status;
@@ -90,7 +90,7 @@ void model_initialize()
 {
     model_activity = pubsub_register_topic(MODEL_ACTIVITY, PUBSUB_TYPE_INT);
 
-    model_lamp = pubsub_register_topic(MODEL_LAMP, PUBSUB_TYPE_INT);
+    model_light = pubsub_register_topic(MODEL_LIGHT, PUBSUB_TYPE_INT);
     model_exhaust = pubsub_register_topic(MODEL_EXHAUST, PUBSUB_TYPE_BOOLEAN);
     model_recirc = pubsub_register_topic(MODEL_RECIRC, PUBSUB_TYPE_BOOLEAN);
     model_heater = pubsub_register_topic(MODEL_HEATER, PUBSUB_TYPE_BOOLEAN);
@@ -123,7 +123,7 @@ void model_initialize()
             PUBSUB_TYPE_BOOLEAN);
     model_heater_sv = pubsub_register_topic(MODEL_HEATER_SV,
             PUBSUB_TYPE_BOOLEAN);
-    model_light_sv = pubsub_register_topic(MODEL_LAMP_SV, PUBSUB_TYPE_BOOLEAN);
+    model_light_sv = pubsub_register_topic(MODEL_LIGHT_SV, PUBSUB_TYPE_BOOLEAN);
     model_recirc_sv = pubsub_register_topic(MODEL_RECIRC_SV,
             PUBSUB_TYPE_BOOLEAN);
 

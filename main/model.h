@@ -16,8 +16,8 @@ extern const char *MODEL_ACTIVITY;
 extern const char *MODEL_EXHAUST;
 /** Heater actuator (boolean) */
 extern const char *MODEL_HEATER;
-/** Lamp actuator (boolean) */
-extern const char *MODEL_LAMP;
+/** Light actuator (boolean) */
+extern const char *MODEL_LIGHT;
 /** Recirculation fan actuator (boolean) */
 extern const char *MODEL_RECIRC;
 
@@ -56,8 +56,8 @@ extern const char *MODEL_TEMP_SV_DAY;
 extern const char *MODEL_EXHAUST_SV;
 /* Manual control heater setpoint (boolean) */
 extern const char *MODEL_HEATER_SV;
-/* Manual control lamp setpoint (boolean) */
-extern const char *MODEL_LAMP_SV;
+/* Manual control light setpoint (boolean) */
+extern const char *MODEL_LIGHT_SV;
 /* Manual control recirculation fan setpoint (boolean) */
 extern const char *MODEL_RECIRC_SV;
 
@@ -86,7 +86,7 @@ extern pubsub_topic_t model_activity;
 
 extern pubsub_topic_t model_exhaust;
 extern pubsub_topic_t model_heater;
-extern pubsub_topic_t model_lamp;
+extern pubsub_topic_t model_light;
 extern pubsub_topic_t model_recirc;
 
 extern pubsub_topic_t model_am2301_status;

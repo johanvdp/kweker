@@ -27,7 +27,7 @@ extern "C" {
 // GPIO configuration see Kconfig.projbuild
 #define GPIO_LED (gpio_num_t)CONFIG_GPIO_LED
 #define GPIO_AM2301 (gpio_num_t)CONFIG_GPIO_AM2301
-#define GPIO_LAMP (gpio_num_t)CONFIG_GPIO_LAMP
+#define GPIO_LIGHT (gpio_num_t)CONFIG_GPIO_LIGHT
 #define GPIO_EXHAUST (gpio_num_t)CONFIG_GPIO_EXHAUST
 #define GPIO_RECIRC (gpio_num_t)CONFIG_GPIO_RECIRC
 #define GPIO_HEATER (gpio_num_t)CONFIG_GPIO_HEATER
@@ -37,7 +37,7 @@ extern "C" {
 LED led;
 AM2301 am2301;
 DS3234 ds3234;
-DO lamp;
+DO light;
 DO exhaust;
 DO recirc;
 DO heater;
@@ -69,7 +69,7 @@ void app_main()
     bind_initialize();
 
     led.setup(GPIO_LED, true, MODEL_ACTIVITY);
-    lamp.setup(GPIO_LAMP, true, MODEL_LAMP);
+    light.setup(GPIO_LIGHT, true, MODEL_LIGHT);
     exhaust.setup(GPIO_EXHAUST, true, MODEL_EXHAUST);
     recirc.setup(GPIO_RECIRC, true, MODEL_RECIRC);
     heater.setup(GPIO_HEATER, true, MODEL_HEATER);

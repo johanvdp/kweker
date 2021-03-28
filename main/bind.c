@@ -20,8 +20,8 @@ static const char *TAG = "bind";
 static QueueHandle_t exhaust;
 /** toolbar heater indicator */
 static QueueHandle_t heater;
-/** toolbar lamp indicator */
-static QueueHandle_t lamp;
+/** toolbar light indicator */
+static QueueHandle_t light;
 /** toolbar recirculation indicator */
 static QueueHandle_t recirc;
 /** toolbar circadian indicator */
@@ -43,9 +43,9 @@ static void bind_task(void *pvParameter)
             model_active_t active = (model_active_t)message.int_val;
             hmi_set_heater(active);
         }
-        if (xQueueReceive(lamp, &message, 0)) {
+        if (xQueueReceive(light, &message, 0)) {
             model_active_t active = (model_active_t)message.int_val;
-            hmi_set_lamp(active);
+            hmi_set_light(active);
         }
         if (xQueueReceive(recirc, &message, 0)) {
             model_active_t active = (model_active_t)message.int_val;
@@ -80,8 +80,8 @@ static void bind_subscribe()
     heater = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(heater, MODEL_HEATER, true);
 
-    lamp = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(lamp, MODEL_LAMP, true);
+    light = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(light, MODEL_LIGHT, true);
 
     recirc = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(recirc, MODEL_RECIRC, true);

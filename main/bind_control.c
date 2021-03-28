@@ -36,8 +36,8 @@ static QueueHandle_t temp_lo;
 static QueueHandle_t exhaust_sv;
 /** manual scontrol etpoint heater */
 static QueueHandle_t heater_sv;
-/** manual control setpoint lamp */
-static QueueHandle_t lamp_sv;
+/** manual control setpoint light */
+static QueueHandle_t light_sv;
 /** manual control setpoint recirculation fan */
 static QueueHandle_t recirc_sv;
 
@@ -94,7 +94,7 @@ static void bind_control_task(void *pvParameter)
         if (xQueueReceive(heater_sv, &message, 0)) {
 
         }
-        if (xQueueReceive(lamp_sv, &message, 0)) {
+        if (xQueueReceive(light_sv, &message, 0)) {
 
         }
         if (xQueueReceive(recirc_sv, &message, 0)) {
@@ -138,8 +138,8 @@ static void bind_control_subscribe()
     pubsub_add_subscription(heater_sv, MODEL_HEATER_SV,
     true);
 
-    lamp_sv = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(lamp_sv, MODEL_LAMP_SV,
+    light_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(light_sv, MODEL_LIGHT_SV,
     true);
 
     recirc_sv = xQueueCreate(2, sizeof(pubsub_message_t));
@@ -182,7 +182,7 @@ static void bind_control_mode_callback(hmi_control_mode_t mode)
     pubsub_publish_int(model_control_mode, mode);
 }
 
-static void bind_control_lamp_sv_callback(bool active)
+static void bind_control_light_sv_callback(bool active)
 {
     pubsub_publish_int(model_light_sv,
             active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
@@ -211,7 +211,7 @@ void bind_control_initialize()
     bind_control_subscribe();
 
     hmi_control_set_control_mode_callback(&bind_control_mode_callback);
-    hmi_control_set_lamp_sv_callback(&bind_control_lamp_sv_callback);
+    hmi_control_set_light_sv_callback(&bind_control_light_sv_callback);
     hmi_control_set_exhaust_sv_callback(&bind_control_exhaust_sv_callback);
     hmi_control_set_recirc_sv_callback(&bind_control_recirc_sv_callback);
     hmi_control_set_heater_sv_callback(&bind_control_heater_sv_callback);

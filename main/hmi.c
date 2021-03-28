@@ -305,7 +305,7 @@ static void hmi_set_led(lv_obj_t* led, bool active)
     }
 }
 
-void hmi_set_lamp(bool active)
+void hmi_set_light(bool active)
 {
     hmi_set_led(hmi_led_light_switch, active);
 }
