@@ -92,13 +92,13 @@ static void bind_control_task(void *pvParameter)
             hmi_control_set_exhaust_sv(message.boolean_val);
         }
         if (xQueueReceive(heater_sv, &message, 0)) {
-
+            hmi_control_set_heater_sv(message.boolean_val);
         }
         if (xQueueReceive(light_sv, &message, 0)) {
-
+            hmi_control_set_light_sv(message.boolean_val);
         }
         if (xQueueReceive(recirc_sv, &message, 0)) {
-
+            hmi_control_set_recirc_sv(message.boolean_val);
         }
         if (xQueueReceive(co2_pv, &message, 0)) {
             hmi_control_set_co2_pv(message.double_val);
