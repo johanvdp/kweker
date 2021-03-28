@@ -139,11 +139,6 @@ typedef enum
 
 typedef enum
 {
-    MODEL_ACTIVE_NO = 0, MODEL_ACTIVE_YES = 1
-} model_active_t;
-
-typedef enum
-{
     MODEL_COMPONENT_STATUS_OK = 0,
     MODEL_COMPONENT_STATUS_RECOVERABLE = 1,
     MODEL_COMPONENT_STATUS_FATAL = 2

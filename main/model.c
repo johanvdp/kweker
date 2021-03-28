@@ -90,7 +90,7 @@ void model_initialize()
 {
     model_activity = pubsub_register_topic(MODEL_ACTIVITY, PUBSUB_TYPE_INT);
 
-    model_light = pubsub_register_topic(MODEL_LIGHT, PUBSUB_TYPE_INT);
+    model_light = pubsub_register_topic(MODEL_LIGHT, PUBSUB_TYPE_BOOLEAN);
     model_exhaust = pubsub_register_topic(MODEL_EXHAUST, PUBSUB_TYPE_BOOLEAN);
     model_recirc = pubsub_register_topic(MODEL_RECIRC, PUBSUB_TYPE_BOOLEAN);
     model_heater = pubsub_register_topic(MODEL_HEATER, PUBSUB_TYPE_BOOLEAN);

@@ -89,7 +89,7 @@ static void bind_control_task(void *pvParameter)
             hmi_control_set_temp_sv(message.double_val);
         }
         if (xQueueReceive(exhaust_sv, &message, 0)) {
-
+            hmi_control_set_exhaust_sv(message.boolean_val);
         }
         if (xQueueReceive(heater_sv, &message, 0)) {
 
@@ -184,26 +184,22 @@ static void bind_control_mode_callback(hmi_control_mode_t mode)
 
 static void bind_control_light_sv_callback(bool active)
 {
-    pubsub_publish_int(model_light_sv,
-            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+    pubsub_publish_bool(model_light_sv, active);
 }
 
 static void bind_control_exhaust_sv_callback(bool active)
 {
-    pubsub_publish_int(model_exhaust_sv,
-            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+    pubsub_publish_bool(model_exhaust_sv, active);
 }
 
 static void bind_control_recirc_sv_callback(bool active)
 {
-    pubsub_publish_int(model_recirc_sv,
-            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+    pubsub_publish_bool(model_recirc_sv, active);
 }
 
 static void bind_control_heater_sv_callback(bool active)
 {
-    pubsub_publish_int(model_heater_sv,
-            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+    pubsub_publish_bool(model_heater_sv, active);
 }
 
 void bind_control_initialize()
