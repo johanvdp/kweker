@@ -4,11 +4,12 @@
 #include "hmi_timespinner.h"
 #include "hmi_numberspinner.h"
 
-#define HMI_SETTING_HEIGHT 32
-#define HMI_SETTING_WIDTH 60
-#define HMI_VALUE_X 360
-#define HMI_CURRENT_TIME_GRANULARITY_S 60
-#define HMI_NIGHT_DAY_GRANULARITY_S (15 * 60)
+#define HMI_SETTING_HEIGHT 64
+#define HMI_SETTING_WIDTH 208
+#define HMI_SETTING_LABEL_OFFSET 28
+#define HMI_SETTING_COLUMN_X 256
+#define HMI_SETTING_CURRENT_TIME_GRANULARITY_S 60
+#define HMI_SETTING_NIGHT_DAY_GRANULARITY_S (15 * 60)
 
 static const char *TAG = "hmi_settings";
 
@@ -84,6 +85,7 @@ static lv_obj_t* hmi_settings_create_button_theme(lv_obj_t *parent,
 {
 
     lv_obj_t *button = lv_btn_create(parent, NULL);
+    lv_theme_apply(button, LV_THEME_SPINBOX_BTN);
     lv_obj_set_pos(button, x, y);
     lv_obj_set_size(button, HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT);
     lv_btn_set_checkable(button, true);
@@ -105,7 +107,7 @@ static lv_obj_t* hmi_settings_create_label(lv_obj_t *parent, lv_coord_t x,
 {
 
     lv_obj_t *label = lv_label_create(parent, NULL);
-    lv_obj_set_pos(label, x, y + HMI_MARGIN);
+    lv_obj_set_pos(label, x, y + HMI_SETTING_LABEL_OFFSET);
     lv_label_set_text(label, text);
 
     return label;
@@ -117,89 +119,102 @@ lv_obj_t* hmi_settings_create_tab(lv_obj_t *parent)
     lv_obj_t *tab = lv_tabview_add_tab(parent, "Settings");
 
     /** set current time */
-    hmi_settings_create_label(tab, HMI_MARGIN, 0 * HMI_SETTING_HEIGHT,
-            "Current time:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 0 * HMI_SETTING_HEIGHT,
-    HMI_SETTING_WIDTH,
-    HMI_CURRENT_TIME_GRANULARITY_S, false, &hmi_timespinner_current_time);
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            0 * HMI_SETTING_HEIGHT, "Current time:");
+    hmi_timespinner_create(tab, HMI_SETTING_COLUMN_X, 0 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT,
+    HMI_SETTING_CURRENT_TIME_GRANULARITY_S, false,
+            &hmi_timespinner_current_time);
 
     /** set begin of day */
-    hmi_settings_create_label(tab, HMI_MARGIN, 1 * HMI_SETTING_HEIGHT,
-            "Begin of day:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 1 * HMI_SETTING_HEIGHT,
-    HMI_SETTING_WIDTH, HMI_NIGHT_DAY_GRANULARITY_S, true,
-            &hmi_timespinner_begin_of_day);
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            1 * HMI_SETTING_HEIGHT, "Begin of day:");
+    hmi_timespinner_create(tab, HMI_SETTING_COLUMN_X, 1 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT, HMI_SETTING_NIGHT_DAY_GRANULARITY_S,
+    true, &hmi_timespinner_begin_of_day);
 
     /** set begin of night */
-    hmi_settings_create_label(tab, HMI_MARGIN, 2 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            2 * HMI_SETTING_HEIGHT,
             "Begin of night:");
-    hmi_timespinner_create(tab, HMI_VALUE_X, 2 * HMI_SETTING_HEIGHT,
-    HMI_SETTING_WIDTH, HMI_NIGHT_DAY_GRANULARITY_S, true,
-            &hmi_timespinner_begin_of_night);
+    hmi_timespinner_create(tab, HMI_SETTING_COLUMN_X, 2 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT, HMI_SETTING_NIGHT_DAY_GRANULARITY_S,
+    true, &hmi_timespinner_begin_of_night);
 
     /** set day temperature */
-    hmi_settings_create_label(tab, HMI_MARGIN, 3 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            3 * HMI_SETTING_HEIGHT,
             "Day temperature:");
     hmi_numberspinner_create(tab,
-    HMI_VALUE_X, 3 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH, 0.0, 50.0, 0.5,
+    HMI_SETTING_COLUMN_X, 3 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    HMI_SETTING_HEIGHT, 0.0, 50.0, 0.5,
             hmi_numberspinner_day_temperature_representation,
             sizeof hmi_numberspinner_day_temperature_representation,
             hmi_numberspinner_day_temperature_representation_format,
             &hmi_numberspinner_day_temperature);
 
     /** set day humidity */
-    hmi_settings_create_label(tab, HMI_MARGIN, 4 * HMI_SETTING_HEIGHT,
-            "Day humidity:");
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            4 * HMI_SETTING_HEIGHT, "Day humidity:");
     hmi_numberspinner_create(tab,
-    HMI_VALUE_X, 4 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH, 0.0, 100.0, 1.0,
+    HMI_SETTING_COLUMN_X, 4 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    HMI_SETTING_HEIGHT, 0.0, 100.0, 1.0,
             hmi_numberspinner_day_humidity_representation,
             sizeof hmi_numberspinner_day_humidity_representation,
             hmi_numberspinner_day_humidity_representation_format,
             &hmi_numberspinner_day_humidity);
 
     /** set day CO2 concentration */
-    hmi_settings_create_label(tab, HMI_MARGIN, 5 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            5 * HMI_SETTING_HEIGHT,
             "Day CO2 concentration:");
-    hmi_numberspinner_create(tab, HMI_VALUE_X, 5 * HMI_SETTING_HEIGHT,
-    HMI_SETTING_WIDTH, 0.0, 10000.0, 100.0,
+    hmi_numberspinner_create(tab, HMI_SETTING_COLUMN_X, 5 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT, 0.0, 10000.0, 100.0,
             hmi_numberspinner_day_co2_representation,
             sizeof hmi_numberspinner_day_co2_representation,
             hmi_numberspinner_day_co2_representation_format,
             &hmi_numberspinner_day_co2);
 
     /** set night temperature */
-    hmi_settings_create_label(tab, HMI_MARGIN, 6 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            6 * HMI_SETTING_HEIGHT,
             "Night temperature:");
     hmi_numberspinner_create(tab,
-    HMI_VALUE_X, 6 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH, 0.0, 50.0, 0.5,
+    HMI_SETTING_COLUMN_X, 6 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    HMI_SETTING_HEIGHT, 0.0, 50.0, 0.5,
             hmi_numberspinner_night_temperature_representation,
             sizeof hmi_numberspinner_night_temperature_representation,
             hmi_numberspinner_night_temperature_representation_format,
             &hmi_numberspinner_night_temperature);
 
     /** set night humidity */
-    hmi_settings_create_label(tab, HMI_MARGIN, 7 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            7 * HMI_SETTING_HEIGHT,
             "Night humidity:");
     hmi_numberspinner_create(tab,
-    HMI_VALUE_X, 7 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH, 0.0, 100.0, 1.0,
+    HMI_SETTING_COLUMN_X, 7 * HMI_SETTING_HEIGHT, HMI_SETTING_WIDTH,
+    HMI_SETTING_HEIGHT, 0.0, 100.0, 1.0,
             hmi_numberspinner_night_humidity_representation,
             sizeof hmi_numberspinner_night_humidity_representation,
             hmi_numberspinner_night_humidity_representation_format,
             &hmi_numberspinner_night_humidity);
 
     /** set night CO2 concentration */
-    hmi_settings_create_label(tab, HMI_MARGIN, 8 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            8 * HMI_SETTING_HEIGHT,
             "Night CO2 concentration:");
-    hmi_numberspinner_create(tab, HMI_VALUE_X, 8 * HMI_SETTING_HEIGHT,
-    HMI_SETTING_WIDTH, 0.0, 10000.0, 100.0,
+    hmi_numberspinner_create(tab, HMI_SETTING_COLUMN_X, 8 * HMI_SETTING_HEIGHT,
+    HMI_SETTING_WIDTH, HMI_SETTING_HEIGHT, 0.0, 10000.0, 100.0,
             hmi_numberspinner_night_co2_representation,
             sizeof hmi_numberspinner_night_co2_representation,
             hmi_numberspinner_night_co2_representation_format,
             &hmi_numberspinner_night_co2);
 
-    hmi_settings_create_label(tab, HMI_MARGIN, 9 * HMI_SETTING_HEIGHT,
+    hmi_settings_create_label(tab, HMI_MARGIN,
+            9 * HMI_SETTING_HEIGHT,
             "Color theme dark:");
-    hmi_settings_create_button_theme(tab, HMI_VALUE_X, 9 * HMI_SETTING_HEIGHT);
+    hmi_settings_create_button_theme(tab, HMI_SETTING_COLUMN_X,
+            9 * HMI_SETTING_HEIGHT);
 
     return tab;
 }

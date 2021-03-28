@@ -14,7 +14,7 @@ extern "C" {
 
 typedef struct
 {
-    lv_obj_t *textarea;
+    lv_obj_t *label;
     time_t time;
     uint32_t granularity;
     bool dateless;
@@ -22,7 +22,7 @@ typedef struct
 } hmi_timespinner_t;
 
 void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
-        lv_coord_t width, uint32_t granularity, bool dateless,
+        lv_coord_t width, lv_coord_t height, uint32_t granularity, bool dateless,
         hmi_timespinner_t *spinner);
 void hmi_timespinner_set_time(hmi_timespinner_t *spinner, time_t timestamp);
 

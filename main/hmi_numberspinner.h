@@ -14,7 +14,7 @@ extern "C" {
 
 typedef struct
 {
-    lv_obj_t *textarea;
+    lv_obj_t *label;
     double value;
     double min;
     double max;
@@ -26,7 +26,7 @@ typedef struct
 } hmi_numberspinner_t;
 
 void hmi_numberspinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
-        lv_coord_t width, double min, double max, double granularity,
+        lv_coord_t width, lv_coord_t height, double min, double max, double granularity,
         char *representation, size_t representation_size,
         char *representation_format, hmi_numberspinner_t *spinner);
 
