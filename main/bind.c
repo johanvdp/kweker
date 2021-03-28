@@ -36,19 +36,24 @@ static void bind_task(void *pvParameter)
     pubsub_message_t message;
     while (true) {
         if (xQueueReceive(exhaust, &message, 0)) {
-
+            model_active_t active = (model_active_t)message.int_val;
+            hmi_set_exhaust(active);
         }
         if (xQueueReceive(heater, &message, 0)) {
-
+            model_active_t active = (model_active_t)message.int_val;
+            hmi_set_heater(active);
         }
         if (xQueueReceive(lamp, &message, 0)) {
-
+            model_active_t active = (model_active_t)message.int_val;
+            hmi_set_lamp(active);
         }
         if (xQueueReceive(recirc, &message, 0)) {
-
+            model_active_t active = (model_active_t)message.int_val;
+            hmi_set_recirc(active);
         }
         if (xQueueReceive(circadian, &message, 0)) {
-
+            model_circadian_t circadian = (model_circadian_t)message.int_val;
+            hmi_set_circadian(circadian);
         }
         if (xQueueReceive(control_mode, &message, 0)) {
             model_control_mode_t mode = (model_control_mode_t) message.int_val;

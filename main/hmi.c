@@ -280,3 +280,48 @@ void hmi_set_control_mode(hmi_control_mode_t mode)
         hmi_semaphore_give();
     }
 }
+
+void hmi_set_circadian(bool day)
+{
+    if (hmi_semaphore_take("hmi_set_circadian")) {
+
+        ESP_LOGD(TAG, "hmi_set_circadian day:%s", day ? "true" : "false");
+        lv_label_set_text(hmi_label_circadian, day ? "DAY" : "NIGHT");
+
+        hmi_semaphore_give();
+    }
+}
+
+static void hmi_set_led(lv_obj_t* led, bool active)
+{
+    if (hmi_semaphore_take("hmi_set_led")) {
+        if (active) {
+            lv_led_on(led);
+        } else {
+            lv_led_off(led);
+        }
+
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_set_lamp(bool active)
+{
+    hmi_set_led(hmi_led_light_switch, active);
+}
+
+void hmi_set_exhaust(bool active)
+{
+    hmi_set_led(hmi_led_exhaust_switch, active);
+}
+
+void hmi_set_heater(bool active)
+{
+    hmi_set_led(hmi_led_heater_switch, active);
+}
+
+void hmi_set_recirc(bool active)
+{
+    hmi_set_led(hmi_led_recirculation_switch, active);
+}
+

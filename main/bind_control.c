@@ -1,5 +1,7 @@
 // The author disclaims copyright to this source code.
 
+#include <stdbool.h>
+
 #include "esp_log.h"
 
 #include "freertos/FreeRTOS.h"
@@ -148,29 +150,22 @@ static void bind_control_subscribe()
     pubsub_add_subscription(co2_sv_day, MODEL_CO2_SV_DAY,
     true);
 
-    hum_sv_day = xQueueCreate(2,
-            sizeof(pubsub_message_t));
+    hum_sv_day = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_sv_day, MODEL_HUM_SV_DAY,
     true);
 
-    temp_sv_day = xQueueCreate(2,
-            sizeof(pubsub_message_t));
-    pubsub_add_subscription(temp_sv_day,
-            MODEL_TEMP_SV_DAY, true);
+    temp_sv_day = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(temp_sv_day, MODEL_TEMP_SV_DAY, true);
 
     co2_sv_night = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_sv_night, MODEL_CO2_SV_NIGHT,
     true);
 
-    hum_sv_night = xQueueCreate(2,
-            sizeof(pubsub_message_t));
-    pubsub_add_subscription(hum_sv_night,
-            MODEL_HUM_SV_NIGHT, true);
+    hum_sv_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(hum_sv_night, MODEL_HUM_SV_NIGHT, true);
 
-    temp_sv_night = xQueueCreate(2,
-            sizeof(pubsub_message_t));
-    pubsub_add_subscription(temp_sv_night,
-            MODEL_TEMP_SV_NIGHT, true);
+    temp_sv_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(temp_sv_night, MODEL_TEMP_SV_NIGHT, true);
 
     co2_pv = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_pv, MODEL_CO2_PV, true);
@@ -182,8 +177,33 @@ static void bind_control_subscribe()
     pubsub_add_subscription(temp_pv, MODEL_TEMP_PV, true);
 }
 
-static void bind_control_mode_callback(hmi_control_mode_t mode) {
+static void bind_control_mode_callback(hmi_control_mode_t mode)
+{
     pubsub_publish_int(model_control_mode, mode);
+}
+
+static void bind_control_lamp_sv_callback(bool active)
+{
+    pubsub_publish_int(model_light_sv,
+            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+}
+
+static void bind_control_exhaust_sv_callback(bool active)
+{
+    pubsub_publish_int(model_exhaust_sv,
+            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+}
+
+static void bind_control_recirc_sv_callback(bool active)
+{
+    pubsub_publish_int(model_recirc_sv,
+            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
+}
+
+static void bind_control_heater_sv_callback(bool active)
+{
+    pubsub_publish_int(model_heater_sv,
+            active ? MODEL_ACTIVE_YES : MODEL_ACTIVE_NO);
 }
 
 void bind_control_initialize()
@@ -191,6 +211,10 @@ void bind_control_initialize()
     bind_control_subscribe();
 
     hmi_control_set_control_mode_callback(&bind_control_mode_callback);
+    hmi_control_set_lamp_sv_callback(&bind_control_lamp_sv_callback);
+    hmi_control_set_exhaust_sv_callback(&bind_control_exhaust_sv_callback);
+    hmi_control_set_recirc_sv_callback(&bind_control_recirc_sv_callback);
+    hmi_control_set_heater_sv_callback(&bind_control_heater_sv_callback);
 
     BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1),
@@ -199,6 +223,4 @@ void bind_control_initialize()
         ESP_LOGE(TAG, "failed to create task (FATAL)");
     }
 }
-
-
 

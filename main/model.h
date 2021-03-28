@@ -115,7 +115,7 @@ extern pubsub_topic_t model_temp_sv_day;
 
 extern pubsub_topic_t model_exhaust_sv;
 extern pubsub_topic_t model_heater_sv;
-extern pubsub_topic_t model_lamp_sv;
+extern pubsub_topic_t model_light_sv;
 extern pubsub_topic_t model_recirc_sv;
 
 extern pubsub_topic_t model_co2_pv;

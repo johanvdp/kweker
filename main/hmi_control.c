@@ -30,10 +30,15 @@ hmi_control_t hmi_control_co2;
 
 /** selector control mode */
 static lv_obj_t *hmi_control_mode_btnmatrix;
+
 /** setpoint manual control */
 static lv_obj_t *hmi_control_manual_btnmatrix;
 
 static hmi_control_mode_callback_t hmi_control_mode_callback;
+static hmi_bool_callback_t hmi_control_lamp_sv_callback;
+static hmi_bool_callback_t hmi_control_heater_sv_callback;
+static hmi_bool_callback_t hmi_control_exhaust_sv_callback;
+static hmi_bool_callback_t hmi_control_recirc_sv_callback;
 
 /**
  * Calculate fraction of value on control bar.
@@ -258,6 +263,25 @@ static lv_obj_t* hmi_control_create_mode(lv_obj_t *parent, lv_coord_t x,
     return matrix;
 }
 
+static void hmi_control_manual_cb(lv_obj_t *button, lv_event_t e)
+{
+    if (e == LV_EVENT_VALUE_CHANGED) {
+
+        uint16_t index = lv_btnmatrix_get_active_btn(button);
+        bool checked = lv_btnmatrix_get_btn_ctrl(button, index,
+                LV_BTNMATRIX_CTRL_CHECK_STATE);
+
+        if (index == 0 && hmi_control_lamp_sv_callback != NULL) {
+            hmi_control_lamp_sv_callback(checked);
+        } else if (index == 1 && hmi_control_heater_sv_callback != NULL) {
+            hmi_control_heater_sv_callback(checked);
+        } else if (index == 2 && hmi_control_exhaust_sv_callback != NULL) {
+            hmi_control_exhaust_sv_callback(checked);
+        } else if (index == 3 && hmi_control_recirc_sv_callback != NULL) {
+            hmi_control_recirc_sv_callback(checked);
+        }
+    }
+}
 static const char *hmi_control_manual_map[] = { "Light", "\n", "Heater", "\n",
         "Exhaust", "\n", "Recirc.", "" };
 
@@ -292,6 +316,8 @@ static lv_obj_t* hmi_control_create_manual(lv_obj_t *parent, lv_coord_t x,
     lv_obj_set_size(matrix, cont_coords.x2 - cont_coords.x1 - 10,
             cont_coords.y2 - label_coords.y2 - 10);
     lv_obj_align(matrix, label, LV_ALIGN_OUT_BOTTOM_MID, 0, HMI_MARGIN);
+
+    lv_obj_set_event_cb(matrix, hmi_control_manual_cb);
     return matrix;
 }
 
@@ -370,7 +396,6 @@ void hmi_control_set_temp_lo(bool lo)
     hmi_control_set_lo(&hmi_control_temperature, lo);
 }
 
-
 void hmi_control_set_hum_pv(double pv)
 {
     hmi_control_set_pv(&hmi_control_humidity, pv);
@@ -391,7 +416,6 @@ void hmi_control_set_hum_lo(bool lo)
     hmi_control_set_lo(&hmi_control_humidity, lo);
 }
 
-
 void hmi_control_set_co2_pv(double pv)
 {
     hmi_control_set_pv(&hmi_control_co2, pv);
@@ -411,3 +435,58 @@ void hmi_control_set_co2_lo(bool lo)
 {
     hmi_control_set_lo(&hmi_control_co2, lo);
 }
+
+static void hmi_control_set_manual_btn(uint16_t btn_id, bool active)
+{
+    if (hmi_semaphore_take("hmi_control_set_manual_btn")) {
+        if (active) {
+            lv_btnmatrix_set_btn_ctrl(hmi_control_manual_btnmatrix, btn_id,
+                    LV_BTNMATRIX_CTRL_CHECK_STATE);
+        } else {
+            lv_btnmatrix_clear_btn_ctrl(hmi_control_manual_btnmatrix, btn_id,
+                    LV_BTNMATRIX_CTRL_CHECK_STATE);
+        }
+        hmi_semaphore_give();
+    }
+}
+
+void hmi_control_set_lamp_sv(bool active)
+{
+    hmi_control_set_manual_btn(0, active);
+}
+
+void hmi_control_set_lamp_sv_callback(hmi_bool_callback_t callback)
+{
+    hmi_control_lamp_sv_callback = callback;
+}
+
+void hmi_control_set_heater_sv(bool active)
+{
+    hmi_control_set_manual_btn(1, active);
+}
+
+void hmi_control_set_heater_sv_callback(hmi_bool_callback_t callback)
+{
+    hmi_control_heater_sv_callback = callback;
+}
+
+void hmi_control_set_exhaust_sv(bool active)
+{
+    hmi_control_set_manual_btn(2, active);
+}
+
+void hmi_control_set_exhaust_sv_callback(hmi_bool_callback_t callback)
+{
+    hmi_control_exhaust_sv_callback = callback;
+}
+
+void hmi_control_set_recirc_sv(bool active)
+{
+    hmi_control_set_manual_btn(3, active);
+}
+
+void hmi_control_set_recirc_sv_callback(hmi_bool_callback_t callback)
+{
+    hmi_control_recirc_sv_callback = callback;
+}
+
