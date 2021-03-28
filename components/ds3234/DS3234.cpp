@@ -170,7 +170,7 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 
     // start periodic task
     esp_err_t ret = xTaskCreate(&task, TAG,
-            2048, this, tskIDLE_PRIORITY,
+            3072, this, tskIDLE_PRIORITY,
             NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
