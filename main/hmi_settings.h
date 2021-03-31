@@ -46,7 +46,6 @@ void hmi_settings_set_co2_day_callback(hmi_double_callback_t callback);
 void hmi_settings_set_co2_night(double value);
 void hmi_settings_set_co2_night_callback(hmi_double_callback_t callback);
 
-
 #ifdef __cplusplus
 }
 #endif

@@ -12,11 +12,11 @@ AM2301::~AM2301()
 {
 }
 
-void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
-        pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
+void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic, pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
         pubsub_topic_t timestamp_topic, uint32_t measurement_period_ms)
 {
-    ESP_LOGD(TAG, "setup, pin:%d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic, timestamp_topic);
+    ESP_LOGD(TAG, "setup, pin:%d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic,
+            timestamp_topic);
 
     if (state != COMPONENT_UNINITIALIZED) {
         state = COMPONENT_FATAL;
@@ -42,16 +42,14 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
     this->status_topic = status_topic;
     this->timestamp_topic = timestamp_topic;
 
-    decoderQueue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME,
-            sizeof(decoder_data_t));
+    decoderQueue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME, sizeof(decoder_data_t));
     if (decoderQueue == 0) {
         state = COMPONENT_FATAL;
         ESP_LOGE(TAG, "setup xQueueCreate failed (FATAL)");
         return;
     }
 
-    BaseType_t ret = xTaskCreatePinnedToCore(&task, TAG, 3072, this,
-            (4 | portPRIVILEGE_BIT), NULL, 1);
+    BaseType_t ret = xTaskCreatePinnedToCore(&task, TAG, 3072, this, (4 | portPRIVILEGE_BIT), NULL, 1);
     if (ret != pdPASS) {
         state = COMPONENT_FATAL;
         ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
@@ -265,8 +263,7 @@ void AM2301::handle_instruction_edge_detected()
 void IRAM_ATTR AM2301::run()
 {
     while (true) {
-        if (xQueueReceive(decoderQueue, &decoderData,
-                measurement_period_ms / portTICK_PERIOD_MS)) {
+        if (xQueueReceive(decoderQueue, &decoderData, measurement_period_ms / portTICK_PERIOD_MS)) {
             if (decoderData.instruction == INSTRUCTION_EDGE_DETECTED) {
                 handle_instruction_edge_detected();
             } else if (decoderData.instruction == INSTRUCTION_START) {

@@ -25,10 +25,9 @@ typedef struct
     hmi_double_callback_t callback;
 } hmi_numberspinner_t;
 
-void hmi_numberspinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
-        lv_coord_t width, lv_coord_t height, double min, double max, double granularity,
-        char *representation, size_t representation_size,
-        char *representation_format, hmi_numberspinner_t *spinner);
+void hmi_numberspinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y, lv_coord_t width, lv_coord_t height, double min,
+        double max, double granularity, char *representation, size_t representation_size, char *representation_format,
+        hmi_numberspinner_t *spinner);
 
 void hmi_numberspinner_set_value(hmi_numberspinner_t *spinner, double value);
 

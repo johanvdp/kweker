@@ -10,7 +10,7 @@
 #include "pubsub.h"
 #include "pubsub_test.h"
 
-static const char *tag = "pubsub_test";
+static const char *TAG = "pubsub_test";
 
 static const char *TOPIC_PUBSUB_TEST_INT = "pubsub.test.int";
 static const char *TOPIC_PUBSUB_TEST_BOOL = "pubsub.test.bool";
@@ -18,7 +18,7 @@ static const char *TOPIC_PUBSUB_TEST_DOUBLE = "pubsub.test.double";
 
 bool pubsub_test()
 {
-    ESP_LOGI(tag, "pubsub_test");
+    ESP_LOGI(TAG, "pubsub_test");
 
     bool success = true;
 
@@ -32,7 +32,7 @@ bool pubsub_test()
 
     // check
     if (pubsub_topic_count() != 3) {
-        ESP_LOGE(tag, "expect 3 topics");
+        ESP_LOGE(TAG, "expect 3 topics");
         success = false;
     }
 
@@ -45,21 +45,21 @@ bool pubsub_test()
     int64_t int_value = 0;
     pubsub_last_int(topic_int, &int_value);
     if (int_value != 9) {
-        ESP_LOGE(tag, "expect last value 9");
+        ESP_LOGE(TAG, "expect last value 9");
         success = false;
     }
 
     bool bool_value = false;
     pubsub_last_bool(topic_bool, &bool_value);
     if (bool_value != true) {
-        ESP_LOGE(tag, "expect last value true");
+        ESP_LOGE(TAG, "expect last value true");
         success = false;
     }
 
     double double_value = 0.0;
     pubsub_last_double(topic_double, &double_value);
     if (double_value < 0.08 || double_value > 0.10) {
-        ESP_LOGE(tag, "expect last value 0.09");
+        ESP_LOGE(TAG, "expect last value 0.09");
         success = false;
     }
 
@@ -73,15 +73,15 @@ bool pubsub_test()
 
     // check
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_BOOL) == 1) {
-        ESP_LOGE(tag, "expect 1 subscriber");
+        ESP_LOGE(TAG, "expect 1 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_DOUBLE) == 1) {
-        ESP_LOGE(tag, "expect 1 subscriber");
+        ESP_LOGE(TAG, "expect 1 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_INT) == 2) {
-        ESP_LOGE(tag, "expect 2 subscribers");
+        ESP_LOGE(TAG, "expect 2 subscribers");
         success = false;
     }
 
@@ -93,23 +93,23 @@ bool pubsub_test()
     // check received value
     pubsub_message_t message;
     if (xQueueReceive(queueMixed, &message, 1) != pdTRUE || message.int_val != 11) {
-        ESP_LOGE(tag, "expect 11");
+        ESP_LOGE(TAG, "expect 11");
         success = false;
     }
     if (xQueueReceive(queueMixed, &message, 1) != pdTRUE || message.boolean_val == 0) {
-        ESP_LOGE(tag, "expect true");
+        ESP_LOGE(TAG, "expect true");
         success = false;
     }
     if (xQueueReceive(queueMixed, &message, 1) != pdTRUE || message.double_val < 0.10 || message.double_val > 0.12) {
-        ESP_LOGE(tag, "expect 0.11");
+        ESP_LOGE(TAG, "expect 0.11");
         success = false;
     }
     if (xQueueReceive(queueInt, &message, 1) != pdTRUE || message.int_val != 11) {
-        ESP_LOGE(tag, "expect 11");
+        ESP_LOGE(TAG, "expect 11");
         success = false;
     }
     if (xQueueReceive(queueInt, &message, 1) == pdTRUE) {
-        ESP_LOGE(tag, "expect queue empty");
+        ESP_LOGE(TAG, "expect queue empty");
         success = false;
     }
 
@@ -117,21 +117,21 @@ bool pubsub_test()
     int_value = 0;
     pubsub_last_int(topic_int, &int_value);
     if (int_value != 11) {
-        ESP_LOGE(tag, "expect last value 11");
+        ESP_LOGE(TAG, "expect last value 11");
         success = false;
     }
 
     bool_value = false;
     pubsub_last_bool(topic_bool, &bool_value);
     if (bool_value != true) {
-        ESP_LOGE(tag, "expect last value true");
+        ESP_LOGE(TAG, "expect last value true");
         success = false;
     }
 
     double_value = 0.0;
     pubsub_last_double(topic_double, &double_value);
     if (double_value < 0.10 || double_value > 0.12) {
-        ESP_LOGE(tag, "expect last value 0.11");
+        ESP_LOGE(TAG, "expect last value 0.11");
         success = false;
     }
 
@@ -143,19 +143,19 @@ bool pubsub_test()
 
     // check
     if (pubsub_topic_count() != 3) {
-        ESP_LOGE(tag, "expect 3 topics");
+        ESP_LOGE(TAG, "expect 3 topics");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_BOOL) != 0) {
-        ESP_LOGE(tag, "expect 0 subscriber");
+        ESP_LOGE(TAG, "expect 0 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_DOUBLE) != 0) {
-        ESP_LOGE(tag, "expect 0 subscriber");
+        ESP_LOGE(TAG, "expect 0 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_INT) != 0) {
-        ESP_LOGE(tag, "expect 0 subscribers");
+        ESP_LOGE(TAG, "expect 0 subscribers");
         success = false;
     }
 
@@ -166,19 +166,19 @@ bool pubsub_test()
 
     // check
     if (pubsub_topic_count() != 0) {
-        ESP_LOGE(tag, "expect 0 topics");
+        ESP_LOGE(TAG, "expect 0 topics");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_BOOL) != 0) {
-        ESP_LOGE(tag, "expect 0 subscriber");
+        ESP_LOGE(TAG, "expect 0 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_DOUBLE) != 0) {
-        ESP_LOGE(tag, "expect 0 subscriber");
+        ESP_LOGE(TAG, "expect 0 subscriber");
         success = false;
     }
     if (pubsub_subscriber_count(TOPIC_PUBSUB_TEST_INT) != 0) {
-        ESP_LOGE(tag, "expect 0 subscribers");
+        ESP_LOGE(TAG, "expect 0 subscribers");
         success = false;
     }
 

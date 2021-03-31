@@ -63,8 +63,7 @@ void ctrl_manual_task()
 
 static void ctrl_manual_subscribe()
 {
-    control_mode_queue = xQueueCreate(CTRL_QUEUE_DEPTH,
-            sizeof(pubsub_message_t));
+    control_mode_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
     light_sv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
@@ -82,6 +81,8 @@ static void ctrl_manual_subscribe()
 
 void ctrl_manual_initialize()
 {
+    ESP_LOGD(TAG, "ctrl_manual_initialize");
+
     ctrl_manual_subscribe();
 }
 

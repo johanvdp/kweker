@@ -57,10 +57,8 @@ void DS3234::encode_time(time_t time, uint8_t *raw)
     struct tm structured;
     gmtime_r(&time, &structured);
 
-    ESP_LOGI(TAG, "encode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
-            structured.tm_year + TM_YEAR_OFFSET,
-            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
-            structured.tm_wday, structured.tm_hour, structured.tm_min,
+    ESP_LOGD(TAG, "encode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
+            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday, structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
     raw[0] = int_to_bcd(structured.tm_sec);
@@ -74,15 +72,13 @@ void DS3234::encode_time(time_t time, uint8_t *raw)
     raw[5] = int_to_bcd(structured.tm_mon) | 0x80;
     raw[6] = int_to_bcd(structured.tm_year % 100);
 
-    ESP_LOGD(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
-            raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+    ESP_LOGD(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
 }
 
 time_t DS3234::decode_time(const uint8_t *raw)
 {
-    ESP_LOGD(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0],
-            raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+    ESP_LOGD(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
     struct tm structured;
     structured.tm_sec = bcd_to_int(raw[0]);
@@ -95,10 +91,8 @@ time_t DS3234::decode_time(const uint8_t *raw)
     structured.tm_mon = bcd_to_int(raw[5]);
     structured.tm_year = bcd_to_int(raw[6]);
 
-    ESP_LOGI(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d",
-            structured.tm_year + TM_YEAR_OFFSET,
-            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday,
-            structured.tm_wday, structured.tm_hour, structured.tm_min,
+    ESP_LOGD(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
+            structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday, structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
     time_t time = mktime(&structured);
@@ -148,8 +142,7 @@ void DS3234::task(void *pvParameter)
 
 void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 {
-    ESP_LOGI(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name,
-            this);
+    ESP_LOGD(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name, this);
 
     this->timestamp_topic = topic;
 
@@ -169,9 +162,8 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
     pubsub_add_subscription(time_queue, topic_name, false);
 
     // start periodic task
-    esp_err_t ret = xTaskCreate(&task, TAG,
-            3072, this, tskIDLE_PRIORITY,
-            NULL);
+    esp_err_t ret = xTaskCreate(&task, TAG, 3072, this, tskIDLE_PRIORITY,
+    NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
         return;
@@ -252,7 +244,7 @@ bool DS3234::self_test()
         }
     }
     if (success) {
-        ESP_LOGI(TAG, "self_test OK");
+        ESP_LOGD(TAG, "self_test OK");
     }
     return success;
 }
@@ -325,8 +317,7 @@ void DS3234::run()
     pubsub_message_t message;
     while (true) {
 
-        if (xQueueReceive(time_queue, &message,
-                DS3432_LOOK_INTERVAL_MS / portTICK_PERIOD_MS)) {
+        if (xQueueReceive(time_queue, &message, DS3432_LOOK_INTERVAL_MS / portTICK_PERIOD_MS)) {
 
             // ignore own publish action
             if (time != message.int_val) {

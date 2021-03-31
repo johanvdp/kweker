@@ -96,44 +96,55 @@ static void bind_settings_subscribe()
     pubsub_add_subscription(bind_co2_night, MODEL_CO2_SV_NIGHT, true);
 }
 
-static void bind_settings_current_time_callback(time_t time) {
+static void bind_settings_current_time_callback(time_t time)
+{
     pubsub_publish_int(model_current_time, time);
 }
 
-static void bind_settings_begin_of_day_callback(time_t time) {
+static void bind_settings_begin_of_day_callback(time_t time)
+{
     pubsub_publish_int(model_begin_of_day, time);
 }
 
-static void bind_settings_begin_of_night_callback(time_t time) {
+static void bind_settings_begin_of_night_callback(time_t time)
+{
     pubsub_publish_int(model_begin_of_night, time);
 }
 
-static void bind_settings_temp_day_callback(double value) {
+static void bind_settings_temp_day_callback(double value)
+{
     pubsub_publish_double(model_temp_sv_day, value);
 }
 
-static void bind_settings_temp_night_callback(double value) {
+static void bind_settings_temp_night_callback(double value)
+{
     pubsub_publish_double(model_temp_sv_night, value);
 }
 
-static void bind_settings_hum_day_callback(double value) {
+static void bind_settings_hum_day_callback(double value)
+{
     pubsub_publish_double(model_hum_sv_day, value);
 }
 
-static void bind_settings_hum_night_callback(double value) {
+static void bind_settings_hum_night_callback(double value)
+{
     pubsub_publish_double(model_hum_sv_night, value);
 }
 
-static void bind_settings_co2_day_callback(double value) {
+static void bind_settings_co2_day_callback(double value)
+{
     pubsub_publish_double(model_co2_sv_day, value);
 }
 
-static void bind_settings_co2_night_callback(double value) {
+static void bind_settings_co2_night_callback(double value)
+{
     pubsub_publish_double(model_co2_sv_night, value);
 }
 
 void bind_settings_initialize()
 {
+    ESP_LOGD(TAG, "bind_settings_initialize");
+
     bind_settings_subscribe();
 
     hmi_settings_set_current_time_callback(&bind_settings_current_time_callback);

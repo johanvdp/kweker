@@ -84,8 +84,7 @@ void app_main()
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, model_temp_pv, model_hum_pv, model_am2301_status,
-            model_am2301_timestamp, MEASUREMENT_PERIOD_MS);
+    am2301.setup(GPIO_AM2301, model_temp_pv, model_hum_pv, model_am2301_status, model_am2301_timestamp, MEASUREMENT_PERIOD_MS);
 
     ds3234.setup(model_current_time, MODEL_CURRENT_TIME);
 
@@ -111,8 +110,7 @@ void app_main()
                     activity_message.int_val = 1;
                     pubsub_publish(model_activity, &activity_message);
 
-                } else if (status
-                        == AM2301::result_status_t::RESULT_RECOVERABLE) {
+                } else if (status == AM2301::result_status_t::RESULT_RECOVERABLE) {
 
                     ESP_LOGW(TAG, "AM2301 RECOVERABLE");
 

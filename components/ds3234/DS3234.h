@@ -13,7 +13,8 @@
 /**
  * DS3234 time.
  */
-class DS3234 {
+class DS3234
+{
 
 public:
     DS3234();
@@ -40,10 +41,10 @@ private:
     spi_device_handle_t device_handle = 0;
 
     /** set time queue */
-    QueueHandle_t time_queue;
+    QueueHandle_t time_queue = 0;
 
-    void *tx;
-    void *rx;
+    void *tx = 0;
+    void *rx = 0;
     void run();
 
     /**

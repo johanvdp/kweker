@@ -216,25 +216,32 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
                 message->type);
         return;
     }
-    ESP_LOGD(tag, "pubsub_publish topic:%p", topic);
+    // check if value changed
     // store last value
     bool value_changed;
     if (topic_detail->type == PUBSUB_TYPE_INT) {
         value_changed = topic_detail->int_val != message->int_val;
         topic_detail->int_val = message->int_val;
+        ESP_LOGI(tag, "pubsub_publish %s=%lld", topic_detail->topic, message->int_val);
+
     } else if (topic_detail->type == PUBSUB_TYPE_BOOLEAN) {
         value_changed = topic_detail->boolean_val != message->boolean_val;
         topic_detail->boolean_val = message->boolean_val;
+        ESP_LOGI(tag, "pubsub_publish %s=%s", topic_detail->topic, message->boolean_val ? "true" : "false");
+
     } else if (topic_detail->type == PUBSUB_TYPE_DOUBLE) {
         value_changed = topic_detail->double_val != message->double_val;
         topic_detail->double_val = message->double_val;
+        ESP_LOGI(tag, "pubsub_publish %s=%lf", topic_detail->topic, message->double_val);
+
     } else {
         value_changed = false;
         ESP_LOGE(tag, "pubsub_publish unknown type topic:%s", topic_detail->topic);
         return;
     }
-    // inform all subscribers, publish always or if changed
+    // publish always or if changed
     if (topic_detail->always || value_changed) {
+        // inform all subscribers
         pubsub_subscriber_t *subscriber;
         LIST_FOREACH(subscriber, &(topic_detail->subscribers), pointers)
         {
@@ -256,15 +263,11 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
         ESP_LOGE(tag, "pubsub_publish_bool type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    // publish always or if changed
-    if (topic_detail->always || topic_detail->boolean_val != value) {
-        ESP_LOGI(tag, "pubsub_publish_bool topic:%s, value:%s", topic_detail->topic, str_value);
-        pubsub_message_t message;
-        message.topic = topic_detail->topic;
-        message.type = PUBSUB_TYPE_BOOLEAN;
-        message.boolean_val = value;
-        pubsub_publish(topic, &message);
-    }
+    pubsub_message_t message;
+    message.topic = topic_detail->topic;
+    message.type = PUBSUB_TYPE_BOOLEAN;
+    message.boolean_val = value;
+    pubsub_publish(topic, &message);
 }
 
 void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
@@ -279,15 +282,11 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
         ESP_LOGE(tag, "pubsub_publish_int type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    // publish always or if changed
-    if (topic_detail->always || topic_detail->int_val != value) {
-        ESP_LOGI(tag, "pubsub_publish_int topic:%s, value:%lld", topic_detail->topic, value);
-        pubsub_message_t message;
-        message.topic = topic_detail->topic;
-        message.type = PUBSUB_TYPE_INT;
-        message.int_val = value;
-        pubsub_publish(topic, &message);
-    }
+    pubsub_message_t message;
+    message.topic = topic_detail->topic;
+    message.type = PUBSUB_TYPE_INT;
+    message.int_val = value;
+    pubsub_publish(topic, &message);
 }
 
 void pubsub_publish_double(pubsub_topic_t topic, double value)
@@ -302,15 +301,11 @@ void pubsub_publish_double(pubsub_topic_t topic, double value)
         ESP_LOGE(tag, "pubsub_publish_double type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    // publish always or if changed
-    if (topic_detail->always || topic_detail->double_val != value) {
-        ESP_LOGI(tag, "pubsub_publish_double topic:%s, value:%lf", topic_detail->topic, value);
-        pubsub_message_t message;
-        message.topic = topic_detail->topic;
-        message.type = PUBSUB_TYPE_DOUBLE;
-        message.double_val = value;
-        pubsub_publish(topic, &message);
-    }
+    pubsub_message_t message;
+    message.topic = topic_detail->topic;
+    message.type = PUBSUB_TYPE_DOUBLE;
+    message.double_val = value;
+    pubsub_publish(topic, &message);
 }
 
 uint16_t pubsub_topic_count()

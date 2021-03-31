@@ -48,7 +48,7 @@ static void bind_task(void *pvParameter)
             hmi_set_recirc(message.boolean_val);
         }
         if (xQueueReceive(circadian, &message, 0)) {
-            model_circadian_t circadian = (model_circadian_t)message.int_val;
+            model_circadian_t circadian = (model_circadian_t) message.int_val;
             hmi_set_circadian(circadian);
         }
         if (xQueueReceive(control_mode, &message, 0)) {
@@ -98,13 +98,14 @@ static void bind_subscribe()
 
 void bind_initialize()
 {
+    ESP_LOGD(TAG, "bind_initialize");
+
     bind_subscribe();
 
     bind_control_initialize();
     bind_settings_initialize();
 
-    BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1), NULL);
+    BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL, (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "failed to create task (FATAL)");
     }

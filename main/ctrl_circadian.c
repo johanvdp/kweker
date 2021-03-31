@@ -30,8 +30,7 @@ static void ctrl_circadian_set_day(bool value)
 {
     if (day != value) {
         day = value;
-        pubsub_publish_int(model_circadian,
-                day ? MODEL_CIRCADIAN_DAY : MODEL_CIRCADIAN_NIGHT);
+        pubsub_publish_int(model_circadian, day ? MODEL_CIRCADIAN_DAY : MODEL_CIRCADIAN_NIGHT);
     }
 }
 
@@ -57,8 +56,7 @@ void ctrl_circadian_task()
         struct tm brokentime;
         time_t time = message.int_val;
         gmtime_r(&time, &brokentime);
-        begin_of_night_minutes = brokentime.tm_hour * 60
-                + brokentime.tm_min;
+        begin_of_night_minutes = brokentime.tm_hour * 60 + brokentime.tm_min;
         change = true;
     }
 
@@ -68,11 +66,9 @@ void ctrl_circadian_task()
         // night day: ddNnnnnnnnDddddd
         uint16_t day;
         if (begin_of_day_minutes < begin_of_night_minutes) {
-            day = (time_minutes >= begin_of_day_minutes)
-                    && (time_minutes < begin_of_night_minutes);
+            day = (time_minutes >= begin_of_day_minutes) && (time_minutes < begin_of_night_minutes);
         } else {
-            day = (time_minutes < begin_of_night_minutes)
-                    || (time_minutes >= begin_of_day_minutes);
+            day = (time_minutes < begin_of_night_minutes) || (time_minutes >= begin_of_day_minutes);
         }
         ctrl_circadian_set_day(day);
     }
@@ -90,6 +86,8 @@ static void ctrl_circadian_subscribe()
 
 void ctrl_circadian_initialize()
 {
+    ESP_LOGD(TAG, "ctrl_circadian_initialize");
+
     ctrl_circadian_subscribe();
 }
 

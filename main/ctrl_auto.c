@@ -146,7 +146,8 @@ static void ctrl_auto_control()
     ctrl_auto_heater();
 }
 
-static void ctrl_auto_indicate() {
+static void ctrl_auto_indicate()
+{
     ctrl_auto_set_co2_lo(co2_pv < co2_sv);
     ctrl_auto_set_co2_hi(co2_pv > co2_sv);
 
@@ -211,8 +212,7 @@ static void ctrl_auto_subscribe()
     circadian_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(circadian_queue, MODEL_CIRCADIAN, true);
 
-    control_mode_queue = xQueueCreate(CTRL_QUEUE_DEPTH,
-            sizeof(pubsub_message_t));
+    control_mode_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
     co2_pv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
@@ -233,6 +233,8 @@ static void ctrl_auto_subscribe()
 
 void ctrl_auto_initialize()
 {
+    ESP_LOGD(TAG, "ctrl_auto_initialize");
+
     ctrl_auto_subscribe();
 }
 

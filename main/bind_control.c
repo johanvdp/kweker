@@ -195,6 +195,8 @@ static void bind_control_heater_sv_callback(bool active)
 
 void bind_control_initialize()
 {
+    ESP_LOGD(TAG, "bind_control_initialize");
+
     bind_control_subscribe();
 
     hmi_control_set_control_mode_callback(&bind_control_mode_callback);

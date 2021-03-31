@@ -45,28 +45,32 @@ static QueueHandle_t temp_sv_night_queue;
 static double temp_sv_night;
 static double temp_sv;
 
-static void ctrl_day_night_set_co2_sv(double value) {
+static void ctrl_day_night_set_co2_sv(double value)
+{
     if (value != co2_sv) {
         co2_sv = value;
         pubsub_publish_double(model_co2_sv, value);
     }
 }
 
-static void ctrl_day_night_set_hum_sv(double value) {
+static void ctrl_day_night_set_hum_sv(double value)
+{
     if (value != hum_sv) {
         hum_sv = value;
         pubsub_publish_double(model_hum_sv, value);
     }
 }
 
-static void ctrl_day_night_set_temp_sv(double value) {
+static void ctrl_day_night_set_temp_sv(double value)
+{
     if (value != temp_sv) {
         temp_sv = value;
         pubsub_publish_double(model_temp_sv, value);
     }
 }
 
-static void ctrl_day_night_set_circadian(model_circadian_t value) {
+static void ctrl_day_night_set_circadian(model_circadian_t value)
+{
     if (value == MODEL_CIRCADIAN_DAY) {
         ctrl_day_night_set_co2_sv(co2_sv_day);
         ctrl_day_night_set_hum_sv(hum_sv_day);
@@ -149,6 +153,8 @@ static void ctrl_day_night_subscribe()
 
 void ctrl_day_night_initialize()
 {
+    ESP_LOGD(TAG, "ctrl_day_night_initialize");
+
     ctrl_day_night_subscribe();
 }
 

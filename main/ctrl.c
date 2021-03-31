@@ -35,14 +35,15 @@ static void ctrl_task(void *pvParameter)
 
 void ctrl_initialize()
 {
+    ESP_LOGD(TAG, "ctrl_initialize");
+
     ctrl_circadian_initialize();
     ctrl_day_night_initialize();
     ctrl_auto_initialize();
     ctrl_manual_initialize();
     ctrl_off_initialize();
 
-    BaseType_t ret = xTaskCreate(&ctrl_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1), NULL);
+    BaseType_t ret = xTaskCreate(&ctrl_task, TAG, 2048, NULL, (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "failed to create task (FATAL)");
     }

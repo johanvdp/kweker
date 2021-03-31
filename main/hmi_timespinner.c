@@ -9,13 +9,20 @@
 /** P24:00:00 */
 #define HMI_DATELESS_PERIOD (HMI_DATELESS_MAX - HMI_DATELESS_MIN)
 
-static const char *TAG = "hmi_timespinner";
+//static const char *TAG = "hmi_timespinner";
 
 static void hmi_timespinner_increment_event_cb(lv_obj_t *btn, lv_event_t e)
 {
     if (e == LV_EVENT_SHORT_CLICKED || e == LV_EVENT_LONG_PRESSED_REPEAT) {
         hmi_timespinner_t *spinner = (hmi_timespinner_t*) btn->user_data;
         if (spinner->callback != NULL) {
+            // make valid
+            if (spinner->dateless && spinner->time < HMI_DATELESS_MIN) {
+                spinner->time = HMI_DATELESS_MIN;
+            }
+            if (spinner->dateless && spinner->time > HMI_DATELESS_MAX) {
+                spinner->time = HMI_DATELESS_MAX;
+            }
             // to next granularity
             time_t time = spinner->time;
             time_t rounded = time - time % spinner->granularity;
@@ -34,6 +41,13 @@ static void hmi_timespinner_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
     if (e == LV_EVENT_SHORT_CLICKED || e == LV_EVENT_LONG_PRESSED_REPEAT) {
         hmi_timespinner_t *spinner = (hmi_timespinner_t*) btn->user_data;
         if (spinner->callback != NULL) {
+            // make valid
+            if (spinner->dateless && spinner->time < HMI_DATELESS_MIN) {
+                spinner->time = HMI_DATELESS_MIN;
+            }
+            if (spinner->dateless && spinner->time > HMI_DATELESS_MAX) {
+                spinner->time = HMI_DATELESS_MAX;
+            }
             // to previous granularity
             time_t time = spinner->time;
             uint32_t rounded = time - time % spinner->granularity;
@@ -47,17 +61,15 @@ static void hmi_timespinner_decrement_event_cb(lv_obj_t *btn, lv_event_t e)
     }
 }
 
-void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
-        lv_coord_t width, lv_coord_t height, uint32_t granularity,
-        bool dateless, hmi_timespinner_t *spinner)
+void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y, lv_coord_t width, lv_coord_t height, uint32_t granularity,
+bool dateless, hmi_timespinner_t *spinner)
 {
     lv_coord_t button_width = height;
 
     lv_obj_t *btn_min = lv_btn_create(parent, NULL);
     lv_theme_apply(btn_min, LV_THEME_SPINBOX_BTN);
-    lv_obj_set_style_local_value_str(btn_min, LV_BTN_PART_MAIN,
-            LV_STATE_DEFAULT,
-            LV_SYMBOL_MINUS);
+    lv_obj_set_style_local_value_str(btn_min, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
+    LV_SYMBOL_MINUS);
     lv_obj_set_size(btn_min, button_width, height);
     lv_obj_set_pos(btn_min, x, y);
     /** link to corresponding timespinner for use in event handler */
@@ -66,9 +78,8 @@ void hmi_timespinner_create(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
 
     lv_obj_t *btn_plus = lv_btn_create(parent, NULL);
     lv_theme_apply(btn_plus, LV_THEME_SPINBOX_BTN);
-    lv_obj_set_style_local_value_str(btn_plus, LV_BTN_PART_MAIN,
-            LV_STATE_DEFAULT,
-            LV_SYMBOL_PLUS);
+    lv_obj_set_style_local_value_str(btn_plus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
+    LV_SYMBOL_PLUS);
     lv_obj_set_size(btn_plus, button_width, height);
     lv_obj_align(btn_plus, btn_min, LV_ALIGN_OUT_RIGHT_MID, width - 2 * button_width, 0);
     /** link to corresponding numberspinner for use in event handler */
@@ -97,8 +108,7 @@ void hmi_timespinner_set_time(hmi_timespinner_t *spinner, time_t timestamp)
         gmtime_r(&timestamp, &brokentime);
         // HH:MM\0
         char text[] = { 0, 0, 0, 0, 0, 0 };
-        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour,
-                brokentime.tm_min);
+        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
         lv_label_set_text(spinner->label, text);
 
         hmi_semaphore_give();

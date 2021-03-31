@@ -59,22 +59,19 @@ static lv_obj_t *hmi_tabview;
 /** navigation buttons */
 static lv_obj_t *hmi_btnmatrix_tabview;
 
-static lv_obj_t* hmi_create_led(lv_obj_t *parent, lv_coord_t x, lv_coord_t y,
-        const char *text)
+static lv_obj_t* hmi_create_led(lv_obj_t *parent, lv_coord_t x, lv_coord_t y, const char *text)
 {
 
     lv_obj_t *led = lv_led_create(parent, NULL);
     lv_obj_set_pos(led, x, y);
     lv_obj_set_size(led, HMI_LED_WIDTH, HMI_LED_HEIGHT);
-    lv_obj_set_style_local_value_str(led, LV_LED_PART_MAIN, LV_STATE_DEFAULT,
-            text);
+    lv_obj_set_style_local_value_str(led, LV_LED_PART_MAIN, LV_STATE_DEFAULT, text);
     lv_led_off(led);
 
     return led;
 }
 
-static lv_obj_t* hmi_create_label(lv_obj_t *parent, uint16_t x, uint16_t y,
-        const char *text)
+static lv_obj_t* hmi_create_label(lv_obj_t *parent, uint16_t x, uint16_t y, const char *text)
 {
 
     lv_obj_t *label = lv_label_create(parent, NULL);
@@ -99,8 +96,7 @@ static void hmi_navigation_event_cb(lv_obj_t *button, lv_event_t e)
 
 static const char *hmi_navigation_map[] = { "Control", "Settings", "About", "" };
 
-static lv_obj_t* hmi_create_navigation_btnmatrix(lv_obj_t *parent, lv_coord_t x,
-        lv_coord_t y, lv_coord_t w, lv_coord_t h)
+static lv_obj_t* hmi_create_navigation_btnmatrix(lv_obj_t *parent, lv_coord_t x, lv_coord_t y, lv_coord_t w, lv_coord_t h)
 {
 
     lv_obj_t *matrix = lv_btnmatrix_create(parent, NULL);
@@ -133,20 +129,15 @@ static lv_obj_t* hmi_create_toolbar(lv_obj_t *parent)
     hmi_label_circadian = hmi_create_label(toolbar, 48, 2, "DAY");
     hmi_label_control_mode = hmi_create_label(toolbar, 48, 16, "OFF");
 
-    hmi_btnmatrix_tabview = hmi_create_navigation_btnmatrix(toolbar, 100, 0,
-            250, HMI_TOOLBAR_HEIGHT);
+    hmi_btnmatrix_tabview = hmi_create_navigation_btnmatrix(toolbar, 100, 0, 250, HMI_TOOLBAR_HEIGHT);
 
-    hmi_led_light_switch = hmi_create_led(toolbar,
-            parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 4, HMI_MARGIN, "L");
+    hmi_led_light_switch = hmi_create_led(toolbar, parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 4, HMI_MARGIN, "L");
 
-    hmi_led_heater_switch = hmi_create_led(toolbar,
-            parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 3, HMI_MARGIN, "H");
+    hmi_led_heater_switch = hmi_create_led(toolbar, parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 3, HMI_MARGIN, "H");
 
-    hmi_led_exhaust_switch = hmi_create_led(toolbar,
-            parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 2, HMI_MARGIN, "E");
+    hmi_led_exhaust_switch = hmi_create_led(toolbar, parent_width - (HMI_LED_WIDTH + HMI_MARGIN) * 2, HMI_MARGIN, "E");
 
-    hmi_led_recirculation_switch = hmi_create_led(toolbar,
-            parent_width - (HMI_LED_WIDTH + HMI_MARGIN), HMI_MARGIN, "R");
+    hmi_led_recirculation_switch = hmi_create_led(toolbar, parent_width - (HMI_LED_WIDTH + HMI_MARGIN), HMI_MARGIN, "R");
 
     return toolbar;
 }
@@ -159,8 +150,7 @@ static void hmi_tabview_event_cb(lv_obj_t *button, lv_event_t e)
         uint16_t id = lv_tabview_get_tab_act(hmi_tabview);
         if (id != LV_BTNMATRIX_BTN_NONE && id <= 2) {
             /** synchronize selected navigation button */
-            lv_btnmatrix_set_btn_ctrl(hmi_btnmatrix_tabview, id,
-                    LV_BTNMATRIX_CTRL_CHECK_STATE);
+            lv_btnmatrix_set_btn_ctrl(hmi_btnmatrix_tabview, id, LV_BTNMATRIX_CTRL_CHECK_STATE);
         }
     }
 }
@@ -241,9 +231,8 @@ void hmi_set_current_time(time_t timestamp)
         gmtime_r(&timestamp, &brokentime);
         // HH:MM\0
         char text[] = { 0, 0, 0, 0, 0, 0 };
-        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour,
-                brokentime.tm_min);
-        ESP_LOGI(TAG, "hmi_set_current_time time:%s", text);
+        snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
+        ESP_LOGD(TAG, "hmi_set_current_time time:%s", text);
         lv_label_set_text(hmi_label_current_time, text);
 
         hmi_semaphore_give();
@@ -292,7 +281,7 @@ void hmi_set_circadian(bool day)
     }
 }
 
-static void hmi_set_led(lv_obj_t* led, bool active)
+static void hmi_set_led(lv_obj_t *led, bool active)
 {
     if (hmi_semaphore_take("hmi_set_led")) {
         if (active) {
