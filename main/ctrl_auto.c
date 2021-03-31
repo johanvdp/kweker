@@ -104,18 +104,21 @@ static void ctrl_auto_light()
 {
     bool light_on = (circadian == MODEL_CIRCADIAN_DAY);
     pubsub_publish_bool(model_light, light_on);
+    pubsub_publish_bool(model_light_sv, light_on);
 }
 
 static void ctrl_auto_exhaust()
 {
     bool exhaust_on = (temp_hi || hum_hi || co2_hi);
     pubsub_publish_bool(model_exhaust, exhaust_on);
+    pubsub_publish_bool(model_exhaust_sv, exhaust_on);
 }
 
 static void ctrl_auto_recirculation()
 {
     bool recirc_on = (circadian == MODEL_CIRCADIAN_DAY);
     pubsub_publish_bool(model_recirc, recirc_on);
+    pubsub_publish_bool(model_recirc_sv, recirc_on);
 }
 
 static void ctrl_auto_heater()
@@ -132,6 +135,7 @@ static void ctrl_auto_heater()
         heater_on = false;
     }
     pubsub_publish_bool(model_heater, heater_on);
+    pubsub_publish_bool(model_heater_sv, heater_on);
 }
 
 static void ctrl_auto_control()

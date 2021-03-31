@@ -273,7 +273,8 @@ static void hmi_control_manual_cb(lv_obj_t *button, lv_event_t e)
         bool checked = lv_btnmatrix_get_btn_ctrl(button, index,
                 LV_BTNMATRIX_CTRL_CHECK_STATE);
 
-        ESP_LOGI(TAG, "hmi_control_manual_cb index:%d, checked:%d", index, checked);
+        ESP_LOGI(TAG, "hmi_control_manual_cb index:%d, checked:%d", index,
+                checked);
 
         if (index == 0 && hmi_control_light_sv_callback != NULL) {
             hmi_control_light_sv_callback(checked);
@@ -368,8 +369,19 @@ void hmi_control_set_control_mode(hmi_control_mode_t mode)
 {
     if (hmi_semaphore_take("hmi_control_set_control_mode")) {
 
+        // select matching control mode button
         lv_btnmatrix_set_btn_ctrl(hmi_control_mode_btnmatrix, mode,
                 LV_BTNMATRIX_CTRL_CLICK_TRIG);
+
+        // disable manual control buttons
+        if (mode == HMI_CONTROL_MODE_MANUAL) {
+            lv_btnmatrix_clear_btn_ctrl_all(hmi_control_manual_btnmatrix,
+                    LV_BTNMATRIX_CTRL_DISABLED);
+        } else {
+            lv_btnmatrix_set_btn_ctrl_all(hmi_control_manual_btnmatrix,
+                    LV_BTNMATRIX_CTRL_DISABLED);
+        }
+
         hmi_semaphore_give();
     }
 }
