@@ -11,6 +11,7 @@
 #include "model.h"
 #include "hmi_settings.h"
 #include "bind_settings.h"
+#include "bind.h"
 
 static const char *TAG = "bind_settings";
 
@@ -33,68 +34,65 @@ static QueueHandle_t bind_co2_day;
 /** co2 during night setting */
 static QueueHandle_t bind_co2_night;
 
-static void bind_settings_task(void *pvParameter)
+void bind_settings_task()
 {
     pubsub_message_t message;
-    while (true) {
-        if (xQueueReceive(bind_current_time, &message, 0)) {
-            hmi_settings_set_current_time(message.int_val);
-        }
-        if (xQueueReceive(bind_begin_of_day, &message, 0)) {
-            hmi_settings_set_begin_of_day(message.int_val);
-        }
-        if (xQueueReceive(bind_begin_of_night, &message, 0)) {
-            hmi_settings_set_begin_of_night(message.int_val);
-        }
-        if (xQueueReceive(bind_temp_day, &message, 0)) {
-            hmi_settings_set_temp_day(message.double_val);
-        }
-        if (xQueueReceive(bind_temp_night, &message, 0)) {
-            hmi_settings_set_temp_night(message.double_val);
-        }
-        if (xQueueReceive(bind_hum_day, &message, 0)) {
-            hmi_settings_set_hum_day(message.double_val);
-        }
-        if (xQueueReceive(bind_hum_night, &message, 0)) {
-            hmi_settings_set_hum_night(message.double_val);
-        }
-        if (xQueueReceive(bind_co2_day, &message, 0)) {
-            hmi_settings_set_co2_day(message.double_val);
-        }
-        if (xQueueReceive(bind_co2_night, &message, 0)) {
-            hmi_settings_set_co2_night(message.double_val);
-        }
-        vTaskDelay(1);
-    };
+    if (xQueueReceive(bind_current_time, &message, 0)) {
+        hmi_settings_set_current_time(message.int_val);
+    }
+    if (xQueueReceive(bind_begin_of_day, &message, 0)) {
+        hmi_settings_set_begin_of_day(message.int_val);
+    }
+    if (xQueueReceive(bind_begin_of_night, &message, 0)) {
+        hmi_settings_set_begin_of_night(message.int_val);
+    }
+    if (xQueueReceive(bind_temp_day, &message, 0)) {
+        hmi_settings_set_temp_day(message.double_val);
+    }
+    if (xQueueReceive(bind_temp_night, &message, 0)) {
+        hmi_settings_set_temp_night(message.double_val);
+    }
+    if (xQueueReceive(bind_hum_day, &message, 0)) {
+        hmi_settings_set_hum_day(message.double_val);
+    }
+    if (xQueueReceive(bind_hum_night, &message, 0)) {
+        hmi_settings_set_hum_night(message.double_val);
+    }
+    if (xQueueReceive(bind_co2_day, &message, 0)) {
+        hmi_settings_set_co2_day(message.double_val);
+    }
+    if (xQueueReceive(bind_co2_night, &message, 0)) {
+        hmi_settings_set_co2_night(message.double_val);
+    }
 }
 
 static void bind_settings_subscribe()
 {
-    bind_current_time = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_current_time = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_current_time, MODEL_CURRENT_TIME, true);
 
-    bind_begin_of_day = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_begin_of_day = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_begin_of_day, MODEL_BEGIN_OF_DAY, true);
 
-    bind_begin_of_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_begin_of_night = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_begin_of_night, MODEL_BEGIN_OF_NIGHT, true);
 
-    bind_temp_day = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_temp_day = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_temp_day, MODEL_TEMP_SV_DAY, true);
 
-    bind_temp_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_temp_night = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_temp_night, MODEL_TEMP_SV_NIGHT, true);
 
-    bind_hum_day = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_hum_day = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_hum_day, MODEL_HUM_SV_DAY, true);
 
-    bind_hum_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_hum_night = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_hum_night, MODEL_HUM_SV_NIGHT, true);
 
-    bind_co2_day = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_co2_day = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_co2_day, MODEL_CO2_SV_DAY, true);
 
-    bind_co2_night = xQueueCreate(2, sizeof(pubsub_message_t));
+    bind_co2_night = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(bind_co2_night, MODEL_CO2_SV_NIGHT, true);
 }
 
@@ -147,10 +145,4 @@ void bind_settings_initialize()
     hmi_settings_set_hum_night_callback(&bind_settings_hum_night_callback);
     hmi_settings_set_co2_day_callback(&bind_settings_co2_day_callback);
     hmi_settings_set_co2_night_callback(&bind_settings_co2_night_callback);
-
-    BaseType_t ret = xTaskCreate(&bind_settings_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1), NULL);
-    if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
-    }
 }

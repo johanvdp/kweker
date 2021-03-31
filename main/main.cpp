@@ -21,9 +21,7 @@ extern "C" {
 #include "model.h"
 #include "hmi.h"
 #include "bind.h"
-#include "ctrl_circadian.h"
-#include "ctrl_day_night.h"
-#include "ctrl_auto.h"
+#include "ctrl.h"
 
 #define TAG "main"
 
@@ -70,9 +68,7 @@ void app_main()
 
     model_initialize();
     bind_initialize();
-    ctrl_circadian_initialize();
-    ctrl_day_night_initialize();
-    ctrl_auto_initialize();
+    ctrl_initialize();
 
     led.setup(GPIO_LED, true, MODEL_ACTIVITY);
     light.setup(GPIO_LIGHT, true, MODEL_LIGHT);

@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void bind_control_initialize();
+void bind_control_task();
 
 #ifdef __cplusplus
 }

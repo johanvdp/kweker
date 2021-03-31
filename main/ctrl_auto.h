@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void ctrl_auto_initialize();
+void ctrl_auto_task();
 
 #ifdef __cplusplus
 }

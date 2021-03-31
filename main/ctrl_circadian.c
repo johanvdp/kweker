@@ -14,6 +14,7 @@
 #include "model.h"
 
 #include "ctrl_circadian.h"
+#include "ctrl.h"
 
 static const char *TAG = "ctrl_circadian";
 
@@ -34,72 +35,61 @@ static void ctrl_circadian_set_day(bool value)
     }
 }
 
-static void ctrl_circadian_task(void *pvParameter)
+void ctrl_circadian_task()
 {
     pubsub_message_t message;
-    bool change;
-    while (true) {
-        change = false;
-        if (xQueueReceive(time_queue, &message, 0)) {
-            struct tm brokentime;
-            time_t time = message.int_val;
-            gmtime_r(&time, &brokentime);
-            time_minutes = brokentime.tm_hour * 60 + brokentime.tm_min;
-            change = true;
-        }
-        if (xQueueReceive(begin_of_day_queue, &message, 0)) {
-            struct tm brokentime;
-            time_t time = message.int_val;
-            gmtime_r(&time, &brokentime);
-            begin_of_day_minutes = brokentime.tm_hour * 60 + brokentime.tm_min;
-            change = true;
-        }
-        if (xQueueReceive(begin_of_night_queue, &message, 0)) {
-            struct tm brokentime;
-            time_t time = message.int_val;
-            gmtime_r(&time, &brokentime);
-            begin_of_night_minutes = brokentime.tm_hour * 60
-                    + brokentime.tm_min;
-            change = true;
-        }
+    bool change = false;
+    if (xQueueReceive(time_queue, &message, 0)) {
+        struct tm brokentime;
+        time_t time = message.int_val;
+        gmtime_r(&time, &brokentime);
+        time_minutes = brokentime.tm_hour * 60 + brokentime.tm_min;
+        change = true;
+    }
+    if (xQueueReceive(begin_of_day_queue, &message, 0)) {
+        struct tm brokentime;
+        time_t time = message.int_val;
+        gmtime_r(&time, &brokentime);
+        begin_of_day_minutes = brokentime.tm_hour * 60 + brokentime.tm_min;
+        change = true;
+    }
+    if (xQueueReceive(begin_of_night_queue, &message, 0)) {
+        struct tm brokentime;
+        time_t time = message.int_val;
+        gmtime_r(&time, &brokentime);
+        begin_of_night_minutes = brokentime.tm_hour * 60
+                + brokentime.tm_min;
+        change = true;
+    }
 
-        if (change) {
-            // minute:    0...........1439
-            // day night: nnnnnDdddddddNnn
-            // night day: ddNnnnnnnnDddddd
-            uint16_t day;
-            if (begin_of_day_minutes < begin_of_night_minutes) {
-                day = (time_minutes >= begin_of_day_minutes)
-                        && (time_minutes < begin_of_night_minutes);
-            } else {
-                day = (time_minutes < begin_of_night_minutes)
-                        || (time_minutes >= begin_of_day_minutes);
-            }
-            ctrl_circadian_set_day(day);
+    if (change) {
+        // minute:    0...........1439
+        // day night: nnnnnDdddddddNnn
+        // night day: ddNnnnnnnnDddddd
+        uint16_t day;
+        if (begin_of_day_minutes < begin_of_night_minutes) {
+            day = (time_minutes >= begin_of_day_minutes)
+                    && (time_minutes < begin_of_night_minutes);
+        } else {
+            day = (time_minutes < begin_of_night_minutes)
+                    || (time_minutes >= begin_of_day_minutes);
         }
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    };
+        ctrl_circadian_set_day(day);
+    }
 }
 
 static void ctrl_circadian_subscribe()
 {
-    time_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    time_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(time_queue, MODEL_CURRENT_TIME, true);
-    begin_of_day_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    begin_of_day_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(begin_of_day_queue, MODEL_BEGIN_OF_DAY, true);
-    begin_of_night_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    begin_of_night_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(begin_of_night_queue, MODEL_BEGIN_OF_NIGHT, true);
 }
 
 void ctrl_circadian_initialize()
 {
     ctrl_circadian_subscribe();
-
-    BaseType_t ret = xTaskCreate(&ctrl_circadian_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1),
-            NULL);
-    if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
-    }
 }
 

@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void bind_settings_initialize();
+void bind_settings_task();
 
 #ifdef __cplusplus
 }

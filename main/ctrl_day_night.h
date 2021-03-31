@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void ctrl_day_night_initialize();
+void ctrl_day_night_task();
 
 #ifdef __cplusplus
 }

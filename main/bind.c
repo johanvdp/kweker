@@ -64,31 +64,35 @@ static void bind_task(void *pvParameter)
         if (xQueueReceive(current_time, &message, 0)) {
             hmi_set_current_time(message.int_val);
         }
+
+        bind_control_task();
+        bind_settings_task();
+
         vTaskDelay(1);
     };
 }
 
 static void bind_subscribe()
 {
-    exhaust = xQueueCreate(2, sizeof(pubsub_message_t));
+    exhaust = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(exhaust, MODEL_EXHAUST, true);
 
-    heater = xQueueCreate(2, sizeof(pubsub_message_t));
+    heater = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(heater, MODEL_HEATER, true);
 
-    light = xQueueCreate(2, sizeof(pubsub_message_t));
+    light = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(light, MODEL_LIGHT, true);
 
-    recirc = xQueueCreate(2, sizeof(pubsub_message_t));
+    recirc = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(recirc, MODEL_RECIRC, true);
 
-    circadian = xQueueCreate(2, sizeof(pubsub_message_t));
+    circadian = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(circadian, MODEL_CIRCADIAN, true);
 
-    control_mode = xQueueCreate(2, sizeof(pubsub_message_t));
+    control_mode = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode, MODEL_CONTROL_MODE, true);
 
-    current_time = xQueueCreate(2, sizeof(pubsub_message_t));
+    current_time = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(current_time, MODEL_CURRENT_TIME, true);
 }
 
@@ -96,12 +100,12 @@ void bind_initialize()
 {
     bind_subscribe();
 
+    bind_control_initialize();
+    bind_settings_initialize();
+
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL,
             (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {
         ESP_LOGE(TAG, "failed to create task (FATAL)");
     }
-
-    bind_control_initialize();
-    bind_settings_initialize();
 }

@@ -11,7 +11,8 @@ set(SOURCES main.cpp
 			bind_settings.c
 			ctrl_circadian.c
 			ctrl_day_night.c
-			ctrl_auto.c)
+			ctrl_auto.c
+			ctrl.c)
 idf_component_register(SRCS ${SOURCES}
                     INCLUDE_DIRS .
                     REQUIRES driver esp32 freertos led am2301 lvgl lvgl_esp32_drivers pubsub led do ds3234)

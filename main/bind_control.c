@@ -13,6 +13,7 @@
 #include "model.h"
 #include "hmi_control.h"
 #include "bind_control.h"
+#include "bind.h"
 
 static const char *TAG = "bind_control";
 
@@ -55,120 +56,115 @@ static QueueHandle_t hum_pv;
 /** measurement temperature */
 static QueueHandle_t temp_pv;
 
-static void bind_control_task(void *pvParameter)
+void bind_control_task()
 {
     pubsub_message_t message;
-    while (true) {
+    if (xQueueReceive(control_mode, &message, 0)) {
+        model_control_mode_t mode = (model_control_mode_t) message.int_val;
+        if (mode == MODEL_CONTROL_MODE_OFF) {
+            hmi_control_set_control_mode(HMI_CONTROL_MODE_OFF);
+        } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
+            hmi_control_set_control_mode(HMI_CONTROL_MODE_MANUAL);
+        } else if (mode == MODEL_CONTROL_MODE_AUTO) {
+            hmi_control_set_control_mode(HMI_CONTROL_MODE_AUTO);
+        }
+    }
 
-        if (xQueueReceive(control_mode, &message, 0)) {
-            model_control_mode_t mode = (model_control_mode_t) message.int_val;
-            if (mode == MODEL_CONTROL_MODE_OFF) {
-                hmi_control_set_control_mode(HMI_CONTROL_MODE_OFF);
-            } else if (mode == MODEL_CONTROL_MODE_MANUAL) {
-                hmi_control_set_control_mode(HMI_CONTROL_MODE_MANUAL);
-            } else if (mode == MODEL_CONTROL_MODE_AUTO) {
-                hmi_control_set_control_mode(HMI_CONTROL_MODE_AUTO);
-            }
-        }
+    if (xQueueReceive(co2_pv, &message, 0)) {
+        hmi_control_set_co2_pv(message.double_val);
+    }
+    if (xQueueReceive(co2_sv, &message, 0)) {
+        hmi_control_set_co2_sv(message.double_val);
+    }
+    if (xQueueReceive(co2_lo, &message, 0)) {
+        hmi_control_set_co2_lo(message.boolean_val);
+    }
+    if (xQueueReceive(co2_hi, &message, 0)) {
+        hmi_control_set_co2_hi(message.boolean_val);
+    }
 
-        if (xQueueReceive(co2_pv, &message, 0)) {
-            hmi_control_set_co2_pv(message.double_val);
-        }
-        if (xQueueReceive(co2_sv, &message, 0)) {
-            hmi_control_set_co2_sv(message.double_val);
-        }
-        if (xQueueReceive(co2_lo, &message, 0)) {
-            hmi_control_set_co2_lo(message.boolean_val);
-        }
-        if (xQueueReceive(co2_hi, &message, 0)) {
-            hmi_control_set_co2_hi(message.boolean_val);
-        }
+    if (xQueueReceive(hum_pv, &message, 0)) {
+        hmi_control_set_hum_pv(message.double_val);
+    }
+    if (xQueueReceive(hum_sv, &message, 0)) {
+        hmi_control_set_hum_sv(message.double_val);
+    }
+    if (xQueueReceive(hum_lo, &message, 0)) {
+        hmi_control_set_hum_lo(message.boolean_val);
+    }
+    if (xQueueReceive(hum_hi, &message, 0)) {
+        hmi_control_set_hum_hi(message.boolean_val);
+    }
 
-        if (xQueueReceive(hum_pv, &message, 0)) {
-            hmi_control_set_hum_pv(message.double_val);
-        }
-        if (xQueueReceive(hum_sv, &message, 0)) {
-            hmi_control_set_hum_sv(message.double_val);
-        }
-        if (xQueueReceive(hum_lo, &message, 0)) {
-            hmi_control_set_hum_lo(message.boolean_val);
-        }
-        if (xQueueReceive(hum_hi, &message, 0)) {
-            hmi_control_set_hum_hi(message.boolean_val);
-        }
+    if (xQueueReceive(temp_pv, &message, 0)) {
+        hmi_control_set_temp_pv(message.double_val);
+    }
+    if (xQueueReceive(temp_sv, &message, 0)) {
+        hmi_control_set_temp_sv(message.double_val);
+    }
+    if (xQueueReceive(temp_lo, &message, 0)) {
+        hmi_control_set_temp_lo(message.boolean_val);
+    }
+    if (xQueueReceive(temp_hi, &message, 0)) {
+        hmi_control_set_temp_hi(message.boolean_val);
+    }
 
-        if (xQueueReceive(temp_pv, &message, 0)) {
-            hmi_control_set_temp_pv(message.double_val);
-        }
-        if (xQueueReceive(temp_sv, &message, 0)) {
-            hmi_control_set_temp_sv(message.double_val);
-        }
-        if (xQueueReceive(temp_lo, &message, 0)) {
-            hmi_control_set_temp_lo(message.boolean_val);
-        }
-        if (xQueueReceive(temp_hi, &message, 0)) {
-            hmi_control_set_temp_hi(message.boolean_val);
-        }
-
-        if (xQueueReceive(exhaust_sv, &message, 0)) {
-            hmi_control_set_exhaust_sv(message.boolean_val);
-        }
-        if (xQueueReceive(heater_sv, &message, 0)) {
-            hmi_control_set_heater_sv(message.boolean_val);
-        }
-        if (xQueueReceive(light_sv, &message, 0)) {
-            hmi_control_set_light_sv(message.boolean_val);
-        }
-        if (xQueueReceive(recirc_sv, &message, 0)) {
-            hmi_control_set_recirc_sv(message.boolean_val);
-        }
-
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    };
+    if (xQueueReceive(exhaust_sv, &message, 0)) {
+        hmi_control_set_exhaust_sv(message.boolean_val);
+    }
+    if (xQueueReceive(heater_sv, &message, 0)) {
+        hmi_control_set_heater_sv(message.boolean_val);
+    }
+    if (xQueueReceive(light_sv, &message, 0)) {
+        hmi_control_set_light_sv(message.boolean_val);
+    }
+    if (xQueueReceive(recirc_sv, &message, 0)) {
+        hmi_control_set_recirc_sv(message.boolean_val);
+    }
 }
 
 static void bind_control_subscribe()
 {
-    control_mode = xQueueCreate(2, sizeof(pubsub_message_t));
+    control_mode = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode, MODEL_CONTROL_MODE, true);
 
-    exhaust_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    exhaust_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(exhaust_sv, MODEL_EXHAUST_SV, true);
 
-    heater_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    heater_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(heater_sv, MODEL_HEATER_SV, true);
 
-    light_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    light_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(light_sv, MODEL_LIGHT_SV, true);
 
-    recirc_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    recirc_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(recirc_sv, MODEL_RECIRC_SV, true);
 
-    co2_pv = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_pv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_pv, MODEL_CO2_PV, true);
-    co2_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_sv, MODEL_CO2_SV, true);
-    co2_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_lo = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_lo, MODEL_CO2_LO, true);
-    co2_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_hi = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_hi, MODEL_CO2_HI, true);
 
-    hum_pv = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_pv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_pv, MODEL_HUM_PV, true);
-    hum_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_sv, MODEL_HUM_SV, true);
-    hum_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_lo = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_lo, MODEL_HUM_LO, true);
-    hum_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_hi = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_hi, MODEL_HUM_HI, true);
 
-    temp_pv = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_pv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_pv, MODEL_TEMP_PV, true);
-    temp_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_sv = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_sv, MODEL_TEMP_SV, true);
-    temp_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_lo = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_lo, MODEL_TEMP_LO, true);
-    temp_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_hi = xQueueCreate(BIND_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_hi, MODEL_TEMP_HI, true);
 }
 
@@ -206,12 +202,5 @@ void bind_control_initialize()
     hmi_control_set_exhaust_sv_callback(&bind_control_exhaust_sv_callback);
     hmi_control_set_recirc_sv_callback(&bind_control_recirc_sv_callback);
     hmi_control_set_heater_sv_callback(&bind_control_heater_sv_callback);
-
-    BaseType_t ret = xTaskCreate(&bind_control_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1),
-            NULL);
-    if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
-    }
 }
 

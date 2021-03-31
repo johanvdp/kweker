@@ -13,6 +13,7 @@
 #include "model.h"
 
 #include "ctrl_auto.h"
+#include "ctrl.h"
 
 static const char *TAG = "ctrl_auto";
 
@@ -133,8 +134,15 @@ static void ctrl_auto_heater()
     pubsub_publish_bool(model_heater, heater_on);
 }
 
-static void ctrl_auto_recalculate()
+static void ctrl_auto_control()
 {
+    ctrl_auto_light();
+    ctrl_auto_exhaust();
+    ctrl_auto_recirculation();
+    ctrl_auto_heater();
+}
+
+static void ctrl_auto_indicate() {
     ctrl_auto_set_co2_lo(co2_pv < co2_sv);
     ctrl_auto_set_co2_hi(co2_pv > co2_sv);
 
@@ -143,113 +151,84 @@ static void ctrl_auto_recalculate()
 
     ctrl_auto_set_temp_lo(temp_pv < temp_sv);
     ctrl_auto_set_temp_hi(temp_pv > temp_sv);
-
-    ctrl_auto_light();
-    ctrl_auto_exhaust();
-    ctrl_auto_recirculation();
-    ctrl_auto_heater();
 }
 
-static void ctrl_auto_task(void *pvParameter)
+void ctrl_auto_task()
 {
     pubsub_message_t message;
-    while (true) {
-        bool recalculate = false;
+    bool changed = false;
 
-        if (xQueueReceive(circadian_queue, &message, 0)) {
-            circadian = message.int_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
+    if (xQueueReceive(circadian_queue, &message, 0)) {
+        circadian = message.int_val;
+        changed = true;
+    }
 
-        if (xQueueReceive(control_mode_queue, &message, 0)) {
-            control_mode = message.int_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
+    if (xQueueReceive(control_mode_queue, &message, 0)) {
+        control_mode = message.int_val;
+        changed = true;
+    }
 
-        if (xQueueReceive(co2_pv_queue, &message, 0)) {
-            co2_pv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
-        if (xQueueReceive(co2_sv_queue, &message, 0)) {
-            co2_sv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
+    if (xQueueReceive(co2_pv_queue, &message, 0)) {
+        co2_pv = message.double_val;
+        changed = true;
+    }
+    if (xQueueReceive(co2_sv_queue, &message, 0)) {
+        co2_sv = message.double_val;
+        changed = true;
+    }
 
-        if (xQueueReceive(hum_pv_queue, &message, 0)) {
-            hum_pv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
-        if (xQueueReceive(hum_sv_queue, &message, 0)) {
-            hum_sv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
+    if (xQueueReceive(hum_pv_queue, &message, 0)) {
+        hum_pv = message.double_val;
+        changed = true;
+    }
+    if (xQueueReceive(hum_sv_queue, &message, 0)) {
+        hum_sv = message.double_val;
+        changed = true;
+    }
 
-        if (xQueueReceive(temp_pv_queue, &message, 0)) {
-            temp_pv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
-        if (xQueueReceive(temp_sv_queue, &message, 0)) {
-            temp_sv = message.double_val;
-            if (control_mode == MODEL_CONTROL_MODE_AUTO) {
-                recalculate = true;
-            }
-        }
+    if (xQueueReceive(temp_pv_queue, &message, 0)) {
+        temp_pv = message.double_val;
+        changed = true;
+    }
+    if (xQueueReceive(temp_sv_queue, &message, 0)) {
+        temp_sv = message.double_val;
+        changed = true;
+    }
 
-        if (recalculate) {
-            ctrl_auto_recalculate();
-        }
+    ctrl_auto_indicate();
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    };
+    if (control_mode == MODEL_CONTROL_MODE_AUTO && changed) {
+        ctrl_auto_control();
+    }
 }
 
 static void ctrl_auto_subscribe()
 {
-    circadian_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    circadian_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(circadian_queue, MODEL_CIRCADIAN, true);
 
-    control_mode_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    control_mode_queue = xQueueCreate(CTRL_QUEUE_DEPTH,
+            sizeof(pubsub_message_t));
     pubsub_add_subscription(control_mode_queue, MODEL_CONTROL_MODE, true);
 
-    co2_pv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_pv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_pv_queue, MODEL_CO2_PV, true);
-    co2_sv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    co2_sv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_sv_queue, MODEL_CO2_SV, true);
 
-    hum_pv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_pv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_pv_queue, MODEL_HUM_PV, true);
-    hum_sv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    hum_sv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_sv_queue, MODEL_HUM_SV, true);
 
-    temp_pv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_pv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_pv_queue, MODEL_TEMP_PV, true);
-    temp_sv_queue = xQueueCreate(2, sizeof(pubsub_message_t));
+    temp_sv_queue = xQueueCreate(CTRL_QUEUE_DEPTH, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_sv_queue, MODEL_TEMP_SV, true);
 }
 
 void ctrl_auto_initialize()
 {
     ctrl_auto_subscribe();
-
-    BaseType_t ret = xTaskCreate(&ctrl_auto_task, TAG, 2048, NULL,
-            (tskIDLE_PRIORITY + 1),
-            NULL);
-    if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
-    }
 }
 

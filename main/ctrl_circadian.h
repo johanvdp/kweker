@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void ctrl_circadian_initialize();
+void ctrl_circadian_task();
 
 #ifdef __cplusplus
 }
