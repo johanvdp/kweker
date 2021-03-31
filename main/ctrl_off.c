@@ -18,13 +18,13 @@
 static const char *TAG = "ctrl_off";
 
 static QueueHandle_t control_mode_queue;
-static model_control_mode_t control_mode;
 
 void ctrl_off_task()
 {
     pubsub_message_t message;
 
     if (xQueueReceive(control_mode_queue, &message, 0)) {
+        model_control_mode_t control_mode = message.int_val;
         if (control_mode == MODEL_CONTROL_MODE_OFF) {
             pubsub_publish_bool(model_light_sv, false);
             pubsub_publish_bool(model_light, false);
