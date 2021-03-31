@@ -44,6 +44,10 @@ const char *MODEL_CURRENT_TIME = "time";
 const char *MODEL_BEGIN_OF_DAY = "day";
 const char *MODEL_BEGIN_OF_NIGHT = "night";
 
+const char *MODEL_CO2_SV = "co2.sv";
+const char *MODEL_HUM_SV = "hum.sv";
+const char *MODEL_TEMP_SV = "temp.sv";
+
 pubsub_topic_t model_activity;
 
 pubsub_topic_t model_exhaust;
@@ -85,6 +89,10 @@ pubsub_topic_t model_temp_sv_night;
 pubsub_topic_t model_current_time;
 pubsub_topic_t model_begin_of_day;
 pubsub_topic_t model_begin_of_night;
+
+pubsub_topic_t model_co2_sv;
+pubsub_topic_t model_hum_sv;
+pubsub_topic_t model_temp_sv;
 
 void model_initialize()
 {
@@ -144,4 +152,8 @@ void model_initialize()
             PUBSUB_TYPE_INT);
     model_begin_of_night = pubsub_register_topic(MODEL_BEGIN_OF_NIGHT,
             PUBSUB_TYPE_INT);
+
+    model_temp_sv = pubsub_register_topic(MODEL_TEMP_SV, PUBSUB_TYPE_DOUBLE);
+    model_hum_sv = pubsub_register_topic(MODEL_HUM_SV, PUBSUB_TYPE_DOUBLE);
+    model_co2_sv = pubsub_register_topic(MODEL_CO2_SV, PUBSUB_TYPE_DOUBLE);
 }

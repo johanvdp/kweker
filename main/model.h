@@ -82,6 +82,13 @@ extern const char *MODEL_BEGIN_OF_DAY;
 /** Begin of night (integer) */
 extern const char *MODEL_BEGIN_OF_NIGHT;
 
+/** Current CO2 concentration setpoint [ppm] (double) */
+extern const char *MODEL_CO2_SV;
+/** Current humidity setpoint [%] (double) */
+extern const char *MODEL_HUM_SV;
+/** Current temperature setpoint [K] (double) */
+extern const char *MODEL_TEMP_SV;
+
 extern pubsub_topic_t model_activity;
 
 extern pubsub_topic_t model_exhaust;
@@ -129,6 +136,10 @@ extern pubsub_topic_t model_temp_sv_night;
 extern pubsub_topic_t model_current_time;
 extern pubsub_topic_t model_begin_of_day;
 extern pubsub_topic_t model_begin_of_night;
+
+extern pubsub_topic_t model_co2_sv;
+extern pubsub_topic_t model_hum_sv;
+extern pubsub_topic_t model_temp_sv;
 
 typedef enum
 {
