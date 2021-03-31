@@ -131,7 +131,6 @@ static void hmi_control_set_lo(hmi_control_t *target, bool lo)
 
         lv_obj_t *label_lo = target->label_lo;
 
-        // lo
         lv_obj_set_style_local_text_color(label_lo, LV_LABEL_PART_MAIN,
                 LV_STATE_DEFAULT, lo ? LV_COLOR_RED : LV_COLOR_GRAY);
 
@@ -215,6 +214,9 @@ static void hmi_control_control_mode_cb(lv_obj_t *button, lv_event_t e)
     if (e == LV_EVENT_VALUE_CHANGED) {
         if (hmi_control_mode_callback != NULL) {
             uint16_t index = lv_btnmatrix_get_active_btn(button);
+
+            ESP_LOGI(TAG, "hmi_control_control_mode_cb index:%d", index);
+
             hmi_control_mode_callback(index);
         }
     }
@@ -265,11 +267,13 @@ static lv_obj_t* hmi_control_create_mode(lv_obj_t *parent, lv_coord_t x,
 
 static void hmi_control_manual_cb(lv_obj_t *button, lv_event_t e)
 {
-    if (e == LV_EVENT_VALUE_CHANGED) {
+    if (e == LV_EVENT_CLICKED) {
 
         uint16_t index = lv_btnmatrix_get_active_btn(button);
         bool checked = lv_btnmatrix_get_btn_ctrl(button, index,
                 LV_BTNMATRIX_CTRL_CHECK_STATE);
+
+        ESP_LOGI(TAG, "hmi_control_manual_cb index:%d, checked:%d", index, checked);
 
         if (index == 0 && hmi_control_light_sv_callback != NULL) {
             hmi_control_light_sv_callback(checked);

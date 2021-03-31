@@ -354,9 +354,7 @@ Follows the ambient temperature, humidity, and CO2 concentration.
 | Condition | Result
 
 | Temperature high | ON
-| Temperature low | OFF
 | Humidity high | ON
-| Humidity low | OFF
 | CO2 concentration high | ON
 | else | OFF
 |===

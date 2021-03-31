@@ -71,14 +71,43 @@ static void bind_control_task(void *pvParameter)
             }
         }
 
+        if (xQueueReceive(co2_pv, &message, 0)) {
+            hmi_control_set_co2_pv(message.double_val);
+        }
         if (xQueueReceive(co2_sv, &message, 0)) {
             hmi_control_set_co2_sv(message.double_val);
+        }
+        if (xQueueReceive(co2_lo, &message, 0)) {
+            hmi_control_set_co2_lo(message.boolean_val);
+        }
+        if (xQueueReceive(co2_hi, &message, 0)) {
+            hmi_control_set_co2_hi(message.boolean_val);
+        }
+
+        if (xQueueReceive(hum_pv, &message, 0)) {
+            hmi_control_set_hum_pv(message.double_val);
         }
         if (xQueueReceive(hum_sv, &message, 0)) {
             hmi_control_set_hum_sv(message.double_val);
         }
+        if (xQueueReceive(hum_lo, &message, 0)) {
+            hmi_control_set_hum_lo(message.boolean_val);
+        }
+        if (xQueueReceive(hum_hi, &message, 0)) {
+            hmi_control_set_hum_hi(message.boolean_val);
+        }
+
+        if (xQueueReceive(temp_pv, &message, 0)) {
+            hmi_control_set_temp_pv(message.double_val);
+        }
         if (xQueueReceive(temp_sv, &message, 0)) {
             hmi_control_set_temp_sv(message.double_val);
+        }
+        if (xQueueReceive(temp_lo, &message, 0)) {
+            hmi_control_set_temp_lo(message.boolean_val);
+        }
+        if (xQueueReceive(temp_hi, &message, 0)) {
+            hmi_control_set_temp_hi(message.boolean_val);
         }
 
         if (xQueueReceive(exhaust_sv, &message, 0)) {
@@ -92,16 +121,6 @@ static void bind_control_task(void *pvParameter)
         }
         if (xQueueReceive(recirc_sv, &message, 0)) {
             hmi_control_set_recirc_sv(message.boolean_val);
-        }
-
-        if (xQueueReceive(co2_pv, &message, 0)) {
-            hmi_control_set_co2_pv(message.double_val);
-        }
-        if (xQueueReceive(hum_pv, &message, 0)) {
-            hmi_control_set_hum_pv(message.double_val);
-        }
-        if (xQueueReceive(temp_pv, &message, 0)) {
-            hmi_control_set_temp_pv(message.double_val);
         }
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -125,23 +144,32 @@ static void bind_control_subscribe()
     recirc_sv = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(recirc_sv, MODEL_RECIRC_SV, true);
 
-    co2_sv = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(co2_sv, MODEL_CO2_SV, true);
-
-    hum_sv = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(hum_sv, MODEL_HUM_SV, true);
-
-    temp_sv = xQueueCreate(2, sizeof(pubsub_message_t));
-    pubsub_add_subscription(temp_sv, MODEL_TEMP_SV, true);
-
     co2_pv = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(co2_pv, MODEL_CO2_PV, true);
+    co2_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(co2_sv, MODEL_CO2_SV, true);
+    co2_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(co2_lo, MODEL_CO2_LO, true);
+    co2_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(co2_hi, MODEL_CO2_HI, true);
 
     hum_pv = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(hum_pv, MODEL_HUM_PV, true);
+    hum_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(hum_sv, MODEL_HUM_SV, true);
+    hum_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(hum_lo, MODEL_HUM_LO, true);
+    hum_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(hum_hi, MODEL_HUM_HI, true);
 
     temp_pv = xQueueCreate(2, sizeof(pubsub_message_t));
     pubsub_add_subscription(temp_pv, MODEL_TEMP_PV, true);
+    temp_sv = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(temp_sv, MODEL_TEMP_SV, true);
+    temp_lo = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(temp_lo, MODEL_TEMP_LO, true);
+    temp_hi = xQueueCreate(2, sizeof(pubsub_message_t));
+    pubsub_add_subscription(temp_hi, MODEL_TEMP_HI, true);
 }
 
 static void bind_control_mode_callback(hmi_control_mode_t mode)
