@@ -12,6 +12,7 @@ set(SOURCES main.cpp
 			ctrl_circadian.c
 			ctrl_day_night.c
 			ctrl_auto.c
+			ctrl_manual.c
 			ctrl.c)
 idf_component_register(SRCS ${SOURCES}
                     INCLUDE_DIRS .
