@@ -222,18 +222,21 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
     if (topic_detail->type == PUBSUB_TYPE_INT) {
         value_changed = topic_detail->int_val != message->int_val;
         topic_detail->int_val = message->int_val;
-        ESP_LOGI(tag, "pubsub_publish %s=%lld", topic_detail->topic, message->int_val);
-
+        if (topic_detail->always || value_changed) {
+            ESP_LOGI(tag, "pubsub_publish %s=%lld", topic_detail->topic, message->int_val);
+        }
     } else if (topic_detail->type == PUBSUB_TYPE_BOOLEAN) {
         value_changed = topic_detail->boolean_val != message->boolean_val;
         topic_detail->boolean_val = message->boolean_val;
-        ESP_LOGI(tag, "pubsub_publish %s=%s", topic_detail->topic, message->boolean_val ? "true" : "false");
-
+        if (topic_detail->always || value_changed) {
+            ESP_LOGI(tag, "pubsub_publish %s=%s", topic_detail->topic, message->boolean_val ? "true" : "false");
+        }
     } else if (topic_detail->type == PUBSUB_TYPE_DOUBLE) {
         value_changed = topic_detail->double_val != message->double_val;
         topic_detail->double_val = message->double_val;
-        ESP_LOGI(tag, "pubsub_publish %s=%lf", topic_detail->topic, message->double_val);
-
+        if (topic_detail->always || value_changed) {
+            ESP_LOGI(tag, "pubsub_publish %s=%lf", topic_detail->topic, message->double_val);
+        }
     } else {
         value_changed = false;
         ESP_LOGE(tag, "pubsub_publish unknown type topic:%s", topic_detail->topic);
