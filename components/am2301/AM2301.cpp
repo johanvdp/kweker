@@ -50,7 +50,7 @@ void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic,
         return;
     }
 
-    BaseType_t ret = xTaskCreatePinnedToCore(&task, TAG, 2048, this,
+    BaseType_t ret = xTaskCreatePinnedToCore(&task, TAG, 3072, this,
             (4 | portPRIVILEGE_BIT), NULL, 1);
     if (ret != pdPASS) {
         state = COMPONENT_FATAL;
