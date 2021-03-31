@@ -26,6 +26,7 @@ typedef struct pubsub_topic_detail_s
 {
     char *topic;
     pubsub_type_t type;
+    bool always;
     // last known value
     union
     {
@@ -64,13 +65,11 @@ static pubsub_topic_detail_t* pubsub_find_topic_detail(const char *topic_name)
     return NULL;
 }
 
-static pubsub_subscriber_t* pubsub_create_subscriber(
-        QueueHandle_t subscriber_queue)
+static pubsub_subscriber_t* pubsub_create_subscriber(QueueHandle_t subscriber_queue)
 {
     ESP_LOGV(tag, "pubsub_create_subscriber queue:%p", subscriber_queue);
 
-    pubsub_subscriber_t *subscriber = (pubsub_subscriber_t*) malloc(
-            sizeof(pubsub_subscriber_t));
+    pubsub_subscriber_t *subscriber = (pubsub_subscriber_t*) malloc(sizeof(pubsub_subscriber_t));
     subscriber->queue = subscriber_queue;
     return subscriber;
 }
@@ -79,14 +78,13 @@ static pubsub_subscriber_t* pubsub_create_subscriber(
  * Add topic name to list.
  * @return the topic.
  */
-static pubsub_topic_detail_t* pubsub_add_topic_detail(const char *topic_name,
-        pubsub_type_t type)
+static pubsub_topic_detail_t* pubsub_add_topic_detail(const char *topic_name, pubsub_type_t type, const bool always)
 {
     ESP_LOGV(tag, "pubsub_add_topic_detail topic:%s", topic_name);
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) malloc(
-            sizeof(pubsub_topic_detail_t));
+    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) malloc(sizeof(pubsub_topic_detail_t));
     topic_detail->topic = strdup(topic_name);
     topic_detail->type = type;
+    topic_detail->always = always;
     if (type == PUBSUB_TYPE_INT) {
         topic_detail->int_val = 0;
     } else if (type == PUBSUB_TYPE_DOUBLE) {
@@ -116,11 +114,9 @@ static void pubsub_publish_one(QueueHandle_t queue, pubsub_message_t *message)
 /**
  * Add subscription to topic name.
  */
-void pubsub_add_subscription(QueueHandle_t subscriber_queue,
-        const char *topic_name, bool hot)
+void pubsub_add_subscription(QueueHandle_t subscriber_queue, const char *topic_name, bool hot)
 {
-    ESP_LOGI(tag, "pubsub_add_subscription topic:%s, queue:%p", topic_name,
-            subscriber_queue);
+    ESP_LOGI(tag, "pubsub_add_subscription topic:%s, queue:%p", topic_name, subscriber_queue);
 
     // find existing topic by name
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
@@ -129,8 +125,7 @@ void pubsub_add_subscription(QueueHandle_t subscriber_queue,
         return;
     }
     // add subscriber to topic
-    pubsub_subscriber_t *subscriber = pubsub_create_subscriber(
-            subscriber_queue);
+    pubsub_subscriber_t *subscriber = pubsub_create_subscriber(subscriber_queue);
     LIST_INSERT_HEAD(&(topic_detail->subscribers), subscriber, pointers);
     // publish last known value if hot
     if (hot) {
@@ -154,11 +149,9 @@ void pubsub_add_subscription(QueueHandle_t subscriber_queue,
 /**
  * Remove subscription to topic
  */
-void pubsub_remove_subscription(QueueHandle_t subscriber_queue,
-        const char *topic_name)
+void pubsub_remove_subscription(QueueHandle_t subscriber_queue, const char *topic_name)
 {
-    ESP_LOGI(tag, "pubsub_remove_subscription topic:%s, queue:%p", topic_name,
-            subscriber_queue);
+    ESP_LOGI(tag, "pubsub_remove_subscription topic:%s, queue:%p", topic_name, subscriber_queue);
     // find existing topic by name
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail != NULL) {
@@ -167,9 +160,7 @@ void pubsub_remove_subscription(QueueHandle_t subscriber_queue,
         LIST_FOREACH(candidate, &(topic_detail->subscribers), pointers)
         {
             if (candidate->queue == subscriber_queue) {
-                ESP_LOGD(tag,
-                        "pubsub_remove_subscription topic:%s, queue:%p found",
-                        topic_name, subscriber_queue);
+                ESP_LOGD(tag, "pubsub_remove_subscription topic:%s, queue:%p found", topic_name, subscriber_queue);
                 LIST_REMOVE(candidate, pointers);
                 free(candidate);
                 break;
@@ -178,23 +169,22 @@ void pubsub_remove_subscription(QueueHandle_t subscriber_queue,
     }
 }
 
-pubsub_topic_t pubsub_register_topic(const char *topic_name,
-        const pubsub_type_t type)
+pubsub_topic_t pubsub_register_topic(const char *topic_name, const pubsub_type_t type, const bool always)
 {
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
-        topic_detail = pubsub_add_topic_detail(topic_name, type);
-        ESP_LOGI(tag, "pubsub_register_topic new topic:%s, topic:%p",
-                topic_name, topic_detail);
+        topic_detail = pubsub_add_topic_detail(topic_name, type, always);
+        ESP_LOGI(tag, "pubsub_register_topic new topic:%s, topic:%p", topic_name, topic_detail);
     } else {
 
         if (topic_detail->type != type) {
-            ESP_LOGE(tag,
-                    "pubsub_register_topic existing topic:%s, topic:%p, type:%d, mismatch new type:%d",
-                    topic_name, topic_detail, topic_detail->type, type);
+            ESP_LOGE(tag, "pubsub_register_topic existing topic:%s, topic:%p, type:%d, mismatch new type:%d", topic_name,
+                    topic_detail, topic_detail->type, type);
+        } else if (topic_detail->always != always) {
+            ESP_LOGE(tag, "pubsub_register_topic existing topic:%s, topic:%p, always:%d, mismatch new always:%d", topic_name,
+                    topic_detail, topic_detail->always, always);
         } else {
-            ESP_LOGI(tag, "pubsub_register_topic existing topic:%s, topic:%p",
-                    topic_name, topic_detail);
+            ESP_LOGI(tag, "pubsub_register_topic existing topic:%s, topic:%p", topic_name, topic_detail);
         }
     }
     return (pubsub_topic_t) topic_detail;
@@ -210,8 +200,7 @@ void pubsub_unregister_topic(const char *topic_name)
         pubsub_subscriber_t *subscriber_safe;
         LIST_FOREACH_SAFE(subscriber, &(topic_detail->subscribers), pointers, subscriber_safe)
         {
-            ESP_LOGD(tag, "pubsub_unregister_topic queue:%p",
-                    subscriber->queue);
+            ESP_LOGD(tag, "pubsub_unregister_topic queue:%p", subscriber->queue);
             LIST_REMOVE(subscriber, pointers);
             free(subscriber);
         }
@@ -223,29 +212,34 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
 {
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != message->type) {
-        ESP_LOGE(tag,
-                "pubsub_publish type mismatch topic:%s, type:%d, message type:%d",
-                topic_detail->topic, topic_detail->type, message->type);
+        ESP_LOGE(tag, "pubsub_publish type mismatch topic:%s, type:%d, message type:%d", topic_detail->topic, topic_detail->type,
+                message->type);
         return;
     }
     ESP_LOGD(tag, "pubsub_publish topic:%p", topic);
     // store last value
+    bool value_changed;
     if (topic_detail->type == PUBSUB_TYPE_INT) {
+        value_changed = topic_detail->int_val != message->int_val;
         topic_detail->int_val = message->int_val;
     } else if (topic_detail->type == PUBSUB_TYPE_BOOLEAN) {
+        value_changed = topic_detail->boolean_val != message->boolean_val;
         topic_detail->boolean_val = message->boolean_val;
     } else if (topic_detail->type == PUBSUB_TYPE_DOUBLE) {
+        value_changed = topic_detail->double_val != message->double_val;
         topic_detail->double_val = message->double_val;
     } else {
-        ESP_LOGE(tag, "pubsub_publish unknown type topic:%s",
-                topic_detail->topic);
+        value_changed = false;
+        ESP_LOGE(tag, "pubsub_publish unknown type topic:%s", topic_detail->topic);
         return;
     }
-    // inform all subscribers
-    pubsub_subscriber_t *subscriber;
-    LIST_FOREACH(subscriber, &(topic_detail->subscribers), pointers)
-    {
-        pubsub_publish_one(subscriber->queue, message);
+    // inform all subscribers, publish always or if changed
+    if (topic_detail->always || value_changed) {
+        pubsub_subscriber_t *subscriber;
+        LIST_FOREACH(subscriber, &(topic_detail->subscribers), pointers)
+        {
+            pubsub_publish_one(subscriber->queue, message);
+        }
     }
 }
 
@@ -259,17 +253,18 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
     }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
-        ESP_LOGE(tag, "pubsub_publish_bool type mismatch topic:%s",
-                topic_detail->topic);
+        ESP_LOGE(tag, "pubsub_publish_bool type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_bool topic:%s, value:%s", topic_detail->topic,
-            str_value);
-    pubsub_message_t message;
-    message.topic = topic_detail->topic;
-    message.type = PUBSUB_TYPE_BOOLEAN;
-    message.boolean_val = value;
-    pubsub_publish(topic, &message);
+    // publish always or if changed
+    if (topic_detail->always || topic_detail->boolean_val != value) {
+        ESP_LOGI(tag, "pubsub_publish_bool topic:%s, value:%s", topic_detail->topic, str_value);
+        pubsub_message_t message;
+        message.topic = topic_detail->topic;
+        message.type = PUBSUB_TYPE_BOOLEAN;
+        message.boolean_val = value;
+        pubsub_publish(topic, &message);
+    }
 }
 
 void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
@@ -281,17 +276,18 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
     }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_INT) {
-        ESP_LOGE(tag, "pubsub_publish_int type mismatch topic:%s",
-                topic_detail->topic);
+        ESP_LOGE(tag, "pubsub_publish_int type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_int topic:%s, value:%lld",
-            topic_detail->topic, value);
-    pubsub_message_t message;
-    message.topic = topic_detail->topic;
-    message.type = PUBSUB_TYPE_INT;
-    message.int_val = value;
-    pubsub_publish(topic, &message);
+    // publish always or if changed
+    if (topic_detail->always || topic_detail->int_val != value) {
+        ESP_LOGI(tag, "pubsub_publish_int topic:%s, value:%lld", topic_detail->topic, value);
+        pubsub_message_t message;
+        message.topic = topic_detail->topic;
+        message.type = PUBSUB_TYPE_INT;
+        message.int_val = value;
+        pubsub_publish(topic, &message);
+    }
 }
 
 void pubsub_publish_double(pubsub_topic_t topic, double value)
@@ -303,17 +299,18 @@ void pubsub_publish_double(pubsub_topic_t topic, double value)
     }
     pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
-        ESP_LOGE(tag, "pubsub_publish_double type mismatch topic:%s",
-                topic_detail->topic);
+        ESP_LOGE(tag, "pubsub_publish_double type mismatch topic:%s", topic_detail->topic);
         return;
     }
-    ESP_LOGI(tag, "pubsub_publish_double topic:%s, value:%lf",
-            topic_detail->topic, value);
-    pubsub_message_t message;
-    message.topic = topic_detail->topic;
-    message.type = PUBSUB_TYPE_DOUBLE;
-    message.double_val = value;
-    pubsub_publish(topic, &message);
+    // publish always or if changed
+    if (topic_detail->always || topic_detail->double_val != value) {
+        ESP_LOGI(tag, "pubsub_publish_double topic:%s, value:%lf", topic_detail->topic, value);
+        pubsub_message_t message;
+        message.topic = topic_detail->topic;
+        message.type = PUBSUB_TYPE_DOUBLE;
+        message.double_val = value;
+        pubsub_publish(topic, &message);
+    }
 }
 
 uint16_t pubsub_topic_count()
@@ -337,13 +334,11 @@ uint16_t pubsub_subscriber_count(const char *topic_name)
     if (topic_detail != NULL) {
         LIST_FOREACH(subscriber, &(topic_detail->subscribers), pointers)
         {
-            ESP_LOGD(tag, "pubsub_subscriber_count queue:%p",
-                    subscriber->queue);
+            ESP_LOGD(tag, "pubsub_subscriber_count queue:%p", subscriber->queue);
             count++;
         }
     }
-    ESP_LOGI(tag, "pubsub_subscriber_count topic:%s, count:%d", topic_name,
-            count);
+    ESP_LOGI(tag, "pubsub_subscriber_count topic:%s, count:%d", topic_name, count);
     return 0;
 }
 
@@ -359,8 +354,7 @@ bool pubsub_last_bool(pubsub_topic_t topic, bool *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
-        ESP_LOGE(tag, "pubsub_last_bool topic:%s, incorrect type:%d",
-                topic_detail->topic, topic_detail->type);
+        ESP_LOGE(tag, "pubsub_last_bool topic:%s, incorrect type:%d", topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->boolean_val;
@@ -379,8 +373,7 @@ bool pubsub_last_int(pubsub_topic_t topic, int64_t *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_INT) {
-        ESP_LOGE(tag, "pubsub_last_int topic:%s, incorrect type:%d",
-                topic_detail->topic, topic_detail->type);
+        ESP_LOGE(tag, "pubsub_last_int topic:%s, incorrect type:%d", topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->int_val;
@@ -399,8 +392,7 @@ bool pubsub_last_double(pubsub_topic_t topic, double *value)
         return false;
     }
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
-        ESP_LOGE(tag, "pubsub_last_double topic:%s, incorrect type:%d",
-                topic_detail->topic, topic_detail->type);
+        ESP_LOGE(tag, "pubsub_last_double topic:%s, incorrect type:%d", topic_detail->topic, topic_detail->type);
         return false;
     }
     *value = topic_detail->double_val;

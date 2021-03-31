@@ -96,64 +96,49 @@ pubsub_topic_t model_temp_sv;
 
 void model_initialize()
 {
-    model_activity = pubsub_register_topic(MODEL_ACTIVITY, PUBSUB_TYPE_INT);
+    model_activity = pubsub_register_topic(MODEL_ACTIVITY, PUBSUB_TYPE_INT, true);
 
-    model_light = pubsub_register_topic(MODEL_LIGHT, PUBSUB_TYPE_BOOLEAN);
-    model_exhaust = pubsub_register_topic(MODEL_EXHAUST, PUBSUB_TYPE_BOOLEAN);
-    model_recirc = pubsub_register_topic(MODEL_RECIRC, PUBSUB_TYPE_BOOLEAN);
-    model_heater = pubsub_register_topic(MODEL_HEATER, PUBSUB_TYPE_BOOLEAN);
+    model_light = pubsub_register_topic(MODEL_LIGHT, PUBSUB_TYPE_BOOLEAN, false);
+    model_exhaust = pubsub_register_topic(MODEL_EXHAUST, PUBSUB_TYPE_BOOLEAN, false);
+    model_recirc = pubsub_register_topic(MODEL_RECIRC, PUBSUB_TYPE_BOOLEAN, false);
+    model_heater = pubsub_register_topic(MODEL_HEATER, PUBSUB_TYPE_BOOLEAN, false);
 
-    model_am2301_status = pubsub_register_topic(MODEL_AM2301_STATUS,
-            PUBSUB_TYPE_INT);
-    model_am2301_timestamp = pubsub_register_topic(MODEL_AM2301_TIMESTAMP,
-            PUBSUB_TYPE_INT);
+    model_am2301_status = pubsub_register_topic(MODEL_AM2301_STATUS, PUBSUB_TYPE_INT, true);
+    model_am2301_timestamp = pubsub_register_topic(MODEL_AM2301_TIMESTAMP, PUBSUB_TYPE_INT, true);
 
-    model_circadian = pubsub_register_topic(MODEL_CIRCADIAN, PUBSUB_TYPE_INT);
+    model_circadian = pubsub_register_topic(MODEL_CIRCADIAN, PUBSUB_TYPE_INT, false);
 
-    model_control_mode = pubsub_register_topic(MODEL_CONTROL_MODE,
-            PUBSUB_TYPE_INT);
+    model_control_mode = pubsub_register_topic(MODEL_CONTROL_MODE, PUBSUB_TYPE_INT, false);
 
-    model_co2_hi = pubsub_register_topic(MODEL_CO2_HI, PUBSUB_TYPE_BOOLEAN);
-    model_co2_lo = pubsub_register_topic(MODEL_CO2_LO, PUBSUB_TYPE_BOOLEAN);
-    model_hum_hi = pubsub_register_topic(MODEL_HUM_HI, PUBSUB_TYPE_BOOLEAN);
-    model_hum_lo = pubsub_register_topic(MODEL_HUM_LO, PUBSUB_TYPE_BOOLEAN);
-    model_temp_hi = pubsub_register_topic(MODEL_TEMP_HI, PUBSUB_TYPE_BOOLEAN);
-    model_temp_lo = pubsub_register_topic(MODEL_TEMP_LO, PUBSUB_TYPE_BOOLEAN);
+    model_co2_hi = pubsub_register_topic(MODEL_CO2_HI, PUBSUB_TYPE_BOOLEAN, false);
+    model_co2_lo = pubsub_register_topic(MODEL_CO2_LO, PUBSUB_TYPE_BOOLEAN, false);
+    model_hum_hi = pubsub_register_topic(MODEL_HUM_HI, PUBSUB_TYPE_BOOLEAN, false);
+    model_hum_lo = pubsub_register_topic(MODEL_HUM_LO, PUBSUB_TYPE_BOOLEAN, false);
+    model_temp_hi = pubsub_register_topic(MODEL_TEMP_HI, PUBSUB_TYPE_BOOLEAN, false);
+    model_temp_lo = pubsub_register_topic(MODEL_TEMP_LO, PUBSUB_TYPE_BOOLEAN, false);
 
-    model_temp_sv_day = pubsub_register_topic(MODEL_TEMP_SV_DAY,
-            PUBSUB_TYPE_DOUBLE);
-    model_hum_sv_day = pubsub_register_topic(MODEL_HUM_SV_DAY,
-            PUBSUB_TYPE_DOUBLE);
-    model_co2_sv_day = pubsub_register_topic(MODEL_CO2_SV_DAY,
-            PUBSUB_TYPE_DOUBLE);
+    model_temp_sv_day = pubsub_register_topic(MODEL_TEMP_SV_DAY, PUBSUB_TYPE_DOUBLE, false);
+    model_hum_sv_day = pubsub_register_topic(MODEL_HUM_SV_DAY, PUBSUB_TYPE_DOUBLE, false);
+    model_co2_sv_day = pubsub_register_topic(MODEL_CO2_SV_DAY, PUBSUB_TYPE_DOUBLE, false);
 
-    model_exhaust_sv = pubsub_register_topic(MODEL_EXHAUST_SV,
-            PUBSUB_TYPE_BOOLEAN);
-    model_heater_sv = pubsub_register_topic(MODEL_HEATER_SV,
-            PUBSUB_TYPE_BOOLEAN);
-    model_light_sv = pubsub_register_topic(MODEL_LIGHT_SV, PUBSUB_TYPE_BOOLEAN);
-    model_recirc_sv = pubsub_register_topic(MODEL_RECIRC_SV,
-            PUBSUB_TYPE_BOOLEAN);
+    model_exhaust_sv = pubsub_register_topic(MODEL_EXHAUST_SV, PUBSUB_TYPE_BOOLEAN, false);
+    model_heater_sv = pubsub_register_topic(MODEL_HEATER_SV, PUBSUB_TYPE_BOOLEAN, false);
+    model_light_sv = pubsub_register_topic(MODEL_LIGHT_SV, PUBSUB_TYPE_BOOLEAN, false);
+    model_recirc_sv = pubsub_register_topic(MODEL_RECIRC_SV, PUBSUB_TYPE_BOOLEAN, false);
 
-    model_temp_pv = pubsub_register_topic(MODEL_TEMP_PV, PUBSUB_TYPE_DOUBLE);
-    model_hum_pv = pubsub_register_topic(MODEL_HUM_PV, PUBSUB_TYPE_DOUBLE);
-    model_co2_pv = pubsub_register_topic(MODEL_CO2_PV, PUBSUB_TYPE_DOUBLE);
+    model_temp_pv = pubsub_register_topic(MODEL_TEMP_PV, PUBSUB_TYPE_DOUBLE, true);
+    model_hum_pv = pubsub_register_topic(MODEL_HUM_PV, PUBSUB_TYPE_DOUBLE, true);
+    model_co2_pv = pubsub_register_topic(MODEL_CO2_PV, PUBSUB_TYPE_DOUBLE, true);
 
-    model_temp_sv_night = pubsub_register_topic(MODEL_TEMP_SV_NIGHT,
-            PUBSUB_TYPE_DOUBLE);
-    model_hum_sv_night = pubsub_register_topic(MODEL_HUM_SV_NIGHT,
-            PUBSUB_TYPE_DOUBLE);
-    model_co2_sv_night = pubsub_register_topic(MODEL_CO2_SV_NIGHT,
-            PUBSUB_TYPE_DOUBLE);
+    model_temp_sv_night = pubsub_register_topic(MODEL_TEMP_SV_NIGHT, PUBSUB_TYPE_DOUBLE, false);
+    model_hum_sv_night = pubsub_register_topic(MODEL_HUM_SV_NIGHT, PUBSUB_TYPE_DOUBLE, false);
+    model_co2_sv_night = pubsub_register_topic(MODEL_CO2_SV_NIGHT, PUBSUB_TYPE_DOUBLE, false);
 
-    model_current_time = pubsub_register_topic(MODEL_CURRENT_TIME,
-            PUBSUB_TYPE_INT);
-    model_begin_of_day = pubsub_register_topic(MODEL_BEGIN_OF_DAY,
-            PUBSUB_TYPE_INT);
-    model_begin_of_night = pubsub_register_topic(MODEL_BEGIN_OF_NIGHT,
-            PUBSUB_TYPE_INT);
+    model_current_time = pubsub_register_topic(MODEL_CURRENT_TIME, PUBSUB_TYPE_INT, true);
+    model_begin_of_day = pubsub_register_topic(MODEL_BEGIN_OF_DAY, PUBSUB_TYPE_INT, false);
+    model_begin_of_night = pubsub_register_topic(MODEL_BEGIN_OF_NIGHT, PUBSUB_TYPE_INT, false);
 
-    model_temp_sv = pubsub_register_topic(MODEL_TEMP_SV, PUBSUB_TYPE_DOUBLE);
-    model_hum_sv = pubsub_register_topic(MODEL_HUM_SV, PUBSUB_TYPE_DOUBLE);
-    model_co2_sv = pubsub_register_topic(MODEL_CO2_SV, PUBSUB_TYPE_DOUBLE);
+    model_temp_sv = pubsub_register_topic(MODEL_TEMP_SV, PUBSUB_TYPE_DOUBLE, false);
+    model_hum_sv = pubsub_register_topic(MODEL_HUM_SV, PUBSUB_TYPE_DOUBLE, false);
+    model_co2_sv = pubsub_register_topic(MODEL_CO2_SV, PUBSUB_TYPE_DOUBLE, false);
 }
