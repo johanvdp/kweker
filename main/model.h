@@ -75,11 +75,17 @@ extern const char *MODEL_HUM_SV_NIGHT;
 /** Night time temperature setpoint [K] (double) */
 extern const char *MODEL_TEMP_SV_NIGHT;
 
-/** Current time (integer) */
+/** Current time in seconds after epoch (time_t) */
 extern const char *MODEL_CURRENT_TIME;
-/** Begin of day (integer) */
+/**
+ * Begin of day in seconds after epoch (time_t)
+ * always in the same day (2000-01-01)
+ */
 extern const char *MODEL_BEGIN_OF_DAY;
-/** Begin of night (integer) */
+/**
+ * Begin of day in seconds after epoch (time_t)
+ * always in the same day (2000-01-01)
+ */
 extern const char *MODEL_BEGIN_OF_NIGHT;
 
 /** Current CO2 concentration setpoint [ppm] (double) */
