@@ -35,6 +35,9 @@
  */
 #define TM_MONTH_OFFSET 1
 
+/** Truncate dates to always be in this century 2000-01-01T00:00:00 */
+#define TM_MINIMUM 946684800
+
 #define TIME_REG 0x00
 #define SRAM_ADDR_REG 0x18
 #define SRAM_DATA_REG 0x19
@@ -69,7 +72,8 @@ void DS3234::encode_time(time_t time, uint8_t *raw)
     raw[3] = int_to_bcd(structured.tm_wday);
     raw[4] = int_to_bcd(structured.tm_mday);
     // already in century 20xx
-    raw[5] = int_to_bcd(structured.tm_mon) | 0x80;
+    // tm_mon is 0-based month number
+    raw[5] = int_to_bcd(structured.tm_mon + 1) | 0x80;
     raw[6] = int_to_bcd(structured.tm_year % 100);
 
     ESP_LOGD(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
@@ -88,8 +92,12 @@ time_t DS3234::decode_time(const uint8_t *raw)
     structured.tm_hour = hour_to_int(raw[2]);
     structured.tm_wday = bcd_to_int(raw[3]);
     structured.tm_mday = bcd_to_int(raw[4]);
-    structured.tm_mon = bcd_to_int(raw[5]);
-    structured.tm_year = bcd_to_int(raw[6]);
+    // month number (exclude century bit)
+    uint8_t month = bcd_to_int(raw[5] & 0x7F);
+    // tm_mon is 0-based month number
+    structured.tm_mon = month - 1;
+    // tm_year = 1900 based year (always in 20xx)
+    structured.tm_year = bcd_to_int(raw[6]) + 100;
 
     ESP_LOGD(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
             structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday, structured.tm_wday, structured.tm_hour, structured.tm_min,
@@ -161,7 +169,7 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
     time_queue = xQueueCreate(10, sizeof(pubsub_message_t));
     pubsub_add_subscription(time_queue, topic_name, false);
 
-    // start periodic task
+    // start task
     esp_err_t ret = xTaskCreate(&task, TAG, 3072, this, tskIDLE_PRIORITY,
     NULL);
     if (ret != pdPASS) {
@@ -319,6 +327,10 @@ void DS3234::run()
 
         if (xQueueReceive(time_queue, &message, DS3432_LOOK_INTERVAL_MS / portTICK_PERIOD_MS)) {
 
+            // truncate incoming date
+            if (message.int_val < TM_MINIMUM) {
+                time = TM_MINIMUM;
+            }
             // ignore own publish action
             if (time != message.int_val) {
                 ESP_LOGD(TAG, "run set time");

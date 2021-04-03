@@ -3,6 +3,7 @@ set(SOURCES main.cpp
 			hmi_about.c
 			hmi_control.c
 			hmi_settings.c
+			hmi_datespinner.c
 			hmi_timespinner.c
 			hmi_numberspinner.c
 			model.c
