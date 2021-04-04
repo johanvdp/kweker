@@ -45,9 +45,13 @@ static lv_obj_t *hmi_led_exhaust_switch;
 /** current recirculation fan switch state [off, on] */
 static lv_obj_t *hmi_led_recirculation_switch;
 
-/* Creates a semaphore to handle concurrent call to lvgl stuff
+/**
+ * Creates a semaphore to handle concurrent call to lvgl stuff
  * If you wish to call *any* lvgl function from other threads/tasks
- * you should lock on the very same semaphore! */
+ * you should lock on the very same semaphore!
+ *
+ * Use hmi_semaphore_take and hmi_semaphore_give.
+ */
 static SemaphoreHandle_t hmi_semaphore = 0;
 
 static lv_color_t buf1[DISP_BUF_SIZE];
