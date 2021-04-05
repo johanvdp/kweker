@@ -18,6 +18,6 @@ set(SOURCES main.cpp
 			ctrl.c)
 idf_component_register(SRCS ${SOURCES}
                     INCLUDE_DIRS .
-                    REQUIRES driver esp32 freertos led am2301 lvgl lvgl_esp32_drivers pubsub led do ds3234)
+                    REQUIRES driver esp32 freertos led am2301 lvgl lvgl_esp32_drivers pubsub led do ds3234 nvs)
 
 target_compile_definitions(${COMPONENT_LIB} PUBLIC "-DLV_LVGL_H_INCLUDE_SIMPLE")

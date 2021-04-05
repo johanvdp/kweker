@@ -22,6 +22,7 @@ extern "C" {
 #include "hmi.h"
 #include "bind.h"
 #include "ctrl.h"
+#include "NVS.h"
 
 #define TAG "main"
 
@@ -34,6 +35,7 @@ extern "C" {
 #define GPIO_HEATER (gpio_num_t)CONFIG_GPIO_HEATER
 
 #define MEASUREMENT_PERIOD_MS 5000
+#define NVS_HOLD_OFF_MS (60 * 1000)
 
 LED led;
 AM2301 am2301;
@@ -42,6 +44,27 @@ DO light;
 DO exhaust;
 DO recirc;
 DO heater;
+NVS nvs;
+
+void nvs_setup()
+{
+    const char *nvs_settings[] { //
+    MODEL_BEGIN_OF_DAY, //
+            MODEL_BEGIN_OF_NIGHT, //
+            MODEL_CO2_SV_DAY, //
+            MODEL_CO2_SV_NIGHT, //
+            MODEL_HUM_SV_DAY, //
+            MODEL_HUM_SV_NIGHT, //
+            MODEL_TEMP_SV_DAY, //
+            MODEL_TEMP_SV_NIGHT, //
+            MODEL_EXHAUST_SV, //
+            MODEL_HEATER_SV, //
+            MODEL_LIGHT_SV, //
+            MODEL_RECIRC_SV //
+    };
+
+    nvs.setup("settings", nvs_settings, sizeof(nvs_settings) / sizeof(nvs_settings[0]), NVS_HOLD_OFF_MS);
+}
 
 void app_main()
 {
@@ -75,6 +98,7 @@ void app_main()
     exhaust.setup(GPIO_EXHAUST, true, MODEL_EXHAUST);
     recirc.setup(GPIO_RECIRC, true, MODEL_RECIRC);
     heater.setup(GPIO_HEATER, true, MODEL_HEATER);
+    nvs_setup();
 
     // LOG: big queue not useful
     QueueHandle_t log_queue = xQueueCreate(10, sizeof(pubsub_message_t));

@@ -20,7 +20,7 @@ typedef enum
 
 typedef struct
 {
-    char *topic;
+    const char *topic;
     pubsub_type_t type;
     union
     {
