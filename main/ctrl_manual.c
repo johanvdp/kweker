@@ -38,25 +38,25 @@ void ctrl_manual_task()
     if (xQueueReceive(light_sv_queue, &message, 0)) {
         if (control_mode == MODEL_CONTROL_MODE_MANUAL) {
             bool light_sv = message.boolean_val;
-            pubsub_publish_bool(model_light, light_sv);
+            pubsub_publish_bool(MODEL_LIGHT, light_sv);
         }
     }
     if (xQueueReceive(exhaust_sv_queue, &message, 0)) {
         if (control_mode == MODEL_CONTROL_MODE_MANUAL) {
             bool exhaust_sv = message.boolean_val;
-            pubsub_publish_bool(model_exhaust, exhaust_sv);
+            pubsub_publish_bool(MODEL_EXHAUST, exhaust_sv);
         }
     }
     if (xQueueReceive(recirc_sv_queue, &message, 0)) {
         if (control_mode == MODEL_CONTROL_MODE_MANUAL) {
             bool recirc_sv = message.boolean_val;
-            pubsub_publish_bool(model_recirc, recirc_sv);
+            pubsub_publish_bool(MODEL_RECIRC, recirc_sv);
         }
     }
     if (xQueueReceive(heater_sv_queue, &message, 0)) {
         if (control_mode == MODEL_CONTROL_MODE_MANUAL) {
             bool heater_sv = message.boolean_val;
-            pubsub_publish_bool(model_heater, heater_sv);
+            pubsub_publish_bool(MODEL_HEATER, heater_sv);
         }
     }
 }

@@ -56,7 +56,7 @@ static void ctrl_auto_set_co2_lo(bool value)
 {
     if (value != co2_lo) {
         co2_lo = value;
-        pubsub_publish_bool(model_co2_lo, value);
+        pubsub_publish_bool(MODEL_CO2_LO, value);
     }
 }
 
@@ -64,7 +64,7 @@ static void ctrl_auto_set_co2_hi(bool value)
 {
     if (value != co2_hi) {
         co2_hi = value;
-        pubsub_publish_bool(model_co2_hi, value);
+        pubsub_publish_bool(MODEL_CO2_HI, value);
     }
 }
 
@@ -72,7 +72,7 @@ static void ctrl_auto_set_hum_lo(bool value)
 {
     if (value != hum_lo) {
         hum_lo = value;
-        pubsub_publish_bool(model_hum_lo, value);
+        pubsub_publish_bool(MODEL_HUM_LO, value);
     }
 }
 
@@ -80,7 +80,7 @@ static void ctrl_auto_set_hum_hi(bool value)
 {
     if (value != hum_hi) {
         hum_hi = value;
-        pubsub_publish_bool(model_hum_hi, value);
+        pubsub_publish_bool(MODEL_HUM_HI, value);
     }
 }
 
@@ -88,7 +88,7 @@ static void ctrl_auto_set_temp_lo(bool value)
 {
     if (value != temp_lo) {
         temp_lo = value;
-        pubsub_publish_bool(model_temp_lo, value);
+        pubsub_publish_bool(MODEL_TEMP_LO, value);
     }
 }
 
@@ -96,29 +96,29 @@ static void ctrl_auto_set_temp_hi(bool value)
 {
     if (value != temp_hi) {
         temp_hi = value;
-        pubsub_publish_bool(model_temp_hi, value);
+        pubsub_publish_bool(MODEL_TEMP_HI, value);
     }
 }
 
 static void ctrl_auto_light()
 {
     bool light_on = (circadian == MODEL_CIRCADIAN_DAY);
-    pubsub_publish_bool(model_light, light_on);
-    pubsub_publish_bool(model_light_sv, light_on);
+    pubsub_publish_bool(MODEL_LIGHT, light_on);
+    pubsub_publish_bool(MODEL_LIGHT_SV, light_on);
 }
 
 static void ctrl_auto_exhaust()
 {
     bool exhaust_on = (temp_hi || hum_hi || co2_hi);
-    pubsub_publish_bool(model_exhaust, exhaust_on);
-    pubsub_publish_bool(model_exhaust_sv, exhaust_on);
+    pubsub_publish_bool(MODEL_EXHAUST, exhaust_on);
+    pubsub_publish_bool(MODEL_EXHAUST_SV, exhaust_on);
 }
 
 static void ctrl_auto_recirculation()
 {
     bool recirc_on = (circadian == MODEL_CIRCADIAN_DAY);
-    pubsub_publish_bool(model_recirc, recirc_on);
-    pubsub_publish_bool(model_recirc_sv, recirc_on);
+    pubsub_publish_bool(MODEL_RECIRC, recirc_on);
+    pubsub_publish_bool(MODEL_RECIRC_SV, recirc_on);
 }
 
 static void ctrl_auto_heater()
@@ -134,8 +134,8 @@ static void ctrl_auto_heater()
     } else {
         heater_on = false;
     }
-    pubsub_publish_bool(model_heater, heater_on);
-    pubsub_publish_bool(model_heater_sv, heater_on);
+    pubsub_publish_bool(MODEL_HEATER, heater_on);
+    pubsub_publish_bool(MODEL_HEATER_SV, heater_on);
 }
 
 static void ctrl_auto_control()

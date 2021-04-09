@@ -30,7 +30,7 @@ static void ctrl_circadian_set_day(bool value)
 {
     if (day != value) {
         day = value;
-        pubsub_publish_int(model_circadian, day ? MODEL_CIRCADIAN_DAY : MODEL_CIRCADIAN_NIGHT);
+        pubsub_publish_int(MODEL_CIRCADIAN, day ? MODEL_CIRCADIAN_DAY : MODEL_CIRCADIAN_NIGHT);
     }
 }
 

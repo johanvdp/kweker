@@ -12,10 +12,10 @@ AM2301::~AM2301()
 {
 }
 
-void AM2301::setup(gpio_num_t pin, pubsub_topic_t temperature_topic, pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
-        pubsub_topic_t timestamp_topic, uint32_t measurement_period_ms)
+void AM2301::setup(gpio_num_t pin, const char *temperature_topic, const char *humidity_topic, const char *status_topic,
+        const char *timestamp_topic, uint32_t measurement_period_ms)
 {
-    ESP_LOGD(TAG, "setup, pin:%d, t:%p, rh:%p, status:%p, time:%p", pin, temperature_topic, humidity_topic, status_topic,
+    ESP_LOGD(TAG, "setup, pin:%d, t:%s, rh:%s, status:%s, time:%s", pin, temperature_topic, humidity_topic, status_topic,
             timestamp_topic);
 
     if (state != COMPONENT_UNINITIALIZED) {

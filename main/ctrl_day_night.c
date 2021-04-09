@@ -49,7 +49,7 @@ static void ctrl_day_night_set_co2_sv(double value)
 {
     if (value != co2_sv) {
         co2_sv = value;
-        pubsub_publish_double(model_co2_sv, value);
+        pubsub_publish_double(MODEL_CO2_SV, value);
     }
 }
 
@@ -57,7 +57,7 @@ static void ctrl_day_night_set_hum_sv(double value)
 {
     if (value != hum_sv) {
         hum_sv = value;
-        pubsub_publish_double(model_hum_sv, value);
+        pubsub_publish_double(MODEL_HUM_SV, value);
     }
 }
 
@@ -65,7 +65,7 @@ static void ctrl_day_night_set_temp_sv(double value)
 {
     if (value != temp_sv) {
         temp_sv = value;
-        pubsub_publish_double(model_temp_sv, value);
+        pubsub_publish_double(MODEL_TEMP_SV, value);
     }
 }
 

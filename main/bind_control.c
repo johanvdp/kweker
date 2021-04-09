@@ -170,27 +170,27 @@ static void bind_control_subscribe()
 
 static void bind_control_mode_callback(hmi_control_mode_t mode)
 {
-    pubsub_publish_int(model_control_mode, mode);
+    pubsub_publish_int(MODEL_CONTROL_MODE, mode);
 }
 
 static void bind_control_light_sv_callback(bool active)
 {
-    pubsub_publish_bool(model_light_sv, active);
+    pubsub_publish_bool(MODEL_LIGHT_SV, active);
 }
 
 static void bind_control_exhaust_sv_callback(bool active)
 {
-    pubsub_publish_bool(model_exhaust_sv, active);
+    pubsub_publish_bool(MODEL_EXHAUST_SV, active);
 }
 
 static void bind_control_recirc_sv_callback(bool active)
 {
-    pubsub_publish_bool(model_recirc_sv, active);
+    pubsub_publish_bool(MODEL_RECIRC_SV, active);
 }
 
 static void bind_control_heater_sv_callback(bool active)
 {
-    pubsub_publish_bool(model_heater_sv, active);
+    pubsub_publish_bool(MODEL_HEATER_SV, active);
 }
 
 void bind_control_initialize()

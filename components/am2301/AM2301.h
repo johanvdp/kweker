@@ -34,8 +34,8 @@ public:
      * @param timestamp_topic measurement timestamp topic [int, timt_t].
      * @param measurement_period_ms measurement period [ms].
      */
-    void setup(gpio_num_t pin, pubsub_topic_t temperature_topic, pubsub_topic_t humidity_topic, pubsub_topic_t status_topic,
-            pubsub_topic_t timestamp_topic, uint32_t measurement_period_ms);
+    void setup(gpio_num_t pin, const char *temperature_topic, const char *humidity_topic, const char *status_topic,
+            const char *timestamp_topic, uint32_t measurement_period_ms);
 
     typedef enum
     {
@@ -108,19 +108,19 @@ private:
     /**
      * Temperature measurement topic.
      */
-    pubsub_topic_t temperature_topic = 0;
+    const char *temperature_topic = 0;
     /**
      * Humidity measurement topic.
      */
-    pubsub_topic_t humidity_topic = 0;
+    const char *humidity_topic = 0;
     /**
      * Measurement status topic.
      */
-    pubsub_topic_t status_topic = 0;
+    const char *status_topic = 0;
     /**
      * Measurement timestamp topic.
      */
-    pubsub_topic_t timestamp_topic = 0;
+    const char *timestamp_topic = 0;
 
     // timestamp of previous edge detected
     int64_t previousTimestamp = 0;

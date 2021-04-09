@@ -108,9 +108,9 @@ void app_main()
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, model_temp_pv, model_hum_pv, model_am2301_status, model_am2301_timestamp, MEASUREMENT_PERIOD_MS);
+    am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, MEASUREMENT_PERIOD_MS);
 
-    ds3234.setup(model_current_time, MODEL_CURRENT_TIME);
+    ds3234.setup(MODEL_CURRENT_TIME);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;
@@ -132,7 +132,7 @@ void app_main()
 
                     // blink 1x
                     activity_message.int_val = 1;
-                    pubsub_publish(model_activity, &activity_message);
+                    pubsub_publish(MODEL_ACTIVITY, &activity_message);
 
                 } else if (status == AM2301::result_status_t::RESULT_RECOVERABLE) {
 
@@ -140,7 +140,7 @@ void app_main()
 
                     // blink 2x
                     activity_message.int_val = 2;
-                    pubsub_publish(model_activity, &activity_message);
+                    pubsub_publish(MODEL_ACTIVITY, &activity_message);
 
                 } else if (status == AM2301::result_status_t::RESULT_FATAL) {
 

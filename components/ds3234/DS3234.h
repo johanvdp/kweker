@@ -21,10 +21,9 @@ public:
     virtual ~DS3234();
     /**
      * Setup once before use.
-     * @param time_topic time topic, used to publish time changes.
-     * @param topic_name time topic, used to subscribe to (set) time changes.
+     * @param time_topic time topic, used to publish and subscribe to time changes.
      */
-    void setup(pubsub_topic_t time_topic, const char *topic_name);
+    void setup(const char *time_topic);
 
 private:
 
@@ -33,7 +32,7 @@ private:
     /**
      * Timestamp topic. Publish ticks since epoch.
      */
-    pubsub_topic_t timestamp_topic = 0;
+    const char *timestamp_topic = 0;
 
     /**
      * Handle to SPI device.

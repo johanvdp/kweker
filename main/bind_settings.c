@@ -98,47 +98,47 @@ static void bind_settings_subscribe()
 
 static void bind_settings_current_time_callback(time_t time)
 {
-    pubsub_publish_int(model_current_time, time);
+    pubsub_publish_int(MODEL_CURRENT_TIME, time);
 }
 
 static void bind_settings_begin_of_day_callback(time_t time)
 {
-    pubsub_publish_int(model_begin_of_day, time);
+    pubsub_publish_int(MODEL_BEGIN_OF_DAY, time);
 }
 
 static void bind_settings_begin_of_night_callback(time_t time)
 {
-    pubsub_publish_int(model_begin_of_night, time);
+    pubsub_publish_int(MODEL_BEGIN_OF_NIGHT, time);
 }
 
 static void bind_settings_temp_day_callback(double value)
 {
-    pubsub_publish_double(model_temp_sv_day, value);
+    pubsub_publish_double(MODEL_TEMP_SV_DAY, value);
 }
 
 static void bind_settings_temp_night_callback(double value)
 {
-    pubsub_publish_double(model_temp_sv_night, value);
+    pubsub_publish_double(MODEL_TEMP_SV_NIGHT, value);
 }
 
 static void bind_settings_hum_day_callback(double value)
 {
-    pubsub_publish_double(model_hum_sv_day, value);
+    pubsub_publish_double(MODEL_HUM_SV_DAY, value);
 }
 
 static void bind_settings_hum_night_callback(double value)
 {
-    pubsub_publish_double(model_hum_sv_night, value);
+    pubsub_publish_double(MODEL_HUM_SV_NIGHT, value);
 }
 
 static void bind_settings_co2_day_callback(double value)
 {
-    pubsub_publish_double(model_co2_sv_day, value);
+    pubsub_publish_double(MODEL_CO2_SV_DAY, value);
 }
 
 static void bind_settings_co2_night_callback(double value)
 {
-    pubsub_publish_double(model_co2_sv_night, value);
+    pubsub_publish_double(MODEL_CO2_SV_NIGHT, value);
 }
 
 void bind_settings_initialize()

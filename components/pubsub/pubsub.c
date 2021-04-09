@@ -169,14 +169,16 @@ void pubsub_remove_subscription(QueueHandle_t subscriber_queue, const char *topi
     }
 }
 
-pubsub_topic_t pubsub_register_topic(const char *topic_name, const pubsub_type_t type, const bool always)
+bool pubsub_register_topic(const char *topic_name, const pubsub_type_t type, const bool always)
 {
+    bool success = false;
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
         topic_detail = pubsub_add_topic_detail(topic_name, type, always);
         ESP_LOGI(tag, "pubsub_register_topic new topic:%s, topic:%p", topic_name, topic_detail);
-    } else {
 
+        success = true;
+    } else {
         if (topic_detail->type != type) {
             ESP_LOGE(tag, "pubsub_register_topic existing topic:%s, topic:%p, type:%d, mismatch new type:%d", topic_name,
                     topic_detail, topic_detail->type, type);
@@ -187,11 +189,12 @@ pubsub_topic_t pubsub_register_topic(const char *topic_name, const pubsub_type_t
             ESP_LOGI(tag, "pubsub_register_topic existing topic:%s, topic:%p", topic_name, topic_detail);
         }
     }
-    return (pubsub_topic_t) topic_detail;
+    return success;
 }
 
-void pubsub_unregister_topic(const char *topic_name)
+bool pubsub_unregister_topic(const char *topic_name)
 {
+    bool success = false;
     ESP_LOGI(tag, "pubsub_unregister_topic topic:%s", topic_name);
     pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail != NULL) {
@@ -205,12 +208,31 @@ void pubsub_unregister_topic(const char *topic_name)
             free(subscriber);
         }
         LIST_REMOVE(topic_detail, pointers);
+        success = true;
     }
+    return success;
 }
 
-void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
+pubsub_type_t pubsub_get_type(const char *topic_name)
 {
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_type_t topic_type = PUBSUB_TYPE_UNKNOWN;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
+    if (topic_detail != NULL) {
+        topic_type = topic_detail->type;
+    }
+    return topic_type;
+}
+
+void pubsub_publish(const char *topic_name, pubsub_message_t *message)
+{
+    if (topic_name == NULL) {
+        ESP_LOGE(tag, "pubsub_publish topic required");
+        return;
+    }
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
+    if (topic_detail == NULL) {
+        return;
+    }
     if (topic_detail->type != message->type) {
         ESP_LOGE(tag, "pubsub_publish type mismatch topic:%s, type:%d, message type:%d", topic_detail->topic, topic_detail->type,
                 message->type);
@@ -253,15 +275,22 @@ void pubsub_publish(pubsub_topic_t topic, pubsub_message_t *message)
     }
 }
 
-void pubsub_publish_bool(pubsub_topic_t topic, bool value)
+void pubsub_publish_bool(const char *topic_name, bool value)
 {
-    const char *str_value = value ? "true" : "false";
-    ESP_LOGD(tag, "pubsub_publish_bool topic:%p, value:%s", topic, str_value);
-    if (topic == NULL) {
+    if (topic_name == NULL) {
         ESP_LOGE(tag, "pubsub_publish_bool topic required");
         return;
     }
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
+    if (topic_detail == NULL) {
+        return;
+    }
+    const char *str_value = value ? "true" : "false";
+    ESP_LOGD(tag, "pubsub_publish_bool topic:%p, value:%s", topic_name, str_value);
+    if (topic_name == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_bool topic required");
+        return;
+    }
     if (topic_detail->type != PUBSUB_TYPE_BOOLEAN) {
         ESP_LOGE(tag, "pubsub_publish_bool type mismatch topic:%s", topic_detail->topic);
         return;
@@ -270,17 +299,24 @@ void pubsub_publish_bool(pubsub_topic_t topic, bool value)
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_BOOLEAN;
     message.boolean_val = value;
-    pubsub_publish(topic, &message);
+    pubsub_publish(topic_name, &message);
 }
 
-void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
+void pubsub_publish_int(const char *topic_name, int64_t value)
 {
-    ESP_LOGD(tag, "pubsub_publish_int topic:%p, value:%lld", topic, value);
-    if (topic == NULL) {
+    if (topic_name == NULL) {
         ESP_LOGE(tag, "pubsub_publish_int topic required");
         return;
     }
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
+    if (topic_detail == NULL) {
+        return;
+    }
+    ESP_LOGD(tag, "pubsub_publish_int topic:%p, value:%lld", topic_name, value);
+    if (topic_name == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_int topic required");
+        return;
+    }
     if (topic_detail->type != PUBSUB_TYPE_INT) {
         ESP_LOGE(tag, "pubsub_publish_int type mismatch topic:%s", topic_detail->topic);
         return;
@@ -289,17 +325,24 @@ void pubsub_publish_int(pubsub_topic_t topic, int64_t value)
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_INT;
     message.int_val = value;
-    pubsub_publish(topic, &message);
+    pubsub_publish(topic_name, &message);
 }
 
-void pubsub_publish_double(pubsub_topic_t topic, double value)
+void pubsub_publish_double(const char *topic_name, double value)
 {
-    ESP_LOGD(tag, "pubsub_publish_double topic:%p, value:%lf", topic, value);
-    if (topic == NULL) {
+    if (topic_name == NULL) {
         ESP_LOGE(tag, "pubsub_publish_double topic required");
         return;
     }
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
+    if (topic_detail == NULL) {
+        return;
+    }
+    ESP_LOGD(tag, "pubsub_publish_double topic:%p, value:%lf", topic_name, value);
+    if (topic_name == NULL) {
+        ESP_LOGE(tag, "pubsub_publish_double topic required");
+        return;
+    }
     if (topic_detail->type != PUBSUB_TYPE_DOUBLE) {
         ESP_LOGE(tag, "pubsub_publish_double type mismatch topic:%s", topic_detail->topic);
         return;
@@ -308,7 +351,7 @@ void pubsub_publish_double(pubsub_topic_t topic, double value)
     message.topic = topic_detail->topic;
     message.type = PUBSUB_TYPE_DOUBLE;
     message.double_val = value;
-    pubsub_publish(topic, &message);
+    pubsub_publish(topic_name, &message);
 }
 
 uint16_t pubsub_topic_count()
@@ -344,9 +387,9 @@ uint16_t pubsub_subscriber_count(const char *topic_name)
  * get last published value for topic
  * @return true if successful, false on failure.
  */
-bool pubsub_last_bool(pubsub_topic_t topic, bool *value)
+bool pubsub_last_bool(const char *topic_name, bool *value)
 {
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
         ESP_LOGE(tag, "pubsub_last_bool missing topic");
         return false;
@@ -363,9 +406,9 @@ bool pubsub_last_bool(pubsub_topic_t topic, bool *value)
  * get last published value for topic
  * @return true if successful, false on failure.
  */
-bool pubsub_last_int(pubsub_topic_t topic, int64_t *value)
+bool pubsub_last_int(const char *topic_name, int64_t *value)
 {
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
         ESP_LOGE(tag, "pubsub_last_int missing topic");
         return false;
@@ -382,9 +425,9 @@ bool pubsub_last_int(pubsub_topic_t topic, int64_t *value)
  * get last published value for topic
  * @return true if successful, false on failure.
  */
-bool pubsub_last_double(pubsub_topic_t topic, double *value)
+bool pubsub_last_double(const char *topic_name, double *value)
 {
-    pubsub_topic_detail_t *topic_detail = (pubsub_topic_detail_t*) topic;
+    pubsub_topic_detail_t *topic_detail = pubsub_find_topic_detail(topic_name);
     if (topic_detail == NULL) {
         ESP_LOGE(tag, "pubsub_last_double missing topic");
         return false;

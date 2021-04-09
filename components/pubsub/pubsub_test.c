@@ -23,12 +23,9 @@ bool pubsub_test()
     bool success = true;
 
     // create topic
-    pubsub_topic_t *topic_int;
-    topic_int = pubsub_register_topic(TOPIC_PUBSUB_TEST_INT, PUBSUB_TYPE_INT, true);
-    pubsub_topic_t *topic_bool;
-    topic_bool = pubsub_register_topic(TOPIC_PUBSUB_TEST_BOOL, PUBSUB_TYPE_BOOLEAN, true);
-    pubsub_topic_t *topic_double;
-    topic_double = pubsub_register_topic(TOPIC_PUBSUB_TEST_DOUBLE, PUBSUB_TYPE_DOUBLE, true);
+    pubsub_register_topic(TOPIC_PUBSUB_TEST_INT, PUBSUB_TYPE_INT, true);
+    pubsub_register_topic(TOPIC_PUBSUB_TEST_BOOL, PUBSUB_TYPE_BOOLEAN, true);
+    pubsub_register_topic(TOPIC_PUBSUB_TEST_DOUBLE, PUBSUB_TYPE_DOUBLE, true);
 
     // check
     if (pubsub_topic_count() != 3) {
@@ -37,27 +34,27 @@ bool pubsub_test()
     }
 
     // publish value (no subscribers)
-    pubsub_publish_int(topic_int, 9);
-    pubsub_publish_bool(topic_bool, 1);
-    pubsub_publish_double(topic_double, 0.09);
+    pubsub_publish_int(TOPIC_PUBSUB_TEST_INT, 9);
+    pubsub_publish_bool(TOPIC_PUBSUB_TEST_BOOL, 1);
+    pubsub_publish_double(TOPIC_PUBSUB_TEST_DOUBLE, 0.09);
 
     // examine last value
     int64_t int_value = 0;
-    pubsub_last_int(topic_int, &int_value);
+    pubsub_last_int(TOPIC_PUBSUB_TEST_INT, &int_value);
     if (int_value != 9) {
         ESP_LOGE(TAG, "expect last value 9");
         success = false;
     }
 
     bool bool_value = false;
-    pubsub_last_bool(topic_bool, &bool_value);
+    pubsub_last_bool(TOPIC_PUBSUB_TEST_BOOL, &bool_value);
     if (bool_value != true) {
         ESP_LOGE(TAG, "expect last value true");
         success = false;
     }
 
     double double_value = 0.0;
-    pubsub_last_double(topic_double, &double_value);
+    pubsub_last_double(TOPIC_PUBSUB_TEST_DOUBLE, &double_value);
     if (double_value < 0.08 || double_value > 0.10) {
         ESP_LOGE(TAG, "expect last value 0.09");
         success = false;
@@ -86,9 +83,9 @@ bool pubsub_test()
     }
 
     // publish value
-    pubsub_publish_int(topic_int, 11);
-    pubsub_publish_bool(topic_bool, true);
-    pubsub_publish_double(topic_double, 0.11);
+    pubsub_publish_int(TOPIC_PUBSUB_TEST_INT, 11);
+    pubsub_publish_bool(TOPIC_PUBSUB_TEST_BOOL, true);
+    pubsub_publish_double(TOPIC_PUBSUB_TEST_DOUBLE, 0.11);
 
     // check received value
     pubsub_message_t message;
@@ -115,21 +112,21 @@ bool pubsub_test()
 
     // examine last value
     int_value = 0;
-    pubsub_last_int(topic_int, &int_value);
+    pubsub_last_int(TOPIC_PUBSUB_TEST_INT, &int_value);
     if (int_value != 11) {
         ESP_LOGE(TAG, "expect last value 11");
         success = false;
     }
 
     bool_value = false;
-    pubsub_last_bool(topic_bool, &bool_value);
+    pubsub_last_bool(TOPIC_PUBSUB_TEST_BOOL, &bool_value);
     if (bool_value != true) {
         ESP_LOGE(TAG, "expect last value true");
         success = false;
     }
 
     double_value = 0.0;
-    pubsub_last_double(topic_double, &double_value);
+    pubsub_last_double(TOPIC_PUBSUB_TEST_DOUBLE, &double_value);
     if (double_value < 0.10 || double_value > 0.12) {
         ESP_LOGE(TAG, "expect last value 0.11");
         success = false;

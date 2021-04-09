@@ -148,11 +148,11 @@ void DS3234::task(void *pvParameter)
     }
 }
 
-void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
+void DS3234::setup(const char *time_topic)
 {
-    ESP_LOGD(TAG, "setup, topic:%p, topic_name:%s, this:%p", topic, topic_name, this);
+    ESP_LOGD(TAG, "setup, topic_name:%s, this:%p", time_topic, this);
 
-    this->timestamp_topic = topic;
+    this->timestamp_topic = time_topic;
 
     tx = malloc(MAX_TRANSFER_SIZE);
     if (tx == NULL) {
@@ -167,7 +167,7 @@ void DS3234::setup(pubsub_topic_t topic, const char *topic_name)
 
     // when time set actions arrive fast
     time_queue = xQueueCreate(10, sizeof(pubsub_message_t));
-    pubsub_add_subscription(time_queue, topic_name, false);
+    pubsub_add_subscription(time_queue, time_topic, false);
 
     // start task
     esp_err_t ret = xTaskCreate(&task, TAG, 3072, this, tskIDLE_PRIORITY,

@@ -26,14 +26,14 @@ void ctrl_off_task()
     if (xQueueReceive(control_mode_queue, &message, 0)) {
         model_control_mode_t control_mode = message.int_val;
         if (control_mode == MODEL_CONTROL_MODE_OFF) {
-            pubsub_publish_bool(model_light_sv, false);
-            pubsub_publish_bool(model_light, false);
-            pubsub_publish_bool(model_exhaust_sv, false);
-            pubsub_publish_bool(model_exhaust, false);
-            pubsub_publish_bool(model_recirc_sv, false);
-            pubsub_publish_bool(model_recirc, false);
-            pubsub_publish_bool(model_heater_sv, false);
-            pubsub_publish_bool(model_heater, false);
+            pubsub_publish_bool(MODEL_LIGHT_SV, false);
+            pubsub_publish_bool(MODEL_LIGHT, false);
+            pubsub_publish_bool(MODEL_EXHAUST_SV, false);
+            pubsub_publish_bool(MODEL_EXHAUST, false);
+            pubsub_publish_bool(MODEL_RECIRC_SV, false);
+            pubsub_publish_bool(MODEL_RECIRC, false);
+            pubsub_publish_bool(MODEL_HEATER_SV, false);
+            pubsub_publish_bool(MODEL_HEATER, false);
         }
     }
 }
