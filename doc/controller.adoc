@@ -22,38 +22,39 @@ For ease of reference a short module name is chosen.
 .Screw terminals top
 [%autowidth]
 |===
-| pin | function | connection
+| pin   | function | connection
 
 3+| power supply input
-| *1.1* | 5V  | PWR.5V
-| *1.2* | GND | PWR.GND
+| *1.1* | 5V       | PWR.5V
+| *1.2* | GND      | PWR.GND
 |===
 
 .Screw terminals bottom
 [%autowidth]
 |===
-| pin | function | description | connection
+| pin    | function | description                | connection
 
 4+| *actuators*
-| *2.1*  | GND  |                 | PWR.GND
-| *2.2*  | OUT1 | output 1 (3.3V) | ESP.8
-| *2.3*  | GND  |                 | PWR.GND
-| *2.4*  | OUT2 | output 2 (3.3V) | ESP.9
-| *2.5*  | GND  |                 | PWR.GND
-| *2.6*  | OUT3 | output 3 (3.3V) | ESP.10
-| *2.7*  | GND  |                 | PWR.GND
-| *2.8*  | OUT4 | output 4 (3.3V) | ESP.11
+| *2.1*  | GND      |                            | PWR.GND
+| *2.2*  | OUT1     | output 1 (3.3V)            | ESP.8
+| *2.3*  | GND      |                            | PWR.GND
+| *2.4*  | OUT2     | output 2 (3.3V)            | ESP.9
+| *2.5*  | GND      |                            | PWR.GND
+| *2.6*  | OUT3     | output 3 (3.3V)            | ESP.10
+| *2.7*  | GND      |                            | PWR.GND
+| *2.8*  | OUT4     | output 4 (3.3V)            | ESP.11
 
 4+| *humidity & temperature sensor*
-| *2.9*  | 5V   |                          | PWR.5V
-| *2.10* | GND  |                          | PWR.GND
-| *2.11* | DATA | 1 wire serial TTL (3.3V) | ESP.26
+| *2.9*  | 5V       | 5V power gives 3.3V signal | PWR.5V
+| *2.10* | GND      |                            | PWR.GND
+| *2.11* | DATA     | 1 wire serial TTL (3.3V)   | ESP.26
 
 4+| *CO2 concentration sensor*
-| *2.12* | 5V  |                            | PWR.5V
-| *2.13* | GND |                            | PWR.GND
-| *2.14* | TX  | serial transmit TTL (3.3V) | ESP.28
-| *2.15* | RX  | serial receive TTL (3.3V)  | ESP.27
+| *2.12* | 5V       | 5V power gives 3.3V signal | PWR.5V
+| *2.13* | GND      |                            | PWR.GND
+| *2.14* | TX       | serial transmit TTL (3.3V) | ESP.28
+| *2.15* | RX       | serial receive TTL (3.3V)  | ESP.27
+
 |===
 
 === ESP32 module
@@ -63,63 +64,63 @@ For ease of reference a short module name is chosen.
 .ESP32 module left
 [%autowidth]
 |===
-| pin  | name | iomux *choice*          | function            | connection
+| pin  | name | iomux        | function            | connection
 
-| *1*  | 3.3V |                         |                     |
-| *2*  | EN   |                         | on board reset btn  |
-| *3*  | P36  | input only              |                     |
-| *4*  | P39  | input only              |                     |
-| *5*  | P34  | input only              |                     |
-| *6*  | P35  | input only              | TOUCH IRQ           | LCD.1.14
-| *7*  | P32  |                         | LCD LED             | LCD.1.8
-| *8*  | P33  |                         | OUT1                | CPU.2.2
-| *9*  | P25  |                         | OUT2                | CPU.2.4
-| *10* | P26  |                         | OUT3                | CPU.2.6
-| *11* | P27  |                         | OUT4                | CPU.2.8
-| *12* | P14  | HSPICLK(2)              | RTC SPICLK          | RTC.4
-| *13* | P12  | HSPIQ(2)                | RTC SPIMISO         | RTC.3
-| *14* | GND  |                         |                     |
-| *15* | P13  | HSPID(2)                | RTC SPIMOSI         | RTC.2
-| *16* | P9   | SD_DATA_2(1), *U1RXD*(5)| on board flash      |
-| *17* | P10  | SD_DATA_3(1), *U1TXD*(5)| on board flash      |
-| *18* | P11  | SD_CMD(1)               | on board flash      |
-| *19* | 5V   |                         |                     | PWR.5V
+| *1*  | 3.3V |              |                     | PWR.3V3
+| *2*  | EN   |              | on board reset btn  | n.c.
+| *3*  | P36  | input only   |                     |
+| *4*  | P39  | input only   |                     |
+| *5*  | P34  | input only   |                     |
+| *6*  | P35  | input only   | TOUCH IRQ           | LCD.1.14
+| *7*  | P32  |              | LCD LED             | LCD.1.8
+| *8*  | P33  |              | LCD RESET           | LCD.1.4
+| *9*  | P25  |              | IO RESET            | IO.3.4
+| *10* | P26  |              | IO CS               | IO.3.6
+| *11* | P27  |              |                     |
+| *12* | P14  | HSPICLK(2)   | RTC SPICLK          | RTC.4
+| *13* | P12  | HSPIQ(2)     | RTC SPIMISO         | RTC.3
+| *14* | GND  |              |                     | PWR.GND
+| *15* | P13  | HSPID(2)     | RTC SPIMOSI         | RTC.2
+| *16* | P9   | SD_DATA_2(1) | on board flash      | n.c.
+| *17* | P10  | SD_DATA_3(1) | on board flash      | n.c.
+| *18* | P11  | SD_CMD(1)    | on board flash      | n.c.
+| *19* | 5V   |              |                     | PWR.5V
 |===
 
 .ESP32 module right
 [%autowidth]
 |===
-| pin  | name | iomux *choice*          | function            | connection
+| pin  | name | iomux        | function            | connection
 
-| *38* | GND  |                         |                     | PWR.GND
+| *38* | GND  |              |                     | PWR.GND
 .3+| *37*
 .3+| P23
 .3+| *VSPID*(2)
-| TOUCH SPIMOSI    | LCD.1.12
-| LCD SPIMOSI      | LCD.1.6
-| RTC SPIMOSI      | RTC.2
-| *36* | P22  | VSPIWP(2)               | TOUCH CS            | LCD.1.11
-| *35* | P1   | *U0TXD*(1)              | on board USB SERIAL |
-| *34* | P3   | *U0RXD*(1)              | on board USB SERIAL |
-| *33* | P21  | VSPIHD(2)               | LCD DC/RS           | LCD.1.5
-| *32* | GND  |                         |                     |
-| *31* | P19  | *VSPIQ*(2)              | TOUCH SPIMISO       | LCD.1.13
+                             | TOUCH SPIMOSI       | LCD.1.12
+                             | LCD SPIMOSI         | LCD.1.6
+                             | RTC SPIMOSI         | RTC.2
+| *36* | P22  | VSPIWP(2)    | TOUCH CS            | LCD.1.11
+| *35* | P1   | U0TXD(1)     | on board USB SERIAL |
+| *34* | P3   | U0RXD(1)     | on board USB SERIAL |
+| *33* | P21  | VSPIHD(2)    | LCD DC/RS           | LCD.1.5
+| *32* | GND  |              |                     | PWR.GND
+| *31* | P19  | VSPIQ(2)     | TOUCH SPIMISO       | LCD.1.13
 .3+| *30*
 .3+| P18
-.3+| *VSPICLK*(2)
-| LCD SPICLK | LCD.1.7
-| TOUCH SPICLK | LCD.1.10
-| RTC SPICLK | RTC.4
-| *29* | P5   | VSPICS0(2)              | LCD CS              | LCD.1.3
-| *28* | P17  | U2TXD(5)                | CO2 TXD             | CPU.2.14
-| *27* | P16  | U2RXD(5)                | CO2 RXD             | CPU.2.15
-| *26* | P4   | HSPIHD(2)               | 1 WIRE SERIAL       | CPU.2.11
-| *25* | P0   | *GPIO0*(1, 3)           | on board boot logic |
-| *24* | P2   | *GPIO2*(1, 3), HSPIWP(2)| on board LED        |
-| *23* | P15  | HSPICS0(2)              | RTC SS              | RTC.1
-| *22* | P8   | SD_DATA_1(1)            | on board flash      |
-| *21* | P7   | SD_DATA_O(1)            | on board flash      |
-| *20* | P6   | SD_CLK(1)               | on board flash      |
+.3+| VSPICLK(2)
+                             | LCD SPICLK          | LCD.1.7
+                             | TOUCH SPICLK        | LCD.1.10
+                             | RTC SPICLK          | RTC.4
+| *29* | P5   | VSPICS0(2)   | LCD CS              | LCD.1.3
+| *28* | P17  | U2TXD(5)     | CO2 TXD             | CPU.2.14
+| *27* | P16  | U2RXD(5)     | CO2 RXD             | CPU.2.15
+| *26* | P4   | HSPIHD(2)    | 1 WIRE SERIAL       | CPU.2.11
+| *25* | P0   | GPIO0(1, 3)  | on board boot logic | n.c.
+| *24* | P2   | GPIO2(1, 3)  | on board LED        | n.c.
+| *23* | P15  | HSPICS0(2)   | RTC SS              | RTC.1
+| *22* | P8   | SD_DATA_1(1) | on board flash      | n.c.
+| *21* | P7   | SD_DATA_O(1) | on board flash      | n.c.
+| *20* | P6   | SD_CLK(1)    | on board flash      | n.c.
 |===
 
 === User interface module
@@ -132,41 +133,120 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 .MSP3520 module
 [%autowidth]
 |===
-| pin  | function  | description | connection
+| pin    | function  | description                   | connection
 
 4+| *LCD panel*
 | *1.1*  | VCC       | 5V (all signals are 3.3V)     | PWR.5V
 | *1.2*  | GND       | GND                           | PWR.GND
 | *1.3*  | CS        | LCD CS                        | ESP.29
-| *1.4*  | RESET     | LCD RESET                     |
+| *1.4*  | RESET     | LCD RESET                     | ESP.8
 | *1.5*  | DC/RS     | LCD DC/RS                     | ESP.33
 | *1.6*  | SDI(MOSI) | LCD SPIMOSI                   | ESP.37
 | *1.7*  | SCK       | LCD SPICLK                    | ESP.30
 | *1.8*  | LED       | LCD LED (high is on)          | ESP.7
-| *1.9*  | SDO(MISO) | do not use tri-state conflict |
+| *1.9*  | SDO(MISO) | do not use tri-state conflict | n.c.
 
 4+| *touch screen*
-| *1.10* | T_CLK     | TOUCH SPICLK  | ESP.30
-| *1.11* | T_CS      | TOUCH CS      | ESP.36
-| *1.12* | T_DIN     | TOUCH SPIMOSI | ESP.37
-| *1.13* | T_DO      | TOUCH SPIMISO | ESP.31
-| *1.14* | T_IRQ     | TOUCH IRQ     | ESP.6
+| *1.10* | T_CLK     | TOUCH SPICLK                  | ESP.30
+| *1.11* | T_CS      | TOUCH CS                      | ESP.36
+| *1.12* | T_DIN     | TOUCH SPIMOSI                 | ESP.37
+| *1.13* | T_DO      | TOUCH SPIMISO                 | ESP.31
+| *1.14* | T_IRQ     | TOUCH IRQ                     | ESP.6
 
 4+| *SD card* (unused)
-| *2.1*  | SD_CS     | SD card chip select        |
-| *2.2*  | SD_MOSI   | SD card SPI bus write data |
-| *2.3*  | SD_MISO   | SD card SPI bus read data  |
-| *2.4*  | SD_SCK    | SD card SPI bus clock      |
+| *2.1*  | SD_CS     | SD card chip select           | n.c.
+| *2.2*  | SD_MOSI   | SD card SPI bus write data    | n.c.
+| *2.3*  | SD_MISO   | SD card SPI bus read data     | n.c.
+| *2.4*  | SD_SCK    | SD card SPI bus clock         | n.c.
 |===
 
 .MSP3520 module other
 [%autowidth]
 |===
-| parameter | value
+| parameter          | value
 
-| operating voltage  | 5V
+| operating voltage  | 5 V
 | operating current  | 90 mA
-| I/O voltage levels | 3.3V
+| I/O voltage levels | 3.3 V
+|===
+
+=== Real time clock
+
+Module name: *RTC*
+
+.DS3234 module
+[%autowidth]
+|===
+| pin | name | function    | connection
+
+| *1* | SS   | chip select | ESP.23
+| *2* | MOSI | SPIMOSI     | ESP.15
+| *3* | MISO | SPIMISO     | ESP.13
+| *4* | CLK  | SPICLK      | ESP.12
+| *5* | SQW  | square wave | n.c.
+| *6* | VCC  |             | PWR.3V3
+| *7* | GND  |             | PWR.GND
+|===
+
+.DS3234 module other
+[%autowidth]
+|===
+| parameter          | value
+
+| operating voltage  | 3.3 V
+| operating current  | 400 µA
+|===
+
+=== I/O expander
+
+Module name: *IO*
+
+.MCP23S17 module
+[%autowidth]
+|===
+| pin    | name  | function      | connection
+
+| *1.1*  | GND   |               | PWR.GND
+| *1.2*  | ITA   | INT A         |
+| *1.3*  | A0    | I/O A0 (OUT1) | CPU.2.2
+| *1.4*  | A1    | I/O A1 (OUT2) | CPU.2.4
+| *1.5*  | A2    | I/O A2 (OUT3) | CPU.2.6
+| *1.6*  | A3    | I/O A3 (OUT4) | CPU.2.8
+| *1.7*  | A4    | I/O A4        |
+| *1.8*  | A5    | I/O A5        |
+| *1.9*  | A6    | I/O A6        |
+| *1.10* | A7    | I/O A7        |
+
+| *2.1*  | VCC   |               | PWR.3V3
+| *2.2*  | ITB   | INT B         |
+| *2.3*  | B0    | I/O B0        |
+| *2.4*  | B1    | I/O B1        |
+| *2.5*  | B2    | I/O B2        |
+| *2.6*  | B3    | I/O B3        |
+| *2.7*  | B4    | I/O B4        |
+| *2.8*  | B5    | I/O B5        |
+| *2.9*  | B6    | I/O B6        |
+| *2.10* | B7    | I/O B7        |
+
+| *3.1*  | A2    | address A2    | PWR.GND
+| *3.2*  | A1    | address A1    | PWR.GND
+| *3.3*  | A0    | address A0    | PWR.GND
+| *3.4*  | RESET | reset         | ESP.9
+| *3.5*  | SO    | SPIMISO       | ESP.13
+| *3.6*  | CS    | chip select   | ESP.10
+| *3.7*  | SI    | SPIMOSI       | ESP.15
+| *3.8*  | SCK   | SPICLK        | ESP.12
+| *3.9*  | GND   |               | PWR.GND
+| *3.10* | VCC   |               | PWR.3V3
+|===
+
+.MCP23S17 module other
+[%autowidth]
+|===
+| parameter          | value
+
+| operating voltage  | 3.3 V
+| operating current  | 1 mA
 |===
 
 === Power distribution
@@ -176,8 +256,9 @@ Module name: *PWR*
 .Power distribution
 [%autowidth]
 |===
-| pin  | name | use
+| pin    | name
 
-| *GND*  | GND  |
-| *5V*   | 5V   |
+| *GND*  | GND
+| *5V*   | 5V
+| *3V3*  | 3.3V
 |===
