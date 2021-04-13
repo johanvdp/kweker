@@ -45,7 +45,7 @@ void ctrl_initialize()
 
     BaseType_t ret = xTaskCreate(&ctrl_task, TAG, 2048, NULL, (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
+        ESP_LOGE(TAG, "ctrl_initialize, failed to create task (FATAL)");
     }
 }
 

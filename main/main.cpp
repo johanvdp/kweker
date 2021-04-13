@@ -103,7 +103,7 @@ void app_main()
     // LOG: big queue not useful
     QueueHandle_t log_queue = xQueueCreate(10, sizeof(pubsub_message_t));
     if (log_queue == 0) {
-        ESP_LOGE(TAG, "setup, failed to create log queue (FATAL)");
+        ESP_LOGE(TAG, "failed to create log queue (FATAL)");
         return;
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);

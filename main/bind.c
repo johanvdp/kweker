@@ -107,6 +107,6 @@ void bind_initialize()
 
     BaseType_t ret = xTaskCreate(&bind_task, TAG, 2048, NULL, (tskIDLE_PRIORITY + 1), NULL);
     if (ret != pdPASS) {
-        ESP_LOGE(TAG, "failed to create task (FATAL)");
+        ESP_LOGE(TAG, "bind_initialize, failed to create task (FATAL)");
     }
 }

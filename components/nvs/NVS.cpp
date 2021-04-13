@@ -143,21 +143,21 @@ void NVS::read_nvs()
             int64_t value = 0;
             size_t size = sizeof(int64_t);
             err = nvs_get_blob(handle, message->topic, &value, &size);
-            ESP_LOGI(TAG, "read_nvs key:%s, value:%lld", message->topic, value);
+            ESP_LOGI(TAG, "read_nvs, key:%s, value:%lld", message->topic, value);
             message->int_val = value;
             pubsub_publish_int(message->topic, value);
         } else if (message->type == PUBSUB_TYPE_DOUBLE) {
             double value = 0.0;
             size_t size = sizeof(double);
             err = nvs_get_blob(handle, message->topic, &value, &size);
-            ESP_LOGI(TAG, "read_nvs key:%s, value:%lf", message->topic, value);
+            ESP_LOGI(TAG, "read_nvs, key:%s, value:%lf", message->topic, value);
             message->double_val = value;
             pubsub_publish_double(message->topic, value);
         } else if (message->type == PUBSUB_TYPE_BOOLEAN) {
             bool value = false;
             size_t size = sizeof(bool);
             err = nvs_get_blob(handle, message->topic, &value, &size);
-            ESP_LOGI(TAG, "read_nvs key:%s, value:%s", message->topic, value ? "true" : "false");
+            ESP_LOGI(TAG, "read_nvs, key:%s, value:%s", message->topic, value ? "true" : "false");
             message->boolean_val = value;
             pubsub_publish_bool(message->topic, value);
         } else {
@@ -224,19 +224,19 @@ void NVS::run()
 void NVS::write_nvs()
 {
     if (is_change_detected()) {
-        ESP_LOGI(TAG, "write_nvs required");
+        ESP_LOGI(TAG, "write_nvs, change detected");
         for (int i = 0; i < number_of_messages; i++) {
             if (changed[i]) {
                 pubsub_message_t *message = messages[i];
                 esp_err_t err = ESP_ERR_NVS_BASE;
                 if (message->type == PUBSUB_TYPE_INT) {
-                    ESP_LOGI(TAG, "write_nvs key:%s, value:%lld", message->topic, message->int_val);
+                    ESP_LOGI(TAG, "write_nvs, key:%s, value:%lld", message->topic, message->int_val);
                     err = nvs_set_blob(handle, message->topic, &message->int_val, sizeof(int64_t));
                 } else if (message->type == PUBSUB_TYPE_DOUBLE) {
-                    ESP_LOGI(TAG, "write_nvs key:%s, value:%lf", message->topic, message->double_val);
+                    ESP_LOGI(TAG, "write_nvs, key:%s, value:%lf", message->topic, message->double_val);
                     err = nvs_set_blob(handle, message->topic, &message->double_val, sizeof(double));
                 } else if (message->type == PUBSUB_TYPE_BOOLEAN) {
-                    ESP_LOGI(TAG, "write_nvs key:%s, value:%s", message->topic, message->boolean_val ? "true" : "false");
+                    ESP_LOGI(TAG, "write_nvs, key:%s, value:%s", message->topic, message->boolean_val ? "true" : "false");
                     err = nvs_set_blob(handle, message->topic, &message->int_val, sizeof(bool));
                 } else {
                     ESP_LOGE(TAG, "write_nvs, unsupported message type:%d", message->type);

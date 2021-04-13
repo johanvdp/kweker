@@ -50,7 +50,7 @@ void LED::run()
     pubsub_message_t message;
     while (true) {
         if (xQueueReceive(queue, &message, portMAX_DELAY)) {
-            ESP_LOGD(TAG, "blink %lld", message.int_val);
+            ESP_LOGD(TAG, "run, blink %lld", message.int_val);
             for (int i = 0; i < message.int_val; i++) {
                 gpio_set_level(pin, on);
                 vTaskDelay(20 / portTICK_PERIOD_MS);

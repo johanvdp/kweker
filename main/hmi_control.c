@@ -47,7 +47,7 @@ static double hmi_control_bar_fraction(hmi_control_t *control, double value)
 {
 
     double fraction = (value + control->bar_bias) * control->bar_gain;
-    ESP_LOGD(TAG, "value:%lf, bias:%lf, gain:%lf, fraction:%lf", value, control->bar_bias, control->bar_gain, fraction);
+    ESP_LOGD(TAG, "hmi_control_bar_fraction, value:%lf, bias:%lf, gain:%lf, fraction:%lf", value, control->bar_bias, control->bar_gain, fraction);
     return fraction;
 }
 
@@ -208,7 +208,7 @@ static void hmi_control_control_mode_cb(lv_obj_t *button, lv_event_t e)
         if (hmi_control_mode_callback != NULL) {
             uint16_t index = lv_btnmatrix_get_active_btn(button);
 
-            ESP_LOGD(TAG, "hmi_control_control_mode_cb index:%d", index);
+            ESP_LOGD(TAG, "hmi_control_control_mode_cb, index:%d", index);
 
             hmi_control_mode_callback(index);
         }
@@ -258,7 +258,7 @@ static void hmi_control_manual_cb(lv_obj_t *button, lv_event_t e)
         uint16_t index = lv_btnmatrix_get_active_btn(button);
         bool checked = lv_btnmatrix_get_btn_ctrl(button, index, LV_BTNMATRIX_CTRL_CHECK_STATE);
 
-        ESP_LOGD(TAG, "hmi_control_manual_cb index:%d, checked:%d", index, checked);
+        ESP_LOGD(TAG, "hmi_control_manual_cb, index:%d, checked:%d", index, checked);
 
         if (index == 0 && hmi_control_light_sv_callback != NULL) {
             hmi_control_light_sv_callback(checked);

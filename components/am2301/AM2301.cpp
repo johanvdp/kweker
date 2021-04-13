@@ -20,20 +20,20 @@ void AM2301::setup(gpio_num_t pin, const char *temperature_topic, const char *hu
 
     if (state != COMPONENT_UNINITIALIZED) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup only once (FATAL)");
+        ESP_LOGE(TAG, "setup, only once (FATAL)");
         return;
     }
 
     if (pin < GPIO_NUM_0 || pin >= GPIO_NUM_MAX) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup requires GPIO pin number (FATAL)");
+        ESP_LOGE(TAG, "setup, requires GPIO pin number (FATAL)");
         return;
     }
     this->pin = pin;
 
     if (measurement_period_ms < MINIMUM_MEASUREMENT_PERIOD_MS) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup requires measurement_period_ms >  %d (FATAL)", MINIMUM_MEASUREMENT_PERIOD_MS);
+        ESP_LOGE(TAG, "setup, requires measurement_period_ms >  %d (FATAL)", MINIMUM_MEASUREMENT_PERIOD_MS);
         return;
     }
     this->measurement_period_ms = measurement_period_ms;
@@ -45,14 +45,14 @@ void AM2301::setup(gpio_num_t pin, const char *temperature_topic, const char *hu
     decoderQueue = xQueueCreate(NUMBER_OF_EDGES_IN_DATA_FRAME, sizeof(decoder_data_t));
     if (decoderQueue == 0) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup xQueueCreate failed (FATAL)");
+        ESP_LOGE(TAG, "setup, xQueueCreate failed (FATAL)");
         return;
     }
 
     BaseType_t ret = xTaskCreatePinnedToCore(&task, TAG, 3072, this, (4 | portPRIVILEGE_BIT), NULL, 1);
     if (ret != pdPASS) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "setup, xTaskCreate failed:%d (FATAL)", ret);
         return;
     }
 
@@ -65,7 +65,7 @@ void AM2301::setup(gpio_num_t pin, const char *temperature_topic, const char *hu
     ret = gpio_config(&io_conf);
     if (ret != ESP_OK) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup gpio_config failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "setup, gpio_config failed:%d (FATAL)", ret);
         return;
     }
 
@@ -81,7 +81,7 @@ void AM2301::setup(gpio_num_t pin, const char *temperature_topic, const char *hu
     ret = gpio_isr_handler_add(pin, isr_handler, this);
     if (ret != ESP_OK) {
         state = COMPONENT_FATAL;
-        ESP_LOGE(TAG, "setup gpio_isr_handler_add failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "setup, gpio_isr_handler_add failed:%d (FATAL)", ret);
         return;
     }
 
@@ -102,7 +102,7 @@ bool AM2301::queue_instruction_start()
     BaseType_t ret = xQueueSend(decoderQueue, &data, (TickType_t ) 0);
     if (ret != pdPASS) {
         // queue full, might recover
-        ESP_LOGE(TAG, "queue_instruction_start xQueueSend failed");
+        ESP_LOGE(TAG, "queue_instruction_start, xQueueSend failed");
         return false;
     }
 

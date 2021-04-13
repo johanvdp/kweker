@@ -55,12 +55,12 @@ DS3234::~DS3234()
 
 void DS3234::encode_time(time_t time, uint8_t *raw)
 {
-    ESP_LOGD(TAG, "encode_time time:%ld", time);
+    ESP_LOGD(TAG, "encode_time, time:%ld", time);
 
     struct tm structured;
     gmtime_r(&time, &structured);
 
-    ESP_LOGD(TAG, "encode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
+    ESP_LOGD(TAG, "encode_time, structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
             structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday, structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
@@ -76,13 +76,13 @@ void DS3234::encode_time(time_t time, uint8_t *raw)
     raw[5] = int_to_bcd(structured.tm_mon + 1) | 0x80;
     raw[6] = int_to_bcd(structured.tm_year % 100);
 
-    ESP_LOGD(TAG, "encode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+    ESP_LOGD(TAG, "encode_time, raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
 }
 
 time_t DS3234::decode_time(const uint8_t *raw)
 {
-    ESP_LOGD(TAG, "decode_time raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
+    ESP_LOGD(TAG, "decode_time, raw:%02X %02X %02X %02X %02X %02X %02X", raw[0], raw[1], raw[2], raw[3], raw[4], raw[5], raw[6]);
 
     struct tm structured;
     structured.tm_sec = bcd_to_int(raw[0]);
@@ -99,12 +99,12 @@ time_t DS3234::decode_time(const uint8_t *raw)
     // tm_year = 1900 based year (always in 20xx)
     structured.tm_year = bcd_to_int(raw[6]) + 100;
 
-    ESP_LOGD(TAG, "decode_time structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
+    ESP_LOGD(TAG, "decode_time, structured:%d-%02d-%02d (%d) %02d:%02d:%02d", structured.tm_year + TM_YEAR_OFFSET,
             structured.tm_mon + TM_MONTH_OFFSET, structured.tm_mday, structured.tm_wday, structured.tm_hour, structured.tm_min,
             structured.tm_sec);
 
     time_t time = mktime(&structured);
-    ESP_LOGD(TAG, "decode_time time:%ld", time);
+    ESP_LOGD(TAG, "decode_time, time:%ld", time);
     return time;
 }
 
@@ -156,12 +156,12 @@ void DS3234::setup(const char *time_topic)
 
     tx = malloc(MAX_TRANSFER_SIZE);
     if (tx == NULL) {
-        ESP_LOGE(TAG, "run malloc tx failed (FATAL)");
+        ESP_LOGE(TAG, "setup, malloc tx failed (FATAL)");
         return;
     }
     rx = malloc(MAX_TRANSFER_SIZE);
     if (rx == NULL) {
-        ESP_LOGE(TAG, "run malloc rx failed (FATAL)");
+        ESP_LOGE(TAG, "setup, malloc rx failed (FATAL)");
         return;
     }
 
@@ -173,14 +173,14 @@ void DS3234::setup(const char *time_topic)
     esp_err_t ret = xTaskCreate(&task, TAG, 3072, this, tskIDLE_PRIORITY,
     NULL);
     if (ret != pdPASS) {
-        ESP_LOGE(TAG, "setup xTaskCreate failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "setup, xTaskCreate failed:%d (FATAL)", ret);
         return;
     }
 }
 
 void DS3234::write_data(const uint8_t cmd, const uint8_t *data, const int len)
 {
-    ESP_LOGD(TAG, "writeData cmd:%02X, len:%d", cmd, len);
+    ESP_LOGD(TAG, "writeData, cmd:%02X, len:%d", cmd, len);
     assert(len <= MAX_TRANSFER_SIZE);
     memcpy(tx, data, len);
 
@@ -204,7 +204,7 @@ void DS3234::write_data(const uint8_t cmd, const uint8_t *data, const int len)
 
 void DS3234::read_data(const uint8_t cmd, uint8_t *data, const int len)
 {
-    ESP_LOGD(TAG, "read_data cmd:%02X, len:%d", cmd, len);
+    ESP_LOGD(TAG, "read_data, cmd:%02X, len:%d", cmd, len);
     assert(len <= MAX_TRANSFER_SIZE);
 
     spi_transaction_t transaction;
@@ -247,12 +247,12 @@ bool DS3234::self_test()
     for (int i = 0; i < MAX_TRANSFER_SIZE; i++) {
         if (data[i] != i) {
             success = false;
-            ESP_LOGE(TAG, "self_test failed [%d/%d]", i, MAX_TRANSFER_SIZE);
+            ESP_LOGE(TAG, "self_test, failed [%d/%d]", i, MAX_TRANSFER_SIZE);
             break;
         }
     }
     if (success) {
-        ESP_LOGD(TAG, "self_test OK");
+        ESP_LOGD(TAG, "self_test, OK");
     }
     return success;
 }
@@ -277,7 +277,7 @@ void DS3234::run()
     esp_err_t ret = spi_bus_initialize(HSPI_HOST, &buscfg, 0);
     ESP_ERROR_CHECK(ret);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "run spi_bus_initialize failed (FATAL)");
+        ESP_LOGE(TAG, "run, spi_bus_initialize failed (FATAL)");
         return;
     }
 
@@ -293,7 +293,7 @@ void DS3234::run()
     devcfg.queue_size = 1;
     ret = spi_bus_add_device(HSPI_HOST, &devcfg, &device_handle);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "run spi_bus_add_device (READ) failed (FATAL)");
+        ESP_LOGE(TAG, "run, spi_bus_add_device (READ) failed (FATAL)");
         return;
     }
 
@@ -307,7 +307,7 @@ void DS3234::run()
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     ret = gpio_config(&io_conf);
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "run gpio_config failed:%d (FATAL)", ret);
+        ESP_LOGE(TAG, "run, gpio_config failed:%d (FATAL)", ret);
         return;
     }
 
@@ -315,7 +315,7 @@ void DS3234::run()
     gpio_set_level(GPIO_NUM_15, 1);
 
     if (self_test() == false) {
-        ESP_LOGE(TAG, "run self test failed (FATAL)");
+        ESP_LOGE(TAG, "run, self test failed (FATAL)");
         return;
     }
 
@@ -333,13 +333,13 @@ void DS3234::run()
             }
             // ignore own publish action
             if (time != message.int_val) {
-                ESP_LOGD(TAG, "run set time");
+                ESP_LOGD(TAG, "run, set time");
                 encode_time(message.int_val, raw);
                 write_data(TIME_REG, raw, 7);
             }
         } else {
 
-            ESP_LOGD(TAG, "run read time");
+            ESP_LOGD(TAG, "run, read time");
             read_data(TIME_REG, raw, 7);
             time = decode_time(raw);
             pubsub_publish_int(timestamp_topic, time);

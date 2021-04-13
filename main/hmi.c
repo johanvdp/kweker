@@ -230,13 +230,13 @@ void hmi_set_current_time(time_t timestamp)
 {
     if (hmi_semaphore_take("hmi_set_current_time")) {
 
-        ESP_LOGD(TAG, "hmi_set_current_time time:%ld", timestamp);
+        ESP_LOGD(TAG, "hmi_set_current_time, time:%ld", timestamp);
         struct tm brokentime;
         gmtime_r(&timestamp, &brokentime);
         // HH:MM\0
         char text[] = { 0, 0, 0, 0, 0, 0 };
         snprintf(text, sizeof text, "%02d:%02d", brokentime.tm_hour, brokentime.tm_min);
-        ESP_LOGD(TAG, "hmi_set_current_time time:%s", text);
+        ESP_LOGD(TAG, "hmi_set_current_time, time:%s", text);
         lv_label_set_text(hmi_label_current_time, text);
 
         hmi_semaphore_give();
@@ -278,7 +278,7 @@ void hmi_set_circadian(bool day)
 {
     if (hmi_semaphore_take("hmi_set_circadian")) {
 
-        ESP_LOGD(TAG, "hmi_set_circadian day:%s", day ? "true" : "false");
+        ESP_LOGD(TAG, "hmi_set_circadian, day:%s", day ? "true" : "false");
         lv_label_set_text(hmi_label_circadian, day ? "DAY" : "NIGHT");
 
         hmi_semaphore_give();
