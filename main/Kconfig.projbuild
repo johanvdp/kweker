@@ -42,4 +42,39 @@ menu "Kweker"
         help
             GPIO number (GPIO_NUM_xx) to heater SSR.
 
+    config SPI_HOST_DS3234
+        int "DS3234 SPI host"
+        range 0 2
+        default 1
+        help
+            DS3234 SPI host.
+
+    config GPIO_DS3234_MISO
+        int "DS3234 SPI MISO GPIO number"
+        range 0 33
+        default 12
+        help
+            GPIO number (GPIO_NUM_xx) to DS3234 SPI MISO.
+
+    config GPIO_DS3234_MOSI
+        int "DS3234 SPI MOSI GPIO number"
+        range 0 33
+        default 13
+        help
+            GPIO number (GPIO_NUM_xx) to DS3234 SPI MOSI.
+
+    config GPIO_DS3234_CLK
+        int "DS3234 SPI CLK GPIO number"
+        range 0 33
+        default 14
+        help
+            GPIO number (GPIO_NUM_xx) to DS3234 SPI CLK.
+
+    config GPIO_DS3234_CS
+        int "DS3234 SPI CS GPIO number"
+        range 0 33
+        default 15
+        help
+            GPIO number (GPIO_NUM_xx) to DS3234 CS.
+
 endmenu

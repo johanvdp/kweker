@@ -33,6 +33,11 @@ extern "C" {
 #define GPIO_EXHAUST (gpio_num_t)CONFIG_GPIO_EXHAUST
 #define GPIO_RECIRC (gpio_num_t)CONFIG_GPIO_RECIRC
 #define GPIO_HEATER (gpio_num_t)CONFIG_GPIO_HEATER
+#define SPI_HOST_DS3234 (spi_host_device_t)CONFIG_SPI_HOST_DS3234
+#define GPIO_DS3234_MISO (gpio_num_t)CONFIG_GPIO_DS3234_MISO
+#define GPIO_DS3234_MOSI (gpio_num_t)CONFIG_GPIO_DS3234_MOSI
+#define GPIO_DS3234_CLK (gpio_num_t)CONFIG_GPIO_DS3234_CLK
+#define GPIO_DS3234_CS (gpio_num_t)CONFIG_GPIO_DS3234_CS
 
 #define MEASUREMENT_PERIOD_MS 5000
 #define NVS_HOLD_OFF_MS (60 * 1000)
@@ -110,7 +115,7 @@ void app_main()
 
     am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, MEASUREMENT_PERIOD_MS);
 
-    ds3234.setup(MODEL_CURRENT_TIME);
+    ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_MISO, GPIO_DS3234_MOSI, GPIO_DS3234_CLK, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;
