@@ -6,8 +6,6 @@
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
 
-#include "freertos/timers.h"
-
 #include "pubsub.h"
 
 /**
@@ -44,6 +42,9 @@ private:
 
     void *tx = 0;
     void *rx = 0;
+    /**
+     * Run task for this instance.
+     */
     void run();
 
     /**
@@ -68,8 +69,10 @@ private:
     uint8_t int_to_bcd(uint8_t dec);
     uint8_t hour_to_int(uint8_t bcd);
 
-    /** periodic timer task */
-    static void task(TimerHandle_t xTimer);
+    /**
+     * Link C static world to C++ instance
+     */
+    static void task(void *pvParameter);
 };
 
 #endif /* _DS3234_H_ */
