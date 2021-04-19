@@ -3,7 +3,8 @@
 #ifndef _MHZ19B_H_
 #define _MHZ19B_H_
 
-#include "driver/gpio.h"
+#include "hal/gpio_types.h"
+#include "hal/uart_types.h"
 
 #include "pubsub.h"
 
@@ -19,14 +20,18 @@ public:
     /**
      * Setup once before use.
      *
+     * @param uart_port UART port number
      * @param rx_pin RX pin number
      * @param tx_pin TX pin number
      * @param co2_topic CO2 concentration topic [ppm].
+     * @param measurement_period_ms measurement period [ms].
      */
-    void setup(gpio_num_t rx_pin, gpio_num_t tx_pin, const char *co2_topic);
+    void setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, const char *co2_topic, uint32_t measurement_period_ms);
 
+    static constexpr int MINIMUM_MEASUREMENT_PERIOD_MS = 120000;
 private:
 
+    uart_port_t uart_port = 0;
     gpio_num_t rx_pin = GPIO_NUM_NC;
     gpio_num_t tx_pin = GPIO_NUM_NC;
 
@@ -34,6 +39,93 @@ private:
      * CO2 concentration topic [ppm].
      */
     const char *co2_topic = 0;
+
+    /**
+     * Measurement period [ms].
+     */
+    uint32_t measurement_period_ms = MINIMUM_MEASUREMENT_PERIOD_MS;
+
+    /**
+     * Prepared command: read CO2 concentration (reply expected)
+     * byte0: start    0xFF
+     * byte1: reserved 0x01
+     * byte2: command  0x86
+     * byte3..7: -     0x00
+     * byte8: checksum 0x79
+     */
+    static const uint8_t READ_CO2_CONCENTRATION_FRAME[];
+    /**
+     * Prepared command: self calibrate off (no reply expected)
+     * byte0: start    0xFF
+     * byte1: reserved 0x01
+     * byte2: command  0x79
+     * byte3..7: -     0x00
+     * byte8: checksum 0x86
+     */
+    static const uint8_t SELF_CALIBRATION_OFF_FRAME[];
+
+    /** Size of frames. */
+    static const int RX_BUFFER_SIZE = 9;
+    /** Buffer to receive one frame. */
+    uint8_t *rx_buffer = 0;
+
+    /**
+     * Initialize UART
+     *
+     * @return true if successful
+     */
+    bool initialize_uart();
+
+    /**
+     * Command: read CO2 concentration.
+     * Expect reply: read CO2 concentration.
+     */
+    void read_co2_concentration();
+
+    /**
+     * Command: self calibrate off.
+     * Expect reply: none
+     */
+    void self_calibrate_off();
+
+    /**
+     * Write frame to device.
+     *
+     * @param frame The frame.
+     */
+    void write_frame(const uint8_t *frame);
+
+    /**
+     * Write frame to device.
+     * Modifies the frame to add the checksum.
+     *
+     * @param frame The frame.
+     */
+    void write_frame_calculate(uint8_t *frame);
+
+    /**
+     * Decode received frame.
+     *
+     * @param frame The frame.
+     */
+    void decode_frame(const uint8_t *frame);
+
+    /**
+     * Decode co2 concentration frame.
+     *
+     * @param frame The frame.
+     */
+    void decode_co2_concentration(const uint8_t *frame);
+
+    /**
+     * Calculate the checksum of the data (7 bytes) in a frame (9 bytes).
+     * That is; excluding byte 0 (start), and excluding byte 8 (checksum).
+     * checksum = negative(byte 1 + byte 2 + .. + byte 7) + 1.
+     *
+     * @param frame the frame
+     * @return the checksum
+     */
+    uint8_t calculate_checksum(const uint8_t *bytes);
 
     /**
      * Run task for this instance.

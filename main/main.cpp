@@ -17,6 +17,7 @@ extern "C" {
 #include "DO.h"
 #include "AM2301.h"
 #include "DS3234.h"
+#include "MHZ19B.h"
 
 #include "model.h"
 #include "hmi.h"
@@ -38,6 +39,9 @@ extern "C" {
 #define GPIO_DS3234_MOSI (gpio_num_t)CONFIG_GPIO_DS3234_MOSI
 #define GPIO_DS3234_CLK (gpio_num_t)CONFIG_GPIO_DS3234_CLK
 #define GPIO_DS3234_CS (gpio_num_t)CONFIG_GPIO_DS3234_CS
+#define UART_PORT_MHZ19B (UART_NUM_1)
+#define GPIO_MHZ19B_TXD_PIN (GPIO_NUM_17)
+#define GPIO_MHZ19B_RXD_PIN (GPIO_NUM_16)
 
 #define MEASUREMENT_PERIOD_MS 5000
 #define NVS_HOLD_OFF_MS (60 * 1000)
@@ -50,6 +54,7 @@ DO exhaust;
 DO recirc;
 DO heater;
 NVS nvs;
+MHZ19B mhz19b;
 
 void nvs_setup()
 {
