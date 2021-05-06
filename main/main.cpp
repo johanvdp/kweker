@@ -122,6 +122,9 @@ void app_main()
 
     ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_MISO, GPIO_DS3234_MOSI, GPIO_DS3234_CLK, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
 
+    // void MHZ19B::setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, const char *co2_topic, uint32_t measurement_period_ms)
+    mhz19b.setup((uart_port_t)2, (gpio_num_t)GPIO_NUM_16, (gpio_num_t)GPIO_NUM_17, MODEL_CO2_PV, 120000);
+
     // universal mixed message type can be received only
     pubsub_message_t log_message;
 

@@ -28,6 +28,7 @@ public:
      */
     void setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, const char *co2_topic, uint32_t measurement_period_ms);
 
+    /** Minimum measurement period [ms]. */
     static constexpr int MINIMUM_MEASUREMENT_PERIOD_MS = 120000;
 private:
 
@@ -64,8 +65,10 @@ private:
      */
     static const uint8_t SELF_CALIBRATION_OFF_FRAME[];
 
-    /** Size of frames. */
-    static const int RX_BUFFER_SIZE = 9;
+    /** Size of command/response frame. */
+    static const int FRAME_LENGTH = 9;
+    /** At least frame length but larger than UART_FIFO_LEN. */
+    static const int RX_BUFFER_SIZE = UART_FIFO_LEN + 1;
     /** Buffer to receive one frame. */
     uint8_t *rx_buffer = 0;
 
@@ -80,13 +83,13 @@ private:
      * Command: read CO2 concentration.
      * Expect reply: read CO2 concentration.
      */
-    void read_co2_concentration();
+    void command_read_co2_concentration();
 
     /**
      * Command: self calibrate off.
      * Expect reply: none
      */
-    void self_calibrate_off();
+    void command_self_calibrate_off();
 
     /**
      * Write frame to device.
@@ -128,13 +131,23 @@ private:
     uint8_t calculate_checksum(const uint8_t *bytes);
 
     /**
-     * Run task for this instance.
+     * Write task for this instance.
      */
-    void run();
+    void write();
+    /**
+     * Read task for this instance.
+     */
+    void read();
+
     /**
      * Link C static world to C++ instance
      */
-    static void task(void *pvParameter);
+    static void read_task(void *pvParameter);
+
+    /**
+     * Link C static world to C++ instance
+     */
+    static void write_task(void *pvParameter);
 };
 
 #endif /* _MHZ19B_H_ */
