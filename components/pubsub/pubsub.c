@@ -106,9 +106,9 @@ static void pubsub_publish_one(QueueHandle_t queue, pubsub_message_t *message)
     BaseType_t result = xQueueSendToBack(queue, message, 0);
     if (result != pdTRUE) {
         // todo handle errors
-        ESP_LOGE(tag, "pubsub_publish_one, error");
+        ESP_LOGE(tag, "pubsub_publish_one, error topic:%s", message->topic);
     } else {
-        ESP_LOGV(tag, "pubsub_publish_one, ok");
+        ESP_LOGV(tag, "pubsub_publish_one, ok topic:%s", message->topic);
     }
 }
 /**
