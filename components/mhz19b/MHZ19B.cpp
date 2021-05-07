@@ -125,7 +125,7 @@ void MHZ19B::decode_frame(const uint8_t *frame)
                 frame[3], frame[4], frame[5], frame[6], frame[7], frame[8]);
         return;
     }
-    uint8_t command = frame[2];
+    uint8_t command = frame[1];
     if (command == 0x86) {
         decode_co2_concentration(frame);
     } else {
