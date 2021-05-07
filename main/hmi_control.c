@@ -15,6 +15,9 @@ typedef struct
     lv_obj_t *bar;
     double bar_bias;
     double bar_gain;
+    char *format_sv;
+    char *format_pv;
+    char *format_minmax;
     lv_obj_t *label_sv;
     lv_obj_t *label_pv;
     lv_obj_t *label_lo;
@@ -86,7 +89,7 @@ static void hmi_control_set_pv(hmi_control_t *target, double pv)
 
         int16_t value = hmi_control_bar_value(target, pv);
         lv_bar_set_value(bar, value, LV_ANIM_OFF);
-        lv_label_set_text_fmt(label_pv, "=%.1lf", pv);
+        lv_label_set_text_fmt(label_pv, target->format_pv, pv);
         lv_coord_t pv_y = hmi_control_get_y(target, pv);
         lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
 
@@ -102,7 +105,7 @@ static void hmi_control_set_sv(hmi_control_t *target, double sv)
         lv_obj_t *label_sv = target->label_sv;
         lv_coord_t bar_x = lv_obj_get_x(bar);
 
-        lv_label_set_text_fmt(label_sv, "%.1lf>", sv);
+        lv_label_set_text_fmt(label_sv, target->format_sv, sv);
         lv_coord_t label_width = lv_obj_get_width(label_sv);
         lv_coord_t sv_y = hmi_control_get_y(target, sv);
         lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
@@ -136,7 +139,7 @@ static void hmi_control_set_lo(hmi_control_t *target, bool lo)
 }
 
 static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent, lv_coord_t x, lv_coord_t y, lv_coord_t w,
-        lv_coord_t h, const char *name, double min, double max)
+        lv_coord_t h, const char *name, double min, double max, int decimals)
 {
 
     lv_obj_t *control = lv_cont_create(parent, NULL);
@@ -179,27 +182,31 @@ static void hmi_control_create_control(hmi_control_t *target, lv_obj_t *parent, 
     lv_coord_t bar_x = lv_obj_get_x(bar);
 
     lv_obj_t *label_max = lv_label_create(control, NULL);
-    lv_label_set_text_fmt(label_max, "-%.1lf", max);
+    asprintf(&target->format_minmax, "-%%.%dlf", decimals);
+    lv_label_set_text_fmt(label_max, target->format_minmax, max);
     lv_coord_t max_y = hmi_control_get_y(target, max);
     lv_obj_set_pos(label_max, bar_x + bar_width + HMI_MARGIN, max_y);
 
     lv_obj_t *label_min = lv_label_create(control, NULL);
     lv_coord_t min_y = hmi_control_get_y(target, min);
     lv_obj_set_pos(label_min, bar_x + bar_width + HMI_MARGIN, min_y);
-    lv_label_set_text_fmt(label_min, "-%.1lf", min);
+    lv_label_set_text_fmt(label_min, target->format_minmax, min);
 
     lv_obj_t *label_pv = lv_label_create(control, NULL);
+    asprintf(&target->format_pv, "=%%.%dlf", decimals);
     lv_coord_t pv_y = hmi_control_get_y(target, min);
     lv_obj_set_pos(label_pv, bar_x + bar_width + HMI_MARGIN, pv_y);
-    lv_label_set_text_fmt(label_pv, "=%.1lf", min);
+    lv_label_set_text_fmt(label_pv, target->format_pv, min);
     target->label_pv = label_pv;
 
     lv_obj_t *label_sv = lv_label_create(control, NULL);
-    lv_label_set_text_fmt(label_sv, "%.1lf>", min);
+    asprintf(&target->format_sv, "%%.%dlf>", decimals);
+    lv_label_set_text_fmt(label_sv, target->format_sv, min);
     lv_coord_t label_width = lv_obj_get_width(label_sv);
     lv_coord_t sv_y = hmi_control_get_y(target, min);
     lv_obj_set_pos(label_sv, bar_x - label_width - HMI_MARGIN, sv_y);
     target->label_sv = label_sv;
+
 }
 
 static void hmi_control_control_mode_cb(lv_obj_t *button, lv_event_t e)
@@ -314,7 +321,7 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
 
     hmi_control_create_control(&hmi_control_temperature, tab, HMI_MARGIN,
     HMI_MARGIN,
-    HMI_CONTROL_W, HMI_CONTROL_H, "Temperature [°C]", 0.0, 50.0);
+    HMI_CONTROL_W, HMI_CONTROL_H, "Temperature [°C]", 0.0, 50.0, 1);
     hmi_control_set_pv(&hmi_control_temperature, 0.0);
     hmi_control_set_sv(&hmi_control_temperature, 0.0);
     hmi_control_set_hi(&hmi_control_temperature, false);
@@ -322,14 +329,14 @@ lv_obj_t* hmi_control_create_tab(lv_obj_t *parent)
 
     hmi_control_create_control(&hmi_control_humidity, tab,
     HMI_MARGIN + HMI_CONTROL_W, HMI_MARGIN,
-    HMI_CONTROL_W, HMI_CONTROL_H, "Humidity [%RH]", 0.0, 100.0);
+    HMI_CONTROL_W, HMI_CONTROL_H, "Humidity [%RH]", 0.0, 100.0, 1);
     hmi_control_set_pv(&hmi_control_humidity, 0.0);
     hmi_control_set_sv(&hmi_control_humidity, 0.0);
     hmi_control_set_hi(&hmi_control_humidity, false);
     hmi_control_set_lo(&hmi_control_humidity, false);
 
     hmi_control_create_control(&hmi_control_co2, tab, (HMI_MARGIN + HMI_CONTROL_W) * 2,
-    HMI_MARGIN, HMI_CONTROL_W, HMI_CONTROL_H, "CO2 conc. [ppm]", 0.0, 2000.0);
+    HMI_MARGIN, HMI_CONTROL_W, HMI_CONTROL_H, "CO2 conc. [ppm]", 0.0, 2000.0, 0);
     hmi_control_set_pv(&hmi_control_co2, 0.0);
     hmi_control_set_sv(&hmi_control_co2, 0.0);
     hmi_control_set_hi(&hmi_control_co2, false);
