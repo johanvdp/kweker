@@ -45,7 +45,7 @@ bool NVS::init_topics(const char *topic_list[], const size_t number_of_topics)
 bool NVS::init_queue()
 {
     // big queue not useful
-    QueueHandle_t queue = xQueueCreate(10, sizeof(pubsub_message_t));
+    QueueHandle_t queue = xQueueCreate(number_of_messages * 2, sizeof(pubsub_message_t));
     if (queue == 0) {
         return false;
     }
