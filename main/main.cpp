@@ -43,7 +43,7 @@ extern "C" {
 #define GPIO_MHZ19B_TXD_PIN (GPIO_NUM_17)
 #define GPIO_MHZ19B_RXD_PIN (GPIO_NUM_16)
 
-#define MEASUREMENT_PERIOD_MS 5000
+#define MEASUREMENT_PERIOD_MS 60000
 #define NVS_HOLD_OFF_MS (60 * 1000)
 
 LED led;
@@ -141,7 +141,7 @@ void app_main()
                 int64_t status = log_message.int_val;
                 if (status == AM2301::result_status_t::RESULT_OK) {
 
-                    ESP_LOGI(TAG, "AM2301 OK");
+                    ESP_LOGD(TAG, "AM2301 OK");
 
                     // blink 1x
                     activity_message.int_val = 1;
@@ -163,7 +163,7 @@ void app_main()
 
                 } else {
                     // unknown
-                    ESP_LOGE(TAG, "status:%lld", status);
+                    ESP_LOGE(TAG, "AM2301 %lld", status);
                 }
             }
         }
