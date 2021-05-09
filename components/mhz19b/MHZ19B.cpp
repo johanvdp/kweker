@@ -79,7 +79,7 @@ void MHZ19B::setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, 
     this->measurement_period_ms = measurement_period_ms;
 
     bool success = initialize_uart();
-    if (!success) {arguments
+    if (!success) {
         ESP_LOGE(TAG, "write, initialize_uart failed (FATAL)");
         return;
     }
