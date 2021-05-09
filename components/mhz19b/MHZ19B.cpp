@@ -5,7 +5,6 @@
 #include "string.h"
 
 #include "driver/gpio.h"
-#include "hal/uart_types.h"
 #include "driver/uart.h"
 #include "esp_system.h"
 #include "esp_log.h"
@@ -31,14 +30,15 @@ MHZ19B::~MHZ19B()
 
 bool MHZ19B::initialize_uart()
 {
-    const uart_config_t uart_config = { //
-            .baud_rate = 9600, //
-                    .data_bits = UART_DATA_8_BITS, //
-                    .parity = UART_PARITY_DISABLE, //
-                    .stop_bits = UART_STOP_BITS_1, //
-                    .flow_ctrl = UART_HW_FLOWCTRL_DISABLE, //
-                    .rx_flow_ctrl_thresh = static_cast<uint8_t>(0), //
-                    .source_clk = UART_SCLK_APB };
+    // somehow using single constructor does not work
+    uart_config_t uart_config;
+    uart_config.baud_rate = 9600;
+    uart_config.data_bits = UART_DATA_8_BITS;
+    uart_config.parity = UART_PARITY_DISABLE;
+    uart_config.stop_bits = UART_STOP_BITS_1;
+    uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+    uart_config.rx_flow_ctrl_thresh = 0;
+    uart_config.source_clk = UART_SCLK_APB;
 
     // rx_buffer only read by task below
     rx_buffer = (uint8_t*) (malloc(RX_BUFFER_SIZE));
@@ -79,7 +79,7 @@ void MHZ19B::setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, 
     this->measurement_period_ms = measurement_period_ms;
 
     bool success = initialize_uart();
-    if (!success) {
+    if (!success) {arguments
         ESP_LOGE(TAG, "write, initialize_uart failed (FATAL)");
         return;
     }
