@@ -39,11 +39,12 @@ extern "C" {
 #define GPIO_DS3234_MOSI (gpio_num_t)CONFIG_GPIO_DS3234_MOSI
 #define GPIO_DS3234_CLK (gpio_num_t)CONFIG_GPIO_DS3234_CLK
 #define GPIO_DS3234_CS (gpio_num_t)CONFIG_GPIO_DS3234_CS
-#define UART_PORT_MHZ19B (UART_NUM_1)
-#define GPIO_MHZ19B_TXD_PIN (GPIO_NUM_17)
-#define GPIO_MHZ19B_RXD_PIN (GPIO_NUM_16)
+#define UART_PORT_MHZ19B (uart_port_t)CONFIG_UART_PORT_MHZ19B
+#define GPIO_MHZ19B_TXD (gpio_num_t)CONFIG_GPIO_MHZ19B_TXD
+#define GPIO_MHZ19B_RXD (gpio_num_t)CONFIG_GPIO_MHZ19B_RXD
 
-#define MEASUREMENT_PERIOD_MS 60000
+#define AM2301_MEASUREMENT_PERIOD_MS 60000
+#define MHZ19B_MEASUREMENT_PERIOD_MS 120000
 #define NVS_HOLD_OFF_MS (60 * 1000)
 
 LED led;
@@ -118,12 +119,11 @@ void app_main()
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, MEASUREMENT_PERIOD_MS);
+    am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, AM2301_MEASUREMENT_PERIOD_MS);
 
     ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_MISO, GPIO_DS3234_MOSI, GPIO_DS3234_CLK, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
 
-    // void MHZ19B::setup(uart_port_t uart_port, gpio_num_t rx_pin, gpio_num_t tx_pin, const char *co2_topic, uint32_t measurement_period_ms)
-    mhz19b.setup((uart_port_t)2, (gpio_num_t)GPIO_NUM_16, (gpio_num_t)GPIO_NUM_17, MODEL_CO2_PV, 120000);
+    mhz19b.setup(UART_PORT_MHZ19B, GPIO_MHZ19B_RXD, GPIO_MHZ19B_RXD, MODEL_CO2_PV, MHZ19B_MEASUREMENT_PERIOD_MS);
 
     // universal mixed message type can be received only
     pubsub_message_t log_message;

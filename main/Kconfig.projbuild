@@ -77,4 +77,25 @@ menu "Kweker"
         help
             GPIO number (GPIO_NUM_xx) to DS3234 CS.
 
+    config UART_PORT_MHZ19B
+        int "MH-Z19B UART port"
+        range 0 2
+        default 2
+        help
+            MH-Z19B UART port.
+
+    config GPIO_MHZ19B_TXD
+        int "MH-Z19B TXD GPIO number"
+        range 0 33
+        default 17
+        help
+            GPIO number (GPIO_NUM_xx) TXD to MH-Z19B RXD.
+
+    config GPIO_MHZ19B_RXD
+        int "MH-Z19B RXD GPIO number"
+        range 0 33
+        default 16
+        help
+            GPIO number (GPIO_NUM_xx) RXD to MH-Z19B TXD.
+
 endmenu
