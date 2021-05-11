@@ -166,11 +166,6 @@ void app_main()
     // universal mixed message type can be received only
     pubsub_message_t log_message;
 
-    // explicit message type required when publishing
-    pubsub_message_t activity_message;
-    activity_message.topic = (char*) MODEL_ACTIVITY;
-    activity_message.type = PUBSUB_TYPE_INT;
-
     while (1) {
 
         if (xQueueReceive(log_queue, &log_message, portMAX_DELAY)) {
@@ -182,16 +177,14 @@ void app_main()
                     ESP_LOGD(TAG, "AM2301 OK");
 
                     // blink 1x
-                    activity_message.int_val = 1;
-                    pubsub_publish(MODEL_ACTIVITY, &activity_message);
+                    pubsub_publish_int(MODEL_ACTIVITY, 1);
 
                 } else if (status == AM2301::result_status_t::RESULT_RECOVERABLE) {
 
                     ESP_LOGW(TAG, "AM2301 RECOVERABLE");
 
                     // blink 2x
-                    activity_message.int_val = 2;
-                    pubsub_publish(MODEL_ACTIVITY, &activity_message);
+                    pubsub_publish_int(MODEL_ACTIVITY, 2);
 
                 } else if (status == AM2301::result_status_t::RESULT_FATAL) {
 
