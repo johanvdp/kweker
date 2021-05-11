@@ -4,6 +4,7 @@ extern "C" {
 
 #include <string.h>
 
+#include "driver/spi_master.h"
 #include "esp_system.h"
 #include "esp_log.h"
 #include "sdkconfig.h"
@@ -34,18 +35,31 @@ extern "C" {
 #define GPIO_EXHAUST (gpio_num_t)CONFIG_GPIO_EXHAUST
 #define GPIO_RECIRC (gpio_num_t)CONFIG_GPIO_RECIRC
 #define GPIO_HEATER (gpio_num_t)CONFIG_GPIO_HEATER
+
+#define SPI_HOST_A (spi_host_device_t)CONFIG_SPI_HOST_A
+#define GPIO_SPI_A_MISO (gpio_num_t)CONFIG_GPIO_SPI_A_MISO
+#define GPIO_SPI_A_MOSI (gpio_num_t)CONFIG_GPIO_SPI_A_MOSI
+#define GPIO_SPI_A_CLK (gpio_num_t)CONFIG_GPIO_SPI_A_CLK
+
 #define SPI_HOST_DS3234 (spi_host_device_t)CONFIG_SPI_HOST_DS3234
-#define GPIO_DS3234_MISO (gpio_num_t)CONFIG_GPIO_DS3234_MISO
-#define GPIO_DS3234_MOSI (gpio_num_t)CONFIG_GPIO_DS3234_MOSI
-#define GPIO_DS3234_CLK (gpio_num_t)CONFIG_GPIO_DS3234_CLK
 #define GPIO_DS3234_CS (gpio_num_t)CONFIG_GPIO_DS3234_CS
+
 #define UART_PORT_MHZ19B (uart_port_t)CONFIG_UART_PORT_MHZ19B
 #define GPIO_MHZ19B_TXD (gpio_num_t)CONFIG_GPIO_MHZ19B_TXD
 #define GPIO_MHZ19B_RXD (gpio_num_t)CONFIG_GPIO_MHZ19B_RXD
 
+#define SPI_HOST_MCP23S17 (spi_host_device_t)CONFIG_HOST_MCP23S17
+#define GPIO_MCP23S17_CS (gpio_num_t)CONFIG_GPIO_MCP23S17_CS
+#define GPIO_MCP23S17_RST (gpio_num_t)CONFIG_GPIO_MCP23S17_RST
+
 #define AM2301_MEASUREMENT_PERIOD_MS 60000
 #define MHZ19B_MEASUREMENT_PERIOD_MS 120000
 #define NVS_HOLD_OFF_MS (60 * 1000)
+/**
+ * Limit for non-DMA SPI transfers.
+ * Can not use DMA because need HALF DUPLEX transfers to avoid data corruption.
+ */
+#define MAX_TRANSFER_SIZE 64
 
 LED led;
 AM2301 am2301;
@@ -77,6 +91,25 @@ void nvs_setup()
     nvs.setup("settings", nvs_settings, sizeof(nvs_settings) / sizeof(nvs_settings[0]), NVS_HOLD_OFF_MS);
 }
 
+void spi_setup() {
+    // configure spi bus
+    spi_bus_config_t buscfg;
+    memset(&buscfg, 0, sizeof(spi_bus_config_t));
+    buscfg.flags = SPICOMMON_BUSFLAG_IOMUX_PINS;
+    buscfg.miso_io_num = GPIO_SPI_A_MISO;
+    buscfg.mosi_io_num = GPIO_SPI_A_MOSI;
+    buscfg.sclk_io_num = GPIO_SPI_A_CLK;
+    buscfg.quadwp_io_num = -1;
+    buscfg.quadhd_io_num = -1;
+    buscfg.max_transfer_sz = MAX_TRANSFER_SIZE;
+    esp_err_t ret = spi_bus_initialize(SPI_HOST_A, &buscfg, 0);
+    ESP_ERROR_CHECK(ret);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "run, spi_bus_initialize failed (FATAL)");
+        return;
+    }
+}
+
 void app_main()
 {
     ESP_LOGI(TAG, "app_main");
@@ -104,11 +137,16 @@ void app_main()
     bind_initialize();
     ctrl_initialize();
 
+    spi_setup();
+
     led.setup(GPIO_LED, true, MODEL_ACTIVITY);
-    light.setup(GPIO_LIGHT, true, MODEL_LIGHT);
-    exhaust.setup(GPIO_EXHAUST, true, MODEL_EXHAUST);
-    recirc.setup(GPIO_RECIRC, true, MODEL_RECIRC);
-    heater.setup(GPIO_HEATER, true, MODEL_HEATER);
+
+// disabled needs to be connected through io expander
+//    light.setup(GPIO_LIGHT, true, MODEL_LIGHT);
+//    exhaust.setup(GPIO_EXHAUST, true, MODEL_EXHAUST);
+//    recirc.setup(GPIO_RECIRC, true, MODEL_RECIRC);
+//    heater.setup(GPIO_HEATER, true, MODEL_HEATER);
+
     nvs_setup();
 
     // LOG: big queue not useful
@@ -121,7 +159,7 @@ void app_main()
 
     am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, AM2301_MEASUREMENT_PERIOD_MS);
 
-    ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_MISO, GPIO_DS3234_MOSI, GPIO_DS3234_CLK, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
+    ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
 
     mhz19b.setup(UART_PORT_MHZ19B, GPIO_MHZ19B_RXD, GPIO_MHZ19B_RXD, MODEL_CO2_PV, MHZ19B_MEASUREMENT_PERIOD_MS);
 

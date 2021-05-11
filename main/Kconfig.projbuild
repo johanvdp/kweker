@@ -42,6 +42,34 @@ menu "Kweker"
         help
             GPIO number (GPIO_NUM_xx) to heater SSR.
 
+    config SPI_HOST_A
+        int "SPI host"
+        range 0 2
+        default 1
+        help
+            SPI host.
+
+    config GPIO_SPI_A_MISO
+        int "SPI MISO GPIO number"
+        range 0 33
+        default 12
+        help
+            GPIO number (GPIO_NUM_xx) to SPI MISO.
+
+    config GPIO_SPI_A_MOSI
+        int "SPI SPI MOSI GPIO number"
+        range 0 33
+        default 13
+        help
+            GPIO number (GPIO_NUM_xx) to SPI MOSI.
+
+    config GPIO_SPI_A_CLK
+        int "SPI SPI CLK GPIO number"
+        range 0 33
+        default 14
+        help
+            GPIO number (GPIO_NUM_xx) to SPI CLK.
+
     config SPI_HOST_DS3234
         int "DS3234 SPI host"
         range 0 2
@@ -49,29 +77,8 @@ menu "Kweker"
         help
             DS3234 SPI host.
 
-    config GPIO_DS3234_MISO
-        int "DS3234 SPI MISO GPIO number"
-        range 0 33
-        default 12
-        help
-            GPIO number (GPIO_NUM_xx) to DS3234 SPI MISO.
-
-    config GPIO_DS3234_MOSI
-        int "DS3234 SPI MOSI GPIO number"
-        range 0 33
-        default 13
-        help
-            GPIO number (GPIO_NUM_xx) to DS3234 SPI MOSI.
-
-    config GPIO_DS3234_CLK
-        int "DS3234 SPI CLK GPIO number"
-        range 0 33
-        default 14
-        help
-            GPIO number (GPIO_NUM_xx) to DS3234 SPI CLK.
-
     config GPIO_DS3234_CS
-        int "DS3234 SPI CS GPIO number"
+        int "DS3234 CS GPIO number"
         range 0 33
         default 15
         help
@@ -97,5 +104,26 @@ menu "Kweker"
         default 16
         help
             GPIO number (GPIO_NUM_xx) RXD to MH-Z19B TXD.
+
+    config SPI_HOST_MCP23S17
+        int "MCP23S17 SPI host"
+        range 0 2
+        default 1
+        help
+            MCP23S17 SPI host.
+
+    config GPIO_MCP23S17_CS
+        int "MCP23S17 CS GPIO number"
+        range 0 33
+        default 26
+        help
+            GPIO number (GPIO_NUM_xx) to MCP23S17 CS.
+
+    config GPIO_MCP23S17_RST
+        int "MCP23S17 RST GPIO number"
+        range 0 33
+        default 26
+        help
+            GPIO number (GPIO_NUM_xx) to MCP23S17 RST.
 
 endmenu

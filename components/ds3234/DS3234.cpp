@@ -148,15 +148,11 @@ void DS3234::task(void *pvParameter)
     }
 }
 
-void DS3234::setup(spi_host_device_t host_id, gpio_num_t miso_pin, gpio_num_t mosi_pin, gpio_num_t clk_pin, gpio_num_t cs_pin, const char *time_topic)
+void DS3234::setup(spi_host_device_t host_id, gpio_num_t cs_pin, const char *time_topic)
 {
-    ESP_LOGD(TAG, "setup, host_id:%d, miso_pin:%d, mosi_pin:%d, clk_pin:%d, cs_pin:%d, topic_name:%s, this:%p", host_id, miso_pin, mosi_pin, clk_pin,
-            cs_pin, time_topic, this);
+    ESP_LOGD(TAG, "setup, host_id:%d, cs_pin:%d, topic_name:%s, this:%p", host_id, cs_pin, time_topic, this);
 
     this->host_id = host_id;
-    this->miso_pin = miso_pin;
-    this->mosi_pin = mosi_pin;
-    this->clk_pin = clk_pin;
     this->cs_pin = cs_pin;
     this->timestamp_topic = time_topic;
 
@@ -270,23 +266,6 @@ void DS3234::run()
 {
     ESP_LOGD(TAG, "run, this:%p", this);
 
-    // configure spi bus
-    spi_bus_config_t buscfg;
-    memset(&buscfg, 0, sizeof(spi_bus_config_t));
-    buscfg.flags = SPICOMMON_BUSFLAG_IOMUX_PINS;
-    buscfg.miso_io_num = miso_pin;
-    buscfg.mosi_io_num = mosi_pin;
-    buscfg.sclk_io_num = clk_pin;
-    buscfg.quadwp_io_num = -1;
-    buscfg.quadhd_io_num = -1;
-    buscfg.max_transfer_sz = MAX_TRANSFER_SIZE;
-    esp_err_t ret = spi_bus_initialize(host_id, &buscfg, 0);
-    ESP_ERROR_CHECK(ret);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "run, spi_bus_initialize failed (FATAL)");
-        return;
-    }
-
     // configure spi device (READ)
     spi_device_interface_config_t devcfg;
     memset(&devcfg, 0, sizeof(spi_device_interface_config_t));
@@ -297,7 +276,7 @@ void DS3234::run()
     devcfg.flags = SPI_DEVICE_HALFDUPLEX;
     devcfg.dummy_bits = 0;
     devcfg.queue_size = 1;
-    ret = spi_bus_add_device(host_id, &devcfg, &device_handle);
+    esp_err_t ret = spi_bus_add_device(host_id, &devcfg, &device_handle);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "run, spi_bus_add_device (READ) failed (FATAL)");
         return;

@@ -22,21 +22,14 @@ public:
      * Setup once before use.
      *
      * @param host_id SPI host id
-     * @param miso_pin SPI MISO pin number
-     * @param mosi_pin SPI MOSI pin number
-     * @param clk_pin SPI CLK pin number
      * @param cs_pin chip select pin number
      * @param time_topic time topic, used to publish and subscribe to time changes.
      */
-    void setup(spi_host_device_t host_id, gpio_num_t miso_pin, gpio_num_t mosi_pin, gpio_num_t clk_pin, gpio_num_t cs_pin,
-            const char *time_topic);
+    void setup(spi_host_device_t host_id, gpio_num_t cs_pin, const char *time_topic);
 
 private:
 
     spi_host_device_t host_id = (spi_host_device_t)-1;
-    gpio_num_t miso_pin = GPIO_NUM_NC;
-    gpio_num_t mosi_pin = GPIO_NUM_NC;
-    gpio_num_t clk_pin = GPIO_NUM_NC;
     gpio_num_t cs_pin = GPIO_NUM_NC;
 
     /**
