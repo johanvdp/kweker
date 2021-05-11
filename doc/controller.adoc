@@ -94,8 +94,8 @@ For ease of reference a short module name is chosen.
 .2+| P13
 .2+| HSPID(2)
 .2+| RTC SPIMOSI
-| RTC.2 IO.3.7
-| RTC.2 IO.3.7
+| RTC.2
+| IO.3.7
 | *16* | P9   | SD_DATA_2(1) | on board flash      | n.c.
 | *17* | P10  | SD_DATA_3(1) | on board flash      | n.c.
 | *18* | P11  | SD_CMD(1)    | on board flash      | n.c.
@@ -108,24 +108,22 @@ For ease of reference a short module name is chosen.
 | pin  | name | iomux        | function            | connection
 
 | *38* | GND  |              |                     | PWR.GND
-.3+| *37*
-.3+| P23
-.3+| *VSPID*(2)
+.2+| *37*
+.2+| P23
+.2+| VSPID(2)
                              | TOUCH SPIMOSI       | LCD.1.12
                              | LCD SPIMOSI         | LCD.1.6
-                             | RTC SPIMOSI         | RTC.2
 | *36* | P22  | VSPIWP(2)    | TOUCH CS            | LCD.1.11
 | *35* | P1   | U0TXD(1)     | on board USB SERIAL |
 | *34* | P3   | U0RXD(1)     | on board USB SERIAL |
 | *33* | P21  | VSPIHD(2)    | LCD DC/RS           | LCD.1.5
 | *32* | GND  |              |                     | PWR.GND
 | *31* | P19  | VSPIQ(2)     | TOUCH SPIMISO       | LCD.1.13
-.3+| *30*
-.3+| P18
-.3+| VSPICLK(2)
+.2+| *30*
+.2+| P18
+.2+| VSPICLK(2)
                              | LCD SPICLK          | LCD.1.7
                              | TOUCH SPICLK        | LCD.1.10
-                             | RTC SPICLK          | RTC.4
 | *29* | P5   | VSPICS0(2)   | LCD CS              | LCD.1.3
 | *28* | P17  | U2TXD(5)     | CO2 TXD             | CPU.2.14
 | *27* | P16  | U2RXD(5)     | CO2 RXD             | CPU.2.15

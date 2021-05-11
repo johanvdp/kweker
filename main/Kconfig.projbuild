@@ -17,28 +17,28 @@ menu "Kweker"
     config GPIO_LIGHT
         int "Light GPIO number"
         range 0 33
-        default 33
+        default 2
         help
             GPIO number (GPIO_NUM_xx) to light SSR.
 
     config GPIO_EXHAUST
         int "Exhaust fan GPIO number"
         range 0 33
-        default 25
+        default 2
         help
             GPIO number (GPIO_NUM_xx) to exhaust fan SSR.
 
     config GPIO_RECIRC
         int "Recirculation fan GPIO number"
         range 0 33
-        default 26
+        default 2
         help
             GPIO number (GPIO_NUM_xx) to recirculation fan SSR.
 
     config GPIO_HEATER
         int "Heater GPIO number"
         range 0 33
-        default 27
+        default 2
         help
             GPIO number (GPIO_NUM_xx) to heater SSR.
 
