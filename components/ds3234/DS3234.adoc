@@ -25,6 +25,8 @@ Communicates using SPI interface.
 |===
 | parameter | value
 
+| operating voltage       | 3.3 V
+| operating current       | 400 µA
 | Type                    | DS3234SN (industrial)
 | CLK max (VCC 2.7..5.5V) | 4 MHz
 | Accuracy (T -40..+85C)  | +/-3.5 ppm

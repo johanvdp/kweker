@@ -36,13 +36,13 @@ For ease of reference a short module name is chosen.
 
 4+| *actuators*
 | *2.1*  | GND      |                            | PWR.GND
-| *2.2*  | OUT1     | output 1 (3.3V)            | IO.1.3
+| *2.2*  | OUT1     | output 1 (3.3V)            | IOX.1.3
 | *2.3*  | GND      |                            | PWR.GND
-| *2.4*  | OUT2     | output 2 (3.3V)            | IO.1.4
+| *2.4*  | OUT2     | output 2 (3.3V)            | IOX.1.4
 | *2.5*  | GND      |                            | PWR.GND
-| *2.6*  | OUT3     | output 3 (3.3V)            | IO.1.5
+| *2.6*  | OUT3     | output 3 (3.3V)            | IOX.1.5
 | *2.7*  | GND      |                            | PWR.GND
-| *2.8*  | OUT4     | output 4 (3.3V)            | IO.1.6
+| *2.8*  | OUT4     | output 4 (3.3V)            | IOX.1.6
 
 4+| *humidity & temperature sensor*
 | *2.9*  | 5V       | 5V power gives 3.3V signal | PWR.5V
@@ -74,28 +74,28 @@ For ease of reference a short module name is chosen.
 | *6*  | P35  | input only   | TOUCH IRQ           | LCD.1.14
 | *7*  | P32  |              | LCD LED             | LCD.1.8
 | *8*  | P33  |              | LCD RESET           | LCD.1.4
-| *9*  | P25  |              | IO RESET            | IO.3.4
-| *10* | P26  |              | IO CS               | IO.3.6
+| *9*  | P25  |              | IOX RESET           | IOX.3.4
+| *10* | P26  |              | IOX CS              | IOX.3.6
 | *11* | P27  |              |                     |
 .2+| *12*
 .2+| P14
 .2+| HSPICLK(2)
 .2+| RTC SPICLK
 | RTC.4
-| IO.3.8
+| IOX.3.8
 .2+| *13*
 .2+| P12
 .2+| HSPIQ(2)
 .2+| RTC SPIMISO
 | RTC.3
-| IO.3.5
+| IOX.3.5
 | *14* | GND  |              |                     | PWR.GND
 .2+| *15*
 .2+| P13
 .2+| HSPID(2)
 .2+| RTC SPIMOSI
 | RTC.2
-| IO.3.7
+| IOX.3.7
 | *16* | P9   | SD_DATA_2(1) | on board flash      | n.c.
 | *17* | P10  | SD_DATA_3(1) | on board flash      | n.c.
 | *18* | P11  | SD_CMD(1)    | on board flash      | n.c.
@@ -201,18 +201,9 @@ Module name: *RTC*
 | *7* | GND  |             | PWR.GND
 |===
 
-.DS3234 module other
-[%autowidth]
-|===
-| parameter          | value
-
-| operating voltage  | 3.3 V
-| operating current  | 400 µA
-|===
-
 === I/O expander
 
-Module name: *IO*
+Module name: *IOX*
 
 .MCP23S17 module
 [%autowidth]
@@ -251,15 +242,6 @@ Module name: *IO*
 | *3.8*  | SCK   | SPICLK        | ESP.12
 | *3.9*  | GND   |               | PWR.GND
 | *3.10* | VCC   |               | PWR.3V3
-|===
-
-.MCP23S17 module other
-[%autowidth]
-|===
-| parameter          | value
-
-| operating voltage  | 3.3 V
-| operating current  | 1 mA
 |===
 
 === Power distribution
