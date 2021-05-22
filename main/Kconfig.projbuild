@@ -115,15 +115,15 @@ menu "Kweker"
     config GPIO_MCP23S17_CS
         int "MCP23S17 CS GPIO number"
         range 0 33
-        default 26
+        default 25
         help
             GPIO number (GPIO_NUM_xx) to MCP23S17 CS.
 
-    config GPIO_MCP23S17_RST
-        int "MCP23S17 RST GPIO number"
-        range 0 33
-        default 26
+    config MCP23S17_HOST_ADDR
+        int "MCP23S17 host address"
+        range 0 7
+        default 0
         help
-            GPIO number (GPIO_NUM_xx) to MCP23S17 RST.
+            MCP23S17 host address.
 
 endmenu

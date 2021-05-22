@@ -19,6 +19,7 @@ extern "C" {
 #include "AM2301.h"
 #include "DS3234.h"
 #include "MHZ19B.h"
+#include "MCP23S17.h"
 
 #include "model.h"
 #include "hmi.h"
@@ -51,6 +52,7 @@ extern "C" {
 #define SPI_HOST_MCP23S17 (spi_host_device_t)CONFIG_HOST_MCP23S17
 #define GPIO_MCP23S17_CS (gpio_num_t)CONFIG_GPIO_MCP23S17_CS
 #define GPIO_MCP23S17_RST (gpio_num_t)CONFIG_GPIO_MCP23S17_RST
+#define MCP23S17_HOST_ADDR (uint8_t)CONFIG_MCP23S17_HOST_ADDR
 
 #define AM2301_MEASUREMENT_PERIOD_MS 60000
 #define MHZ19B_MEASUREMENT_PERIOD_MS 120000
@@ -70,6 +72,7 @@ DO recirc;
 DO heater;
 NVS nvs;
 MHZ19B mhz19b;
+MCP23S17 iox;
 
 void nvs_setup()
 {
@@ -91,7 +94,8 @@ void nvs_setup()
     nvs.setup("settings", nvs_settings, sizeof(nvs_settings) / sizeof(nvs_settings[0]), NVS_HOLD_OFF_MS);
 }
 
-void spi_setup() {
+void spi_setup()
+{
     // configure spi bus
     spi_bus_config_t buscfg;
     memset(&buscfg, 0, sizeof(spi_bus_config_t));
@@ -108,6 +112,22 @@ void spi_setup() {
         ESP_LOGE(TAG, "run, spi_bus_initialize failed (FATAL)");
         return;
     }
+}
+
+void iox_setup()
+{
+    const char *iox_bits[] {
+    // topic vs bits
+    // A0
+            MODEL_EXHAUST,
+            // A1
+            MODEL_HEATER,
+            // A2
+            MODEL_LIGHT,
+            // A3
+            MODEL_RECIRC };
+
+    iox.setup(SPI_HOST_A, GPIO_MCP23S17_CS, MCP23S17_HOST_ADDR, iox_bits);
 }
 
 void app_main()
@@ -138,6 +158,7 @@ void app_main()
     ctrl_initialize();
 
     spi_setup();
+    iox_setup();
 
     led.setup(GPIO_LED, true, MODEL_ACTIVITY);
 
@@ -157,7 +178,8 @@ void app_main()
     }
     pubsub_add_subscription(log_queue, MODEL_AM2301_STATUS, false);
 
-    am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP, AM2301_MEASUREMENT_PERIOD_MS);
+    am2301.setup(GPIO_AM2301, MODEL_TEMP_PV, MODEL_HUM_PV, MODEL_AM2301_STATUS, MODEL_AM2301_TIMESTAMP,
+    AM2301_MEASUREMENT_PERIOD_MS);
 
     ds3234.setup(SPI_HOST_DS3234, GPIO_DS3234_CS, MODEL_CURRENT_TIME);
 

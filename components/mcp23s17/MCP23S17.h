@@ -1,7 +1,7 @@
 // The author disclaims copyright to this source code.
 
-#ifndef _DS3234_H_
-#define _DS3234_H_
+#ifndef _MCP23S17_H_
+#define _MCP23S17_H_
 
 #include "hal/spi_types.h"
 #include "driver/gpio.h"

@@ -45,7 +45,7 @@ void MCP23S17::task(void *pvParameter)
 
 void MCP23S17::setup(spi_host_device_t host_id, gpio_num_t cs_pin, uint8_t address, const char *topics[16])
 {
-    ESP_LOGD(TAG, "setup, host_id:%d, cs_pin:%d, address:%02X, topics:%p, this:%p", host_id, cs_pin, address, topics, this);
+    ESP_LOGD(TAG, "setup, host_id:%d, cs_pin:%d, address:%d, topics:%p, this:%p", host_id, cs_pin, address, topics, this);
 
     this->host_id = host_id;
     this->cs_pin = cs_pin;

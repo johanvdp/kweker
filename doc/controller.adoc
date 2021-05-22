@@ -74,8 +74,8 @@ For ease of reference a short module name is chosen.
 | *6*  | P35  | input only   | TOUCH IRQ           | LCD.1.14
 | *7*  | P32  |              | LCD LED             | LCD.1.8
 | *8*  | P33  |              | LCD RESET           | LCD.1.4
-| *9*  | P25  |              | IOX RESET           | IOX.3.4
-| *10* | P26  |              | IOX CS              | IOX.3.6
+| *9*  | P25  |              | IOX CS              | IOX.3.6
+| *10* | P26  |              |                     |
 | *11* | P27  |              |                     |
 .2+| *12*
 .2+| P14
@@ -235,14 +235,18 @@ Module name: *IOX*
 | *3.1*  | A2    | address A2    | PWR.GND
 | *3.2*  | A1    | address A1    | PWR.GND
 | *3.3*  | A0    | address A0    | PWR.GND
-| *3.4*  | RESET | reset         | ESP.9
+| *3.4*  | RESET | reset         | PWR.3V3
 | *3.5*  | SO    | SPIMISO       | ESP.13
-| *3.6*  | CS    | chip select   | ESP.10
+| *3.6*  | CS    | chip select   | ESP.9
 | *3.7*  | SI    | SPIMOSI       | ESP.15
 | *3.8*  | SCK   | SPICLK        | ESP.12
 | *3.9*  | GND   |               | PWR.GND
 | *3.10* | VCC   |               | PWR.3V3
 |===
+
+Configured at host address 0.
+Interrup signal(s) not connected; expander is used for output only.
+Relying on internal power-on-reset functionality. 
 
 === Power distribution
 
