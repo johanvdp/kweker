@@ -80,22 +80,19 @@ For ease of reference a short module name is chosen.
 .2+| *12*
 .2+| P14
 .2+| HSPICLK(2)
-.2+| RTC SPICLK
-| RTC.4
-| IOX.3.8
+| RTC SPICLK | RTC.4
+| IOX SPICLK | IOX.3.8
 .2+| *13*
 .2+| P12
 .2+| HSPIQ(2)
-.2+| RTC SPIMISO
-| RTC.3
-| IOX.3.5
+| RTC SPIMISO | RTC.3
+| IOX SPIMISO | IOX.3.5
 | *14* | GND  |              |                     | PWR.GND
 .2+| *15*
 .2+| P13
 .2+| HSPID(2)
-.2+| RTC SPIMOSI
-| RTC.2
-| IOX.3.7
+| RTC SPIMOSI | RTC.2
+| IOX SPIMOSI | IOX.3.7
 | *16* | P9   | SD_DATA_2(1) | on board flash      | n.c.
 | *17* | P10  | SD_DATA_3(1) | on board flash      | n.c.
 | *18* | P11  | SD_CMD(1)    | on board flash      | n.c.
@@ -246,7 +243,7 @@ Module name: *IOX*
 
 Configured at host address 0.
 Interrup signal(s) not connected; expander is used for output only.
-Relying on internal power-on-reset functionality. 
+Relying on internal power-on-reset functionality.
 
 === Power distribution
 
