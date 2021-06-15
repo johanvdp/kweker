@@ -7,7 +7,7 @@ Real-time clock module.
 Communicates using SPI interface.
 
 .DS3234 module
-[%autowidth]
+[cols=1;2;3]
 |===
 | pin | function | description
 
@@ -21,7 +21,7 @@ Communicates using SPI interface.
 |===
 
 .DS3234 other
-[%autowidth]
+[cols=1;1]
 |===
 | parameter | value
 

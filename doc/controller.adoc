@@ -6,11 +6,7 @@
 
 == Controller
 
-The controller module contains multiple sub-modules:
-
-* <<ESP32 module>>,
-* <<User interface module>>, and
-* <<Power distribution>>.
+The controller module defines its external interface and contains multiple sub-modules.
 
 === External interface
 
@@ -20,7 +16,7 @@ For ease of reference a short module name is chosen.
 *Module name: CPU*
 
 .Screw terminals top
-[%autowidth]
+[cols=1;3;3]
 |===
 | pin   | function | connection
 
@@ -30,7 +26,7 @@ For ease of reference a short module name is chosen.
 |===
 
 .Screw terminals bottom
-[%autowidth]
+[cols=1;2;3;2]
 |===
 | pin    | function | description                | connection
 
@@ -57,12 +53,13 @@ For ease of reference a short module name is chosen.
 
 |===
 
+<<<
 === ESP32 module
 
 *Module name: ESP*
 
 .ESP32 module left
-[%autowidth]
+[cols=1;1;2;3;2]
 |===
 | pin  | name | iomux        | function            | connection
 
@@ -99,8 +96,9 @@ For ease of reference a short module name is chosen.
 | *19* | 5V   |              |                     | PWR.5V
 |===
 
+<<<
 .ESP32 module right
-[%autowidth]
+[cols=1;1;2;3;2]
 |===
 | pin  | name | iomux        | function            | connection
 
@@ -133,6 +131,7 @@ For ease of reference a short module name is chosen.
 | *20* | P6   | SD_CLK(1)    | on board flash      | n.c.
 |===
 
+<<<
 === User interface module
 
 The user interface is a small 3.5" LCD display with touch screen.
@@ -141,7 +140,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 *Module name: LCD*
 
 .MSP3520 module
-[%autowidth]
+[cols=1;2;3;2]
 |===
 | pin    | function  | description                   | connection
 
@@ -171,7 +170,7 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 |===
 
 .MSP3520 module other
-[%autowidth]
+[cols=3;1]
 |===
 | parameter          | value
 
@@ -180,12 +179,13 @@ The MSP3520 module is build around a ILI9488 LCD driver, a XPT2046 touch screen 
 | I/O voltage levels | 3.3 V
 |===
 
+<<<
 === Real time clock
 
 Module name: *RTC*
 
 .DS3234 module
-[%autowidth]
+[cols=1;1;3;2]
 |===
 | pin | name | function    | connection
 
@@ -198,12 +198,13 @@ Module name: *RTC*
 | *7* | GND  |             | PWR.GND
 |===
 
+<<<
 === I/O expander
 
 Module name: *IOX*
 
 .MCP23S17 module
-[%autowidth]
+[cols=1;1;3;2]
 |===
 | pin    | name  | function      | connection
 
@@ -245,12 +246,13 @@ Configured at host address 0.
 Interrup signal(s) not connected; expander is used for output only.
 Relying on internal power-on-reset functionality.
 
+<<<
 === Power distribution
 
 Module name: *PWR*
 
 .Power distribution
-[%autowidth]
+[cols=1;1]
 |===
 | pin    | name
 

@@ -4,7 +4,7 @@
 Modules are placed on DIN rails. Size is an approximation.
 
 .Module sizes
-[%autowidth]
+[cols=1;2;2]
 |===
 |name|width(cm)|height(cm)
 

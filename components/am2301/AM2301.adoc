@@ -5,7 +5,7 @@ Measures relative humidity and temperature.
 Communicates using an one-wire serial bus.
 
 .AM2301A module
-[%autowidth]
+[cols=1;2;3]
 |===
 | pin | color | function
 
@@ -19,7 +19,7 @@ Communicates using an one-wire serial bus.
 |===
 
 .AM2301A other
-[%autowidth]
+[cols=1;1]
 |===
 | parameter | value
 

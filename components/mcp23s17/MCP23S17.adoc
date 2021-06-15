@@ -6,7 +6,7 @@
 16-bit I/O expander with SPI interface.
 
 .MCP23S17 module
-[%autowidth]
+[cols=1;1;5]
 |===
 | pin  | function | description
 
@@ -46,7 +46,7 @@
 |===
 
 .MCP23S17 module other
-[%autowidth]
+[cols=1;1]
 |===
 | parameter              | value
 

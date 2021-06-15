@@ -7,7 +7,9 @@
 
 = Kweker (Grower)
 
-As useful as windshield wipers on a goat's ass.
+IMPORTANT: As useful as windshield wipers on a goat's ass.
+And set free using the <<Unlicense>>.
+
 
 == Environment
 
@@ -16,7 +18,7 @@ Typical environment for growing cannabis.
 === Temperature
 
 .Temperature
-[%autowidth]
+[cols=1;1;1;2]
 |===
 | environment| min.[°C] | max.[°C] | description
 
@@ -28,7 +30,7 @@ Typical environment for growing cannabis.
 === Humidity
 
 .Humidity
-[%autowidth]
+[cols=1;1;1;2]
 |===
 | environment | min.[%RH] | max.[%RH] | description
 
@@ -40,7 +42,7 @@ Typical environment for growing cannabis.
 === CO2 concentration
 
 .CO2 concentration
-[%autowidth]
+[cols=2;1;1;4]
 |===
 | environment          | min. [ppm] | max. [ppm] | description
 
@@ -63,7 +65,7 @@ How a positive increase in one phenomenon affects another.
 * effect depends on environment
 
 .Cause and effect
-[%autowidth]
+[cols=2;1;1;1]
 |===
 |Cause/Effect             |Temperature    | Relative Humidity | CO2 concentration
 
@@ -76,6 +78,7 @@ How a positive increase in one phenomenon affects another.
 |Heater                   |+              |-              |
 |===
 
+<<<
 == Model
 
 .Model
@@ -130,6 +133,7 @@ How a positive increase in one phenomenon affects another.
 | Control level | low, normal, high |
 |===
 
+<<<
 == Boundaries
 
 === Sensors
@@ -303,6 +307,7 @@ How a positive increase in one phenomenon affects another.
 ....
 
 
+<<<
 == Control
 
 === Light
@@ -322,6 +327,7 @@ The heat of the light does have an effect on temperature and thus humidity of th
     ** Decrease relative humidity (less evaporation)
 
 .Light control
+[cols=2;1]
 |===
 | Condition | Result
 
@@ -349,7 +355,7 @@ Follows the ambient temperature, humidity, and CO2 concentration.
     ** Reduce CO2 concentration (if light is on, photosynthesis)
 
 .Exhaust fan control
-[%autowidth]
+[cols=3;1]
 |===
 | Condition | Result
 
@@ -372,7 +378,7 @@ Follows the ambient temperature, humidity, and CO2 concentration.
     ** No energy use
 
 .Recirculation fan control
-[%autowidth]
+[cols=2;1]
 |===
 | condition | result
 
@@ -398,7 +404,7 @@ Avoid low temperature, and avoid mold.
     ** Increase relative humidity
 
 .Heater control
-[%autowidth]
+[cols=2;1]
 |===
 | condition | result
 
@@ -414,11 +420,30 @@ Avoid low temperature, and avoid mold.
 
 
 // external level 2 sections
+<<<
 include::controller.adoc[]
+<<<
 include::../components/am2301/AM2301.adoc[]
+<<<
 include::../components/mhz19b/MH-Z19B.adoc[]
+<<<
+include::../components/ds3234/DS3234.adoc[]
+<<<
+include::../components/mcp23s17/MCP23S17.adoc[]
+<<<
 include::HDR-60-5.adoc[]
+<<<
 include::SSR-10-DA.adoc[]
+<<<
 include::layout.adoc[]
+<<<
 include::mains_wiring.adoc[]
+<<<
 include::control_wiring.adoc[]
+
+<<<
+== Unlicense
+include::../LICENSE[]
+
+<<<
+== External references

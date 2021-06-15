@@ -3,7 +3,7 @@
 
 Low voltage power and control signals.
 
-[%autowidth]
+[cols=1;2;2]
 |===
 | pin | connection | function
 

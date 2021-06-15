@@ -1,7 +1,7 @@
 // The author disclaims copyright to this document.
 == Mains wiring
 
-[%autowidth]
+[cols=1;2]
 |===
 | pin  | connection
 

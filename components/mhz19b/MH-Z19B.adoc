@@ -6,7 +6,7 @@ Using a serial port (UART TTL level 3.3V) for communication.
 Software settings and protocol see datasheet.
 
 .MH-Z19B module
-[%autowidth]
+[cols=1;2;4]
 |===
 | pin | name | description
 
@@ -20,7 +20,7 @@ Software settings and protocol see datasheet.
 |===
 
 .MH-Z19B module other
-[%autowidth]
+[cols=1;1]
 |===
 | parameter | value
 

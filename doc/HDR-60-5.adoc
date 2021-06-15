@@ -4,7 +4,7 @@
 Power supply unit.
 
 .HDR-60-5 module
-[%autowidth]
+[cols=1;1]
 |===
 | pin  | function
 
@@ -18,7 +18,7 @@ Power supply unit.
 |===
 
 .HDR-60-5 module other
-[%autowidth]
+[cols=1;1]
 |===
 | parameter | value
 

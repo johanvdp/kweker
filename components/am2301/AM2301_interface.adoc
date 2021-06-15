@@ -38,7 +38,7 @@ Both parties use open-drain type outputs to pull-down the signal from the floati
 ....
 
 .Interface characteristics
-[%autowidth]
+[cols=2;5;1;1;1;1]
 |===
 | symbol | parameter | min | typ | max | unit
 
@@ -52,7 +52,7 @@ Both parties use open-drain type outputs to pull-down the signal from the floati
 | Ten  | Device release            | 45  | 50 | 55  | μs
 |===
 
-
+<<<
 === Software decoding
 
 This software decodes the incoming signal using the following state model.
